@@ -1,3 +1,15 @@
+:root {
+  --bg-color: '#000';
+  --fg-color: '#FAFAFA';
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: '#FAFAFA';
+    --fg-color: '#000';
+  }
+}
+
 *,
 *:after,
 *:before {
@@ -9,7 +21,7 @@ html {
 
 body {
   color: #212121;
-  background-color: #FAFAFA;
+  background-color: var(--bg-color);
   font-family: Merriweather, Georgia, serif;
   font-size: 1.6em;
   font-weight: 300;
@@ -41,7 +53,7 @@ h5,
 h6 {
   font-family: Merriweather, Georgia, sans-serif;
   font-weight: 700;
-  color: #000;
+  color: var(--fg-color);
   margin: 6.4rem 0 3.2rem 0; }
 
 h1 {
@@ -129,7 +141,7 @@ table {
   border-collapse: collapse; }
 
 table td, table th {
-  border: 2px solid #000; }
+  border: 2px solid var(--fg-color); }
 
 table tr:first-child th {
   border-top: 0; }
@@ -343,7 +355,7 @@ figure {
         padding: 0;
         max-height: 0;
         width: 100%;
-        background-color: #FAFAFA;
+        background-color: var(--bg-color);
         border-top: solid 2px #E0E0E0;
         border-bottom: solid 2px #E0E0E0;
         transition: opacity 0.25s, max-height 0.15s linear; } }
