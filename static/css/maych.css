@@ -41,7 +41,7 @@ a:focus, a:hover {
     padding-top: .15rem;
     padding-bottom: .15rem;
 }
-a.fa:focus, a.fa:hover {
+a.la:focus, a.la:hover {
     background-color: transparent;
     color: var(--link-color);
     padding: 0 !important;
