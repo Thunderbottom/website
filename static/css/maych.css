@@ -22,7 +22,7 @@
   font-size: 62.5%; }
 
   body {
-    color: #080705;
+    color: var(--fg-color);
     background-color: var(--bg-color);
     font-family: Merriweather, Georgia, serif;
     font-size: 1.6em;
