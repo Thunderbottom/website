@@ -26,9 +26,9 @@ body {
     color: var(--fg-color);
     background-color: var(--bg-color);
     font-family: var(--body-font);
-    font-size: 1.6em;
-    font-weight: 300;
-    line-height: 1.8em;
+    font-size: 1.75rem;
+    font-weight: 400;
+    line-height: 1.85rem;
 }
 a {
     font-weight: 300;
@@ -41,7 +41,7 @@ a:focus, a:hover {
     padding-bottom: .15rem;
 }
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--body-font);
+    font-family: var(--heading-font);
     font-weight: 700;
     color: var(--fg-color);
     margin: 6.4rem 0 3.2rem 0;
@@ -71,7 +71,7 @@ h6 {
     line-height: 2.2rem;
 }
 code {
-    font-family: var(--heading-font);
+    font-family: var(--body-font);
     font-size: 1.6rem;
     font-weight: 400;
     background-color: #e0e0e0;
