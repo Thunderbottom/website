@@ -1,12 +1,14 @@
 :root {
-  --bg-color: '#000';
-  --fg-color: '#FAFAFA';
+  --bg-color: '#080705';
+  --fg-color: '#FFFFFA';
+  --highlight-color: '#F1F3F5'
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-color: '#FAFAFA';
-    --fg-color: '#1F1F1F';
+    --bg-color: '#FFFFFA';
+    --fg-color: '#080705';
+    --highlight-color: '#212529';
   }
 }
 
@@ -20,7 +22,7 @@ html {
   font-size: 62.5%; }
 
 body {
-  color: #212121;
+  color: #080705;
   background-color: var(--bg-color);
   font-family: Merriweather, Georgia, serif;
   font-size: 1.6em;
@@ -40,7 +42,10 @@ a {
   color: #1565c0;
   text-decoration: none; }
   a:focus, a:hover {
-    text-decoration: underline; }
+    background-color: var(--highlight-color);
+    padding-top: 0.15rem;
+    padding-bottom: 0.15rem;
+  }
 
 p {
   margin: 2.0rem 0 2.0rem 0; }
