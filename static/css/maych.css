@@ -185,3 +185,20 @@ width: 100%}
         width: 10rem;
     }
 }
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+.icon-telegram {
+  width: 1.0011428571428571em;
+}
+.icon-linkedin {
+  width: 0.8571428571428571em;
+}
+.icon-github {
+  width: 0.8571428571428571em;
+}
