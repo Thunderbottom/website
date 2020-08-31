@@ -1,7 +1,7 @@
 :root {
   --bg-color: '#080705';
   --fg-color: '#FFFFFA';
-  --highlight-color: '#F1F3F5'
+  --highlight-color: '#F1F3F5';
 }
 
 @media (prefers-color-scheme: dark) {
