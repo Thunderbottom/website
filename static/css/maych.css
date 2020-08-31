@@ -1,14 +1,14 @@
 :root {
   --bg-color: '#080705';
   --fg-color: '#FFFFFA';
-  --highlight-color: '#F1F3F5';
+  --highlight-color: '#212529';
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-color: '#FFFFFA';
     --fg-color: '#080705';
-    --highlight-color: '#212529';
+    --highlight-color: '#F1F3F5';
   }
 }
 
