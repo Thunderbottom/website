@@ -5,6 +5,7 @@
     --bg-color: #FFFFFA;
     --fg-color: #080705;
     --highlight-color: #F1F3F5;
+    --link-color: #1565C0;
     --heading-font: "Fira Sans Condensed", "Helvetica Neue", Arial, sans-serif;
     --body-font: "PT Serif", serif, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
@@ -32,7 +33,7 @@ body {
 }
 a {
     font-weight: 400;
-    color: #1565c0;
+    color: var(--link-color);
     text-decoration: none;
 }
 a:focus, a:hover {
@@ -40,8 +41,9 @@ a:focus, a:hover {
     padding-top: .15rem;
     padding-bottom: .15rem;
 }
-a i.fab:focus, a i.fab:hover {
+a.fa:focus, a.fa:hover {
     background-color: transparent;
+    color: var(--link-color);
     padding: 0 !important;
 }
 h1, h2, h3, h4, h5, h6 {
