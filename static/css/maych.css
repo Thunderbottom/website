@@ -26,12 +26,12 @@ body {
     color: var(--fg-color);
     background-color: var(--bg-color);
     font-family: var(--body-font);
-    font-size: 1.75rem;
+    font-size: 2.25rem;
     font-weight: 400;
-    line-height: 1.85rem;
+    line-height: 2.5rem;
 }
 a {
-    font-weight: 300;
+    font-weight: 400;
     color: #1565c0;
     text-decoration: none;
 }
@@ -39,6 +39,10 @@ a:focus, a:hover {
     background-color: var(--highlight-color);
     padding-top: .15rem;
     padding-bottom: .15rem;
+}
+a i.fab:focus, a i.fab:hover {
+    background-color: transparent;
+    padding: 0 !important;
 }
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--heading-font);
@@ -142,7 +146,7 @@ width: 100%}
 
 @media only screen and (max-width:768px) {
     body {
-        font-size: 1.6em;
+        font-size: 1.75em;
         line-height: 1.6em;
     }
     h1 {
