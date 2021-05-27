@@ -1,0 +1,57 @@
+{% extends "index.html" %}
+{% import "macros.html" as macros %}
+
+{% block title %}
+  {{ page.title }}
+{% endblock title %}
+
+{% block description %}
+    <meta name="description" content="{{ page.summary | striptags }}">
+
+    {% if page.extra.tags %}
+        <meta name="keywords" content="{{ config.extra.keywords ~ ', ' ~ page.extra.tags }}">
+    {% endif %}
+{% endblock description %}
+
+{% block og_card %}
+    {{ super() }}
+    <meta property="og:title" content="{{ page.title }}">
+{% endblock og_card %}
+
+{% block og_image %}
+    {% if page.image %}
+        <meta property="og:image" content="{{ get_url(path=page.image, cachebust=true) }}">
+    {% endif %}
+{% endblock og_image %}
+
+{% block content %}
+
+<article class="post">
+  <header id="post-header" class="post-header">
+    <time datetime="{{ page.date }}" class="post-date">
+        {{ page.date | date(format="%d %b %Y") }}
+    </time>
+        {% if page.extra.last_modified_at %}
+          <small>
+            (Updated:
+            <time datetime="{{ page.extra.last_modified_at | date(format="%Y-%m-%dT%H:%M:%S") }}" itemprop="dateModified">
+                {{ page.extra.last_modified_at | date(format="%d %b %Y") }}
+            </time>)
+          </small>
+        {% endif %}
+        <small>
+            · {{ macros::read_time(words=page.word_count) }}
+        </small>
+    <h1 class="post-title">{{ page.title }}</h1>
+  </header>
+
+  {{ page.content | replace(from="<!-- toc -->", to=macros::toc(toc=page.toc)) | safe }}
+</article>
+
+{% block contact %}
+  <p style="text-align: center;">Got any questions or comments? Drop me a message on <a href="{{ config.extra.author.telegram.link }}" rel="nofollow">Telegram</a>!</p>
+{% endblock contact %}
+
+{# include related.html #}
+
+{% endblock content %}

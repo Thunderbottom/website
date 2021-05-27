@@ -1,0 +1,57 @@
+/**
+ * Link placement and hover behavior.
+ */
+
+.zola-anchor {
+  color: $link-color !important;
+  text-decoration: none !important; /* do not underline */
+  border-bottom: none;
+
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  font-stretch: normal;
+  font-size: .5em;
+  line-height: inherit;
+  font-size-adjust: none;
+  font-kerning: auto;
+  font-optical-sizing: auto;
+  font-language-override: normal;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+
+  position: absolute;
+  margin-left: -2.5em;
+  // padding-right: 0.5em;
+  padding-top: 0.5em;
+  opacity: 0;
+  background-color: transparent;
+
+   &:hover,
+   &:focus {
+     background-color: inherit;
+     color: inherit;
+   }
+}
+
+@media (max-width: $min-width-breakpoint ) {
+  /* Do not display AnchorJS icon on less than 768px view point */
+  .zola-anchor {
+    display: none;
+  }
+}
+
+h2, h3, h4, h5, h6 {
+  &:hover > .zola-anchor {
+      opacity: .75;
+      /* To fade links as they appear, change transition-property from 'color' to 'all' */
+      -webkit-transition: color .16s linear;
+      transition: color .16s linear;
+  }
+
+  &:hover > .zola-anchor:hover,
+  &:hover > .zola-anchor:focus {
+      text-decoration: none !important; /* do not underline */
+      opacity: 1;
+  }
+}

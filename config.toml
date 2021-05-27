@@ -1,0 +1,39 @@
+# The URL the site will be built for
+base_url = "https://maych.in"
+title = "Chinmay D. Pai"
+description = "Musings on life, tech, and other interests"
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = false
+# Whether to generate a RSS feed automatically
+generate_feed = true
+# minify is broken for code blocks, works on the `next` branch
+# minify_html = true
+
+[markdown]
+external_links_no_follow = true
+external_links_no_referrer = true
+# When set to "true", all code blocks are highlighted.
+highlight_code = true
+highlight_theme = "ayu-dark"
+smart_punctuation = true
+
+[extra]
+navigation = [
+    {name = "Blog", url = "/blog"},
+]
+keywords = "zola, blog, technology, life, linux"
+
+[link_checker]
+# Skip anchor checking for external URLs that start with these prefixes
+skip_anchor_prefixes = [
+    "https://github.com/",
+]
+
+[extra.author]
+name = "Chinmay D. Pai"
+[extra.author.telegram]
+link = "https://t.me/thunderbottom"
+username = "thunderbottom"

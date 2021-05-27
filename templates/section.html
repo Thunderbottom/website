@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+
+{% block content %}
+<article class="page">
+  <header class="page-header">
+  {% if not section.extra.hide_title %}
+    <h1 class="page-title">{{ section.title }}</h1>
+  {% endif %}
+  </header>
+
+  {% block seccontent %}
+    {{ section.content | safe }}
+  {% endblock seccontent %}
+</article>
+{% endblock content %}

@@ -1,0 +1,20 @@
+name = "xpoole"
+description = "A theme inspired by jekyll poole"
+license = "MIT"
+homepage = "https://github.com/thunderbottom/xpoole"
+min_version = "0.11.0"
+
+[extra]
+navigation = [
+    {name = "Blog", url = "/blog"},
+]
+
+[author]
+name = "Chinmay Pai"
+homepage = "https://maych.in"
+repo = "https://github.com/thunderbottom/xpoole"
+
+[original]
+author =  "poole"
+homepage = "http://getpoole.com"
+repo = "https://github.com/poole/poole"

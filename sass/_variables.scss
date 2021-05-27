@@ -1,0 +1,46 @@
+$font-fallback: 'Helvetica Neue', 'sans-serif';
+$font-family: 'PT Serif', $font-fallback;
+$header-font-family: 'Playfair Display', $font-fallback;
+$font-size: 22px;
+$line-height: 1.6;
+
+$min-width-breakpoint: 42em;
+
+$body-padding: 0.75rem 1.5rem;
+$font-color: #555;
+$background-color: #fffffa;
+
+$heading-color: darken($font-color, 12);
+$strong-color: lighten($heading-color, 5);
+$small-color: lighten($font-color, 25);
+
+$divider-color: lighten($small-color, 25);
+
+// $link-color: #1c7ed6;
+$link-color: #1c76dd;
+$link-hover-color: #dee2e6;
+$link-color-masthead: darken($font-color, 20);
+
+$message-background-color: #fff5b2;
+$message-color: $font-color;
+
+$scrollbar-color: darken($link-hover-color, 10);
+
+$table-border-color: $divider-color;
+$table-background-even: #fff;
+$table-background-odd: darken($table-background-even, 2);
+
+$abbr-color: lighten($link-color-masthead, 8);
+$abbr-border-color: $divider-color;
+
+$blockquote-color: $small-color;
+$blockquote-border-color: $divider-color;
+
+$code-background-color: darken(#fff, 3);
+// $code-color: #bf616a;
+$code-color: #E43F6F;
+$code-border-color: darken($code-background-color, 8);
+
+$border-radius:  .25rem;
+
+$post-date-color: $small-color;

@@ -1,0 +1,52 @@
+.post {
+  .post-header {
+    margin-bottom: 2rem;
+
+    .post-title {
+      a {
+        color: inherit;
+        text-decoration: none;
+        &:hover,
+        &:focus {
+          background-color: $link-hover-color;
+          color: $link-color-masthead; // white
+        }
+      }
+      margin-top: 0.3rem;
+      margin-bottom: 0.4rem;
+    }
+  }
+  p {
+    @media (min-width: $min-width-breakpoint) {
+      text-align: justify;
+    }
+  }
+}
+
+.page {
+  .page-header {
+    margin-bottom: 2rem;
+
+    .page-title {
+      margin-bottom: 0.3rem;
+    }
+  }
+
+  .pagination {
+    clear: both;
+  }
+}
+
+.post-date {
+  font-size: 85%;
+  color: $post-date-color;
+}
+
+.index {
+  margin: 2rem;
+}
+
+div#tippin-button {
+  display: inline-block;
+  margin-left: 15px;
+}

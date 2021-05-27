@@ -1,0 +1,50 @@
+{% extends "section.html" %}
+{% import "macros.html" as macros %}
+
+{% block seccontent %}
+{% for post in paginator.pages | filter(attribute="draft", value=false) %}
+{% if loop.first %}
+<h2 class="text-right">{{post.year}}</h2>
+<nav class="posts">
+    {% endif %}
+
+    <div class="posts-item">
+        <div class="posts-item-header">
+            <h2 class="post-title"><a href="{{ post.path | safe }}">{{ post.title }}</a></h2>
+            <time class="post-date" datetime="{{ post.date | date(format="%Y-%m-%dT%H:%M:%S") }}">
+                {{ post.date | date(format="%B %d") }}
+                · {{ macros::read_time(words=post.word_count) }}
+            </time>
+        </div>
+        {% if post.extra.image %}
+        {% set basepath = post.path | trim_start_matches(pat="/") %}
+        <img src="{{ resize_image(path= basepath ~ post.extra.image,
+        width=1600, height=1600, op="fit" ) }}" />
+        {% endif %}
+        <p>{{ post.summary | striptags | replace(from="[link]", to="") | safe }}</p>
+    </div>
+
+    {% if loop.last %}
+</nav>
+{% else %}
+{% set next_year = loop.index0+1 %}
+{% set previous_year = paginator.pages[next_year].year %}
+{% if post.year != previous_year %}
+</nav>
+<h2 class="text-right">{{previous_year}}</h2>
+<nav class="posts">
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+
+    {% block pagination %}
+    <nav class="pagination">
+        {% if paginator.previous %}
+        <a class="previous" href="{{ paginator.previous }}">‹ Previous</a>
+        {% endif %}
+        {% if paginator.next %}
+        <a class="next" href="{{ paginator.next }}">Next ›</a>
+        {% endif %}
+    </nav>
+    {% endblock pagination %}
+    {% endblock seccontent %}
