@@ -1,0 +1,32 @@
+kind: pipeline
+name: docker-build
+
+steps:
+- name: docker
+  image: plugins/docker
+  settings:
+    dockerfile: deploy/Dockerfile
+    repo: thunderbottom/site
+    tags: latest
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+
+trigger:
+  branch:
+    - master
+
+---
+kind: secret
+name: docker_username
+get:
+  path: secret/data/docker
+  name: username
+
+---
+kind: secret
+name: docker_password
+get:
+  path: secret/data/docker
+  name: token
