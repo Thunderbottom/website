@@ -21,12 +21,12 @@ trigger:
 kind: secret
 name: docker_username
 get:
-  path: secret/data/docker
+  path: secret/data/drone-runner/docker
   name: username
 
 ---
 kind: secret
 name: docker_password
 get:
-  path: secret/data/docker
+  path: secret/data/drone-runner/docker
   name: token
