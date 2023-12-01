@@ -7,9 +7,9 @@ text_justify = true
 
 ### Personal
 
-- Setting up a server infrastructure running <abbr title="Nomad, Vault, Consul, and Terraform">Hashistack</abbr>
-- Building a [Pritunl](https://pritunl.com) SSH renewal client in Go
-- Learning and practising [Stoicism](https://plato.stanford.edu/entries/stoicism/)
+- Spending [my life](https://git.deku.moe/thunderbottom/nixos-config) on setting up <abbr title="Please kill me.">NixOS</abbr>.
+- Exploring [Netbird](https://netbird.io) as a P2P VPN.
+- Learning and practising [Stoicism](https://plato.stanford.edu/entries/stoicism/).
 
 ### Reading
 
@@ -18,6 +18,4 @@ text_justify = true
 
 ### Playing
 
-- Hollow Knight
-- Kentucky Route Zero
-- Stardew Valley
+Nothing right now.
