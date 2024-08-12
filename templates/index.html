@@ -93,7 +93,7 @@
         <small>
           This work is licensed under the <a rel="license" href="https://opensource.org/licenses/0BSD">0BSD License</a>.
           <br/>
-          <a href="{{ "/" ~ config.feed_filename | safe }}">RSS Feed</a>
+          {% if config.generate_feeds %}{% for feed in config.feed_filenames %}<span><a href="{{ get_url(path=feed) | safe }}" rel="noopener" target="_blank" type="application/rss+xml">RSS feed</a></span>{% endfor %}{% endif %}
         </small>
       </p>
     </footer>
