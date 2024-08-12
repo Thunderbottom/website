@@ -21,7 +21,9 @@
         <img src="{{ resize_image(path= basepath ~ post.extra.image,
         width=1600, height=1600, op="fit" ) }}" />
         {% endif %}
+        {% if post.summary %}
         <p>{{ post.summary | striptags | replace(from="[link]", to="") | safe }}</p>
+        {% endif %}
     </div>
 
     {% if loop.last %}
