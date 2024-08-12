@@ -1,6 +1,5 @@
 +++
 title = "Now"
-path = "/now"
 [extra]
 text_justify = true
 +++
