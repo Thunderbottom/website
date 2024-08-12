@@ -9,7 +9,7 @@ compile_sass = true
 build_search_index = false
 # Whether to generate a RSS feed automatically
 generate_feeds = true
-feed_filenames = ["atom.xml]
+feed_filenames = ["atom.xml"]
 # minify is broken for code blocks, works on the `next` branch
 # minify_html = true
 
