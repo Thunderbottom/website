@@ -5,7 +5,9 @@ date  = 2018-08-21T21:13:46+05:30
 tags  = "machine learning, tensorflow"
 +++
 
-A comprehensive guide to installing Void Linux on your system with <abbr title="Full-Disk Encryption">FDE</abbr>, including an encrypted boot partition.<!-- more -->
+A comprehensive guide to installing Void Linux on your system with <abbr title="Full-Disk Encryption">FDE</abbr>, including an encrypted boot partition.
+
+<!-- more -->
 
 This guide serves as an extension to the official Void documentation for Full Disk Encryption[^void-fde] in an attempt to make the steps easier to follow.
 
