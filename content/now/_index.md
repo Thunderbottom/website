@@ -6,8 +6,8 @@ text_justify = true
 
 ### Personal
 
-- Spending [my life](https://git.deku.moe/thunderbottom/nixos-config) on setting up <abbr title="Please kill me.">NixOS</abbr>.
-- Exploring [Netbird](https://netbird.io) as a P2P VPN.
+- Spending [my life](https://git.deku.moe/thunderbottom/flakes) on setting up <abbr title="Please kill me.">NixOS</abbr>.
+- Exploring [Netbird](https://netbird.io) as a P2P VPN and [WarpGate](https://github.com/warp-tech/warpgate) as a proxy bastion.
 - Learning and practising [Stoicism](https://plato.stanford.edu/entries/stoicism/).
 
 ### Reading
@@ -17,4 +17,4 @@ text_justify = true
 
 ### Playing
 
-Nothing right now.
+- [Dave the Diver](https://mintrock.et/en/davethediver/platform) on repeat.
