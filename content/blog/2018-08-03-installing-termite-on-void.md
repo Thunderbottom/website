@@ -1,6 +1,7 @@
 +++
 title = "Installing Termite on Void Linux"
 date  = 2018-08-03T12:31:26+05:30
+description = "Simple instructions for building and installing the Termite terminal emulator on Void Linux using a custom VTE build."
 [extra]
 tags  = "void linux, termite, terminal, linux, systems"
 +++
@@ -12,14 +13,14 @@ In this post, I'll show you how to build and install termite on Void Linux.
 <!-- more -->
 
 {% message() %}
-Even though termite is a pretty solid choice for a terminal emulator, I suggest checking out Alacritty[^alacritty], which is a GPU-accelerated terminal emulator and is [available](https://github.com/void-linux/void-packages/blob/master/srcpkgs/alacritty/template) in the Void Linux repository.
+Even though termite is a pretty solid choice for a terminal emulator, I suggest checking out [Alacritty](https://github.com/alacritty/alacritty), which is a GPU-accelerated terminal emulator and is [available](https://github.com/void-linux/void-packages/blob/master/srcpkgs/alacritty/template) in the Void Linux repository.
 {% end %}
 
 ## Build Dependencies
 
 We need to install some dependencies to set up the custom VTE build and compile termite. Luckily enough, all the required dependencies are available in the Void Linux repository.
 
-```sh
+```bash
 $ sudo xbps-install -Sy git gcc make automake autoconf gtk-doc glib-devel \
 	vala-devel gobject-introspection pkg-config intltool \
 	gettext-devel gnutls gnutls-devel gtk+3 gtk+3-devel \
@@ -73,5 +74,3 @@ $ sudo make install
 That's all. If everything goes well, you should end up with termite installed on your system.
 
 [^void-packages]: [GitHub: On why termite won't be included in void-packages](https://github.com/void-linux/void-packages/issues/9769#issuecomment-472585514)
-
-[^alacritty]: [Alacritty: A cross-platform, GPU-accelerated terminal emulator](https://github.com/alacritty/alacritty)

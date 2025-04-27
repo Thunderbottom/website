@@ -1,5 +1,6 @@
 +++
-title = "Installing Void Linux with Full-Disk Encryption"
+title = "Set up Void Linux with Full-Disk Encryption"
+description = "A step-by-step guide to setting up Void Linux with full disk encryption, including encrypted boot partition, for enhanced system security."
 date  = 2018-08-21T21:13:46+05:30
 [extra]
 tags  = "machine learning, tensorflow"
@@ -38,9 +39,8 @@ $ parted -a optimal /dev/sdX mkpart primary 2048s 100M # 100% for legacy mode
 $ parted -a optimal /dev/sdX mkpart primary 100M 100% # UEFI ESP Partition
 $ parted /dev/sdX set 1 boot on
 ```
-
 {% message() %}
-**Note**: If your system's BIOS compatibility is set to Legacy mode, you are not required to create the ESP partition.
+If your system's BIOS compatibility is set to Legacy mode, you are not required to create the ESP partition.
 {% end %}
 
 ### Setting up LVM and LUKS for Encryption

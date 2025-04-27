@@ -17,6 +17,7 @@ feed_filenames = ["atom.xml"]
 external_links_no_follow = true
 external_links_no_referrer = true
 # When set to "true", all code blocks are highlighted.
+extra_syntaxes_and_themes = ["static/themes"]
 highlight_code = true
 highlight_theme = "ayu-dark"
 smart_punctuation = true
@@ -24,6 +25,7 @@ smart_punctuation = true
 [extra]
 navigation = [
     {name = "Blog", url = "/blog"},
+    {name = "Now", url = "/now"},
 ]
 keywords = "zola, blog, technology, life, linux"
 

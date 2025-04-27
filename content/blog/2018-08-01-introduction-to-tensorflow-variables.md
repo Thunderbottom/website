@@ -1,6 +1,7 @@
 +++
 title = "Introduction to TensorFlow Variables"
 date  = 2018-08-01T03:48:49+05:30
+description = "A beginner-friendly guide explaining TensorFlow variables: what they are, how they differ from Python variables, and the essentials of creating, initializing, and executing them within computational graphs."
 [extra]
 tags  = "machine learning, tensorflow"
 +++

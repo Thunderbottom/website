@@ -1,14 +1,14 @@
 $font-fallback: 'Helvetica Neue', 'sans-serif';
-$font-family: 'PT Serif', $font-fallback;
+$font-family: 'Lora', $font-fallback;
 $header-font-family: 'Playfair Display', $font-fallback;
-$font-size: 22px;
-$line-height: 1.6;
+$font-size: 19px;
+$line-height: 1.7;
 
 $min-width-breakpoint: 42em;
 
 $body-padding: 0.75rem 1.5rem;
-$font-color: #555;
-$background-color: #fffffa;
+$font-color: #333;
+$background-color: #fafafa;
 
 $heading-color: darken($font-color, 12);
 $strong-color: lighten($heading-color, 5);
@@ -17,12 +17,25 @@ $small-color: lighten($font-color, 25);
 $divider-color: lighten($small-color, 25);
 
 // $link-color: #1c7ed6;
-$link-color: #1c76dd;
-$link-hover-color: #dee2e6;
+$link-color: #0d6efd;
+$link-hover-color: #f0f7ff;
 $link-color-masthead: darken($font-color, 20);
 
-$message-background-color: #fff5b2;
+$message-background-color: #f0f7ff;
 $message-color: $font-color;
+
+// Admonition colors
+$note-background-color: #f0f7ff;
+$note-border-color: #90c2ff;
+
+$warning-background-color: #fff3cd;
+$warning-border-color: #ffc107;
+
+$tip-background-color: #d1e7dd;
+$tip-border-color: #198754;
+
+$info-background-color: #cff4fc;
+$info-border-color: #0dcaf0;
 
 $scrollbar-color: darken($link-hover-color, 10);
 
@@ -36,10 +49,9 @@ $abbr-border-color: $divider-color;
 $blockquote-color: $small-color;
 $blockquote-border-color: $divider-color;
 
-$code-background-color: darken(#fff, 3);
-// $code-color: #bf616a;
-$code-color: #E43F6F;
-$code-border-color: darken($code-background-color, 8);
+$code-background-color: #1e1e2e;
+$code-color: #bfbab0;
+$code-border-color: #313244;
 
 $border-radius:  .25rem;
 

@@ -10,3 +10,33 @@
   background-color: $message-background-color;
   border-radius: $border-radius;
 }
+
+.message-title {
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.message-content p:last-child {
+  margin-bottom: 0;
+}
+
+.message-note {
+  background-color: $note-background-color;
+  border-left: 4px solid $note-border-color;
+}
+
+.message-warning {
+  background-color: $warning-background-color;
+  border-left: 4px solid $warning-border-color;
+}
+
+.message-tip {
+  background-color: $tip-background-color;
+  border-left: 4px solid $tip-border-color;
+}
+
+.message-info {
+  background-color: $info-background-color;
+  border-left: 4px solid $info-border-color;
+}
