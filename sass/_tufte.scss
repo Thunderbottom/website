@@ -6,16 +6,17 @@
 .sidenote, .marginnote {
   float: right;
   clear: right;
-  margin-right: -35%;
-  width: 30%;
+  margin-right: -30%;
+  width: 25%;
   margin-top: 0;
   margin-bottom: 0;
   /* Adjusted for et-book font */
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   line-height: $line-height;
   vertical-align: baseline;
   position: relative;
   color: $blockquote-color;
+  font-style: italic;
   
   /* Add some subtle styling */
   padding-left: 0.5rem;
@@ -28,7 +29,7 @@
     width: 95%;
     margin: 1rem 0;
     padding: 0.5rem;
-    border-left: 3px solid $link-color;
+    border-left: 2px solid $divider-color;
     font-size: 0.9rem;
 
     &.active {
@@ -46,13 +47,11 @@
     /* Use attr() to get the ID from the data attribute */
     content: attr(data-footnote-id);
     /* Adjusted for et-book font */
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     position: relative;
     /* Adjust the vertical positioning to match your site's style */
-    top: -0.3em;
+    top: 0;
     vertical-align: baseline;
-    color: $link-color;
-    cursor: pointer;
     font-weight: normal;
     padding: 0 0.1rem;
   }
@@ -67,19 +66,12 @@
     position: relative;
     vertical-align: baseline;
     font-weight: bold;
-    color: $link-color;
   }
 }
 
 /* Reset sidenote counter at the beginning of the article */
 article, .post {
   counter-reset: sidenote-counter;
-}
-
-/* For mobile: footnote labels that can be tapped */
-.sidenote-ref {
-  cursor: pointer;
-  color: $link-color;
 }
 
 /* Compatibility with existing footnotes */
@@ -124,27 +116,4 @@ article, .post {
 /* Hide checkbox inputs */
 .sidenote-toggle, .margin-toggle {
   display: none;
-}
-
-/* For small screens, show the toggles */
-@media (max-width: $min-width-breakpoint) {
-  .sidenote-number:after {
-    content: counter(sidenote-counter);
-    vertical-align: super;
-    font-size: 0.7rem;
-    cursor: pointer;
-    color: $link-color;
-  }
-  
-  .margin-toggle:checked + .sidenote,
-  .margin-toggle:checked + .marginnote,
-  .sidenote-toggle:checked + .sidenote {
-    display: block;
-    float: left;
-    left: 0;
-    clear: both;
-    width: 95%;
-    margin: 1rem 2.5%;
-    position: relative;
-  }
 }

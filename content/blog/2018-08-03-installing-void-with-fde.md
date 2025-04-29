@@ -10,11 +10,11 @@ A comprehensive guide to installing Void Linux on your system with <abbr title="
 
 <!-- more -->
 
-This guide serves as an extension to the official Void documentation for Full Disk Encryption {% sidenote(id="1") %}[Void Linux: Full Disk Encryption](https://docs.voidlinux.org/installation/guides/fde.html){% end %} in an attempt to make the steps easier to follow. 
+This guide serves as an extension to the official Void documentation for Full Disk Encryption {% sidenote(id="1") %}Check out the [Void Linux: Full Disk Encryption](https://docs.voidlinux.org/installation/guides/fde.html) wiki article{% end %} in an attempt to make the steps easier to follow.
 
 ## Prerequisites
 
-Make sure you have a Void Linux installation disk ready to plug in and boot.{% sidenote(id="2") %}[Void Linux: Prepare Installation Media](https://docs.voidlinux.org/installation/live-images/prep.html){% end %} This is also a good opportunity to back up your current installation and start afresh, as this tutorial is aimed towards a clean system install. {% marginnote(id="1") %}Hello world{% end %}
+Make sure you have a Void Linux installation disk ready to plug in and boot.{% sidenote(id="2") %}[Void Linux: Prepare Installation Media](https://docs.voidlinux.org/installation/live-images/prep.html){% end %} This is also a good opportunity to back up your current installation and start afresh, as this tutorial is aimed towards a clean system install.
 
 
 ## Installation

@@ -10,9 +10,8 @@
   .sidenote-number:after {
     content: counter(sidenote-counter);
     vertical-align: super;
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     cursor: pointer;
-    color: $link-color;
   }
   
   .margin-toggle:checked + .sidenote,
@@ -30,6 +29,7 @@
   .sidenote-ref:after {
     content: " ⊕";
     color: $link-color;
+    vertical-align: middle;
   }
 }
 

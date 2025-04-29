@@ -18,6 +18,12 @@
   }
 }
 
+.post {
+  @media (min-width: $min-width-breakpoint) {
+  max-width: 75%;
+  }
+}
+
 .page {
   .page-header {
     margin-bottom: 2rem;
