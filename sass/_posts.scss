@@ -16,11 +16,17 @@
       margin-bottom: 0.4rem;
     }
   }
-}
 
-.post {
   @media (min-width: $min-width-breakpoint) {
-  max-width: 75%;
+    & > * {
+      max-width: 75%;
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    &:after {
+      max-width: none;
+    }
   }
 }
 
