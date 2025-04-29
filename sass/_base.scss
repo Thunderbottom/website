@@ -9,7 +9,7 @@ html {
   line-height: $line-height;
 
   @media (min-width: $min-width-breakpoint) {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   @media screen and (prefers-reduced-motion: no-preference) {
@@ -23,6 +23,7 @@ body {
   background-color: $background-color;
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
+  line-height: $line-height;
 }
 
 a {
@@ -46,6 +47,12 @@ img {
   max-width: 100%;
   margin: 0 0 1rem;
   border-radius: 5px;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
 }
 
 table {

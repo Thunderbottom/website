@@ -1,6 +1,6 @@
 <div class="message message-{{ type | default(value="note") }}">
   <p class="message-title">{{ type | default(value="note") | upper }}</p>
   <div class="message-content">
-    {{ body | markdown | safe }}
+    {{ body | markdown(inline=true) | safe }}
   </div>
 </div>

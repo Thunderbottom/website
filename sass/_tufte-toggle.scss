@@ -1,0 +1,57 @@
+/* Toggle functionality for Tufte CSS sidenotes */
+
+/* Hide checkbox inputs */
+.sidenote-toggle, .margin-toggle {
+  display: none;
+}
+
+/* For small screens, show the toggles */
+@media (max-width: $min-width-breakpoint) {
+  .sidenote-number:after {
+    content: counter(sidenote-counter);
+    vertical-align: super;
+    font-size: 0.7rem;
+    cursor: pointer;
+    color: $link-color;
+  }
+  
+  .margin-toggle:checked + .sidenote,
+  .margin-toggle:checked + .marginnote,
+  .sidenote-toggle:checked + .sidenote {
+    display: block;
+    float: left;
+    left: 0;
+    clear: both;
+    width: 95%;
+    margin: 1rem 2.5%;
+    position: relative;
+  }
+
+  .sidenote-ref:after {
+    content: " ⊕";
+    color: $link-color;
+  }
+}
+
+/* Full-width figure toggle */
+.fullwidth-toggle {
+  display: none;
+}
+
+label.margin-toggle.fullwidth-toggle {
+  position: relative;
+  left: 1rem;
+  display: none;
+}
+
+@media (max-width: $min-width-breakpoint) {
+  label.margin-toggle.fullwidth-toggle {
+    display: inline;
+  }
+
+  .fullwidth-toggle:checked + figure.fullwidth {
+    margin-right: 0%;
+    width: 100%;
+    overflow-x: auto;
+  }
+}

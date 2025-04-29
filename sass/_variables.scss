@@ -1,7 +1,7 @@
 $font-fallback: 'Helvetica Neue', 'sans-serif';
-$font-family: 'Lora', $font-fallback;
+$font-family: 'et-book', $font-fallback;
 $header-font-family: 'Playfair Display', $font-fallback;
-$font-size: 19px;
+$font-size: 20px;
 $line-height: 1.7;
 
 $min-width-breakpoint: 42em;
@@ -21,8 +21,12 @@ $link-color: #0d6efd;
 $link-hover-color: #f0f7ff;
 $link-color-masthead: darken($font-color, 20);
 
-$message-background-color: #f0f7ff;
+/* $message-background-color: #f0f7ff; */
+/* $message-color: $font-color; */
+$message-background-color: #f8f9fa;
 $message-color: $font-color;
+$message-border-color: #d1ecf1;
+$message-border-left: 4px solid #0dcaf0;
 
 // Admonition colors
 $note-background-color: #f0f7ff;
@@ -49,9 +53,12 @@ $abbr-border-color: $divider-color;
 $blockquote-color: $small-color;
 $blockquote-border-color: $divider-color;
 
-$code-background-color: #1e1e2e;
-$code-color: #bfbab0;
-$code-border-color: #313244;
+/* $code-background-color: #1e1e2e; */
+/* $code-color: #bfbab0; */
+/* $code-border-color: #313244; */
+$code-background-color: #f5f5f5;
+$code-color: #e43f6f;
+$code-border-color: #e1e1e1;
 
 $border-radius:  .25rem;
 

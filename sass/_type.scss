@@ -8,17 +8,19 @@ h1, h2, h3, h4, h5, h6, summary {
 }
 
 h1 {
-  margin-top: 2.5rem;
+  margin-top: 3rem;
   font-size: 2rem;
 }
 
 h2 {
-  margin-top: 2.2rem;
+  margin-top: 2.5rem;
   font-size: 1.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid $divider-color;
 }
 
 h3 {
-  margin-top: 1.6rem;
+  margin-top: 2rem;
   font-size: 1.25rem;
 }
 
@@ -70,13 +72,14 @@ hr {
 }
 
 abbr {
-  font-weight: bold;
+  font-weight: normal;
   color: $abbr-color;
-  text-decoration-color: $abbr-border-color;
+  text-decoration: underline dotted $abbr-border-color;
+  text-decoration-thickness: 1px;
+  cursor: help;
 
   &[title] {
-    cursor: help;
-    border-bottom: 2px dotted $abbr-border-color;
+    border-bottom: none;
   }
 }
 
@@ -130,4 +133,63 @@ a[href^="#fnref:"] {
 .lead {
   font-size: 1.25rem;
   font-weight: 300;
+}
+
+.sidenote-container {
+  position: relative;
+  display: inline;
+}
+
+.sidenote-marker {
+  font-size: 0.75em;
+  vertical-align: super;
+  color: $link-color;
+  cursor: pointer;
+}
+
+.sidenote-content {
+  display: inline-block;
+  position: relative;
+  max-width: 45%;
+  float: right;
+  clear: right;
+  margin-right: -50%;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 0.85em;
+  vertical-align: baseline;
+  line-height: 1.4;
+  padding-left: 0.5rem;
+  border-left: 2px solid $divider-color;
+  color: $blockquote-color;
+  font-style: italic;
+  
+  @media (max-width: $min-width-breakpoint) {
+    display: none;
+    float: none;
+    max-width: 100%;
+    margin-right: 0;
+    margin-bottom: 1em;
+    margin-top: 1em;
+  }
+}
+
+// For smaller screens, we can use a different approach like
+// tooltips or expandable notes instead of margin notes
+@media (max-width: $min-width-breakpoint) {
+  .sidenote-marker {
+    border-bottom: 1px dotted $link-color;
+  }
+  
+  .sidenote-container:hover .sidenote-content,
+  .sidenote-marker:hover + .sidenote-content {
+    display: block;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background: $background-color;
+    padding: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    z-index: 10;
+  }
 }

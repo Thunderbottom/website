@@ -69,7 +69,7 @@ Multiple such related tensor objects make up a computational graph. We then exec
 
 ### Generating a Tensorflow computational graph
 
-Now that we know what a computational graph is and what it is made up of, we need to generate a graph for all the variables in the code---as the variable `y` that we have defined is computationally dependent on the constant value `x`. For this we'll use [`tf.global_variables_initializer`][4]. This is a TensorFlow helper function which initializes all the variables by creating a graph of dependencies and relationships between the variables when executed.[^1] There also exists an alternative if you want to initialize only a select bunch of variables.[^2]
+Now that we know what a computational graph is and what it is made up of, we need to generate a graph for all the variables in the code---as the variable `y` that we have defined is computationally dependent on the constant value `x`. For this we'll use [`tf.global_variables_initializer`][4]. This is a TensorFlow helper function which initializes all the variables by creating a graph of dependencies and relationships between the variables when executed.{% sidenote(id="1") %}[TensorFlow Helper Functions.](https://github.com/tensorflow/docs/blob/r1.10/site/en/api_guides/python/state_ops.md#variable-helper-functions){% end %} There also exists an alternative if you want to initialize only a select bunch of variables.{% sidenote(id="2") %}[TensorFlow Variables initializer: `tf.variables_initializer`.](https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/initializers/variables){% end %}
 
 This helper function does not require any parameters to execute because it initializes all the global variables defined in the code.
 
@@ -121,7 +121,7 @@ In [15]: with tf.Session() as sess:
 
 _**Do we need to do this every time we create a session?** Frankly, the answer is both yes, and no._
 
-We need to execute the variable every time it is updated, but we initialize the variables just once. It is not recommended to reinitialize the variables all over because doing so generates duplicate operations.[^3]
+We need to execute the variable every time it is updated, but we initialize the variables just once. It is not recommended to reinitialize the variables all over because doing so generates duplicate operations.{% sidenote(id="3") %}[KDNuggets: How not to program TensorFlow Graphs.](http://www.kdnuggets.com/2017/05/how-not-program-tensorflow-graph.html){% end %}
 
 **_Can we update the variables in the session?_** _Yes, that can be done and is a pretty normal thing to do._
 
@@ -158,8 +158,5 @@ TensorFlow documentation : [Variables: Creation, Initialization, Saving, and Loa
 [3]: https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/Session "Tensorflow Session"
 [4]: https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/initializers/global_variables "Tensorflow Global Variables Initializer"
 
-[^1]: [TensorFlow Helper Functions.](https://github.com/tensorflow/docs/blob/r1.10/site/en/api_guides/python/state_ops.md#variable-helper-functions)
 
-[^2]: [TensorFlow Variables initializer: `tf.variables_initializer`.](https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/initializers/variables)
 
-[^3]: [KDNuggets: How not to program TensorFlow Graphs.](http://www.kdnuggets.com/2017/05/how-not-program-tensorflow-graph.html)

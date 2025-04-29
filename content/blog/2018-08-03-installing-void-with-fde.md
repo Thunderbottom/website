@@ -10,11 +10,11 @@ A comprehensive guide to installing Void Linux on your system with <abbr title="
 
 <!-- more -->
 
-This guide serves as an extension to the official Void documentation for Full Disk Encryption[^void-fde] in an attempt to make the steps easier to follow.
+This guide serves as an extension to the official Void documentation for Full Disk Encryption {% sidenote(id="1") %}[Void Linux: Full Disk Encryption](https://docs.voidlinux.org/installation/guides/fde.html){% end %} in an attempt to make the steps easier to follow. 
 
 ## Prerequisites
 
-Make sure you have a Void Linux installation disk ready to plug in and boot.[^prepare-install] This is also a good opportunity to back up your current installation and start afresh, as this tutorial is aimed towards a clean system install.
+Make sure you have a Void Linux installation disk ready to plug in and boot.{% sidenote(id="2") %}[Void Linux: Prepare Installation Media](https://docs.voidlinux.org/installation/live-images/prep.html){% end %} This is also a good opportunity to back up your current installation and start afresh, as this tutorial is aimed towards a clean system install. {% marginnote(id="1") %}Hello world{% end %}
 
 
 ## Installation
@@ -45,7 +45,7 @@ If your system's BIOS compatibility is set to Legacy mode, you are not required 
 
 ### Setting up LVM and LUKS for Encryption
 
-We've created the basic partitions that we need for our system. Now we will install `cryptsetup` and `lvm2`. This will help us set up the <abbr title="Logical Volume Manager">LVM</abbr> partition and encrypt the drive using LUKS[^luks].
+We've created the basic partitions that we need for our system. Now we will install `cryptsetup` and `lvm2`. This will help us set up the <abbr title="Logical Volume Manager">LVM</abbr> partition and encrypt the drive using LUKS{% sidenote(id="3") %}[Linux Unified Key Setup](https://en.wikipedia.org/wiki/Linux_Unified_Key_Setup){% end %}.
 
 ```sh
 $ xbps-install -S cryptsetup lvm2
@@ -174,7 +174,7 @@ We also need to add the ESP to the fstab for UEFI systems.
 /dev/sdX1	/boot/efi	vfat	defaults	0 0
 ```
 
-We now need to `chroot`[^chroot] into our newly installed system and set up the bootloader.
+We now need to `chroot`{% sidenote(id="4") %}[chroot: arch wiki](https://wiki.archlinux.org/index.php/Chroot){% end %} into our newly installed system and set up the bootloader.
 
 ```sh
 $ chroot /mnt /bin/bash
@@ -207,7 +207,7 @@ We then need to add the disk UUID and the key to `/etc/crypttab`:
 luks-<disk UUID here>	/dev/sdXN	/crypto_keyfile.bin	luks
 ```
 
-We need to notify `dracut` about the crypttab. Dracut is the tool used to generate initramfs images.[^dracut] This is also a good time to set `hostonly=yes` for dracut. This will ensure that dracut generates initramfs only for the current system (host) instead of generating a generic image. We will put the two things in separate files for better organization.
+We need to notify `dracut` about the crypttab. Dracut is the tool used to generate initramfs images.{% sidenote(id="5") %}[dracut: man page](https://linux.die.net/man/8/dracut){% end %} This is also a good time to set `hostonly=yes` for dracut. This will ensure that dracut generates initramfs only for the current system (host) instead of generating a generic image. We will put the two things in separate files for better organization.
 
 ```sh
 $ mkdir -p /etc/dracut.conf.d/
@@ -232,7 +232,7 @@ $ xbps-reconfigure -f $(xbps-query -s linux4 | cut -f 2 -d ' ' | cut -f 1 -d -)
 ```
 
 
-### Coda
+## Coda
 
 That's it. Now all you have to do is close the volume group and the LUKS disk, reboot, and pray that it boots right into the system.
 
@@ -244,13 +244,3 @@ $ reboot
 ```
 
 At this point, I'd like to point you to the [Configuration Guide](https://docs.voidlinux.org/config/index.html) for further setup and call it a day.
-
-[^void-fde]: [Void Linux: Full Disk Encryption](https://docs.voidlinux.org/installation/guides/fde.html)
-
-[^prepare-install]: [Void Linux: Prepare Installation Media](https://docs.voidlinux.org/installation/live-images/prep.html)
-
-[^luks]: [Linux Unified Key Setup](https://en.wikipedia.org/wiki/Linux_Unified_Key_Setup)
-
-[^chroot]: [chroot: arch wiki](https://wiki.archlinux.org/index.php/Chroot)
-
-[^dracut]: [dracut: man page](https://linux.die.net/man/8/dracut)

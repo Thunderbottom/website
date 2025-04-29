@@ -4,7 +4,7 @@ title = "Home"
 text_justify = true
 +++
 
-<h4 class="text-center"><i>"Technically a DevOps, practically an absurdist."</i></h4>
+<h4 class="text-center"><i id="random-quote"></i></h4>
 
 Hey there! I'm a systems and security enthusiast living in Bangalore, India. I currently work at [Zerodha](https://zerodha.com) as a DevOps and Security Engineer, where I mainly solve problems pertaining to system orchestration, pipeline optimizations, and maintaining the security and monitoring infrastructure.
 

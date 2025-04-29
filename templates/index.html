@@ -66,14 +66,13 @@
         <small>{{ config.description }}</small>
       </h3>
       <nav class="masthead-nav">
-        {% for node in config.extra.navigation %}
-        {% if current_url and current_url != get_url(path=node.url, trailing_slash=true) %}
+      {% for node in config.extra.navigation %}
         <a href="{{ node.url | replace(from="$BASE_URL", to="" ) }}" class="nav-item">{{ node.name }}</a>
-        {% endif %}
-        {% endfor %}
-        {% if current_url and current_url != get_url(path="/", trailing_slash=true) %}
+      {% endfor %}
+  
+      {% if current_path is defined and current_path != "/" %}
         <a href="/" class="nav-item">Home</a>
-        {% endif %}
+      {% endif %}
       </nav>
     </header>
     {% endblock header %}
@@ -98,5 +97,9 @@
       </p>
     </footer>
     {% endblock footer %}
+    {% if current_path is defined and current_path == "/" %}
+    <script src="{{ get_url(path="/js/random-quote.js") }}"></script>
+    {% endif %}
+    <script src="{{ get_url(path="/js/tufte-sidenotes.js") }}"></script>
   </body>
 </html>
