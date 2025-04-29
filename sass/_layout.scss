@@ -52,20 +52,6 @@
   text-align: right;
 }
 
-.fa-social-icons {
-  font-size: 2rem;
-  margin-top: -1rem;
-
-  a {
-    border: 0;
-    margin-right: 0.1rem;
-
-    &:last-child {
-      margin-right: 0;
-    }
-  }
-}
-
 .masthead, .content, .footer {
   @include container();
 }
@@ -162,10 +148,6 @@
 
   .icon-square:hover {
     color: #252525;
-  }
-
-  .fa-stack-1x {
-    color:black;
   }
 
   p {
