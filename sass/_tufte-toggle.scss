@@ -26,11 +26,11 @@
     font-size: 0.85rem;
     vertical-align: super;
     position: relative;
-    top: 0;
+    top: -0.25rem;
   }
 
   .sidenote-ref:after {
-    content: " ⊕";
+    content: "⊕";
     color: $link-color;
   }
 

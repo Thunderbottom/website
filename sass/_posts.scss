@@ -50,5 +50,7 @@
 }
 
 .index {
-  margin: 2rem;
+  @media (min-width: $min-width-breakpoint) {
+    margin: 2rem;
+  }
 }
