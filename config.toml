@@ -39,3 +39,4 @@ name = "Chinmay D. Pai"
 [extra.author.telegram]
 link = "https://t.me/thunderbottom"
 username = "thunderbottom"
+favicon = true

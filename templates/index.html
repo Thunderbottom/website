@@ -19,6 +19,29 @@
     <meta name="keywords" content="{{ config.extra.keywords }}">
     {% endblock description %}
 
+    {% if config.extra.favicon | default (value="true") %}
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ config.base_url }}/icons/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link
+      rel="shortcut icon"
+      href="{{ config.base_url }}/icons/favicon/favicon.ico"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{{ config.base_url }}/icons/apple-touch-icon.png"
+    />
+    <meta name="apple-mobile-web-app-title" content="{{ config.title }}" />
+    <link
+      rel="manifest"
+      href="{{ config.base_url }}/icons/favicon/site.webmanifest"
+    />
+    {% endif %}
+
     {% block meta %}
     <meta name="author" content="{{ config.extra.author.name }}">
 
