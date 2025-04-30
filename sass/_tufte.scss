@@ -2,14 +2,14 @@
  * This file implements Tufte-style sidenotes and margin notes
  */
 
-/* Base sidenote styling without affecting main layout */
+/* Base styling for both sidenotes and marginnotes */
 .sidenote, .marginnote {
   float: right;
   clear: right;
   margin-right: -30%;
   width: 25%;
   margin-top: 0;
-  margin-bottom: 0;
+  margin-bottom: 0.5rem;
   /* Adjusted for et-book font */
   font-size: 0.75rem;
   line-height: $line-height;
@@ -30,7 +30,7 @@
     margin: 1rem 0;
     padding: 0.5rem;
     border-left: 2px solid $divider-color;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 
     &.active {
       display: block;
@@ -49,11 +49,10 @@
     /* Adjusted for et-book font */
     font-size: 0.85rem;
     position: relative;
-    /* Adjust the vertical positioning to match your site's style */
-    top: 0;
-    vertical-align: baseline;
-    font-weight: normal;
-    padding: 0 0.1rem;
+    vertical-align: super;
+    font-weight: bold;
+    color: $link-color;
+    top: -0.3em;
   }
   
   /* Style the sidenote number in the sidenote as well */
@@ -61,17 +60,25 @@
     /* Also use the ID for the note */
     content: attr(data-footnote-id) ". ";
     /* Adjusted for et-book font */
-    font-size: 0.9rem;
-    top: 0;
+    font-size: 0.85rem;
     position: relative;
     vertical-align: baseline;
     font-weight: bold;
+    top: 0;
   }
 }
 
 /* Reset sidenote counter at the beginning of the article */
 article, .post {
   counter-reset: sidenote-counter;
+}
+
+/* Margin toggle styling to match sidenote toggles */
+label.margin-toggle.sidenote-ref {
+  color: $link-color;
+  font-size: 0.85rem;
+  vertical-align: super;
+  position: relative;
 }
 
 /* Compatibility with existing footnotes */

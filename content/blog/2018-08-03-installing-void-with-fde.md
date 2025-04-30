@@ -10,7 +10,7 @@ A comprehensive guide to installing Void Linux on your system with <abbr title="
 
 <!-- more -->
 
-This guide serves as an extension to the official Void documentation for Full Disk Encryption {% sidenote(id="1") %}Check out the [Void Linux: Full Disk Encryption](https://docs.voidlinux.org/installation/guides/fde.html) wiki article{% end %} in an attempt to make the steps easier to follow.
+This guide serves as an extension to the official Void documentation for Full Disk Encryption{% sidenote(id="1") %}Check out the [Void Linux: Full Disk Encryption](https://docs.voidlinux.org/installation/guides/fde.html) wiki{% end %} in an attempt to make the steps easier to follow.
 
 ## Prerequisites
 
@@ -45,7 +45,7 @@ If your system's BIOS compatibility is set to Legacy mode, you are not required 
 
 ### Setting up LVM and LUKS for Encryption
 
-We've created the basic partitions that we need for our system. Now we will install `cryptsetup` and `lvm2`. This will help us set up the <abbr title="Logical Volume Manager">LVM</abbr> partition and encrypt the drive using LUKS{% sidenote(id="3") %}[Linux Unified Key Setup](https://en.wikipedia.org/wiki/Linux_Unified_Key_Setup){% end %}.
+We've created the basic partitions that we need for our system. Now we will install `cryptsetup` and `lvm2`. This will help us set up the <abbr title="Logical Volume Manager">LVM</abbr> partition and encrypt the drive using LUKS.{% sidenote(id="3") %}[Linux Unified Key Setup](https://en.wikipedia.org/wiki/Linux_Unified_Key_Setup){% end %}
 
 ```sh
 $ xbps-install -S cryptsetup lvm2

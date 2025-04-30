@@ -21,6 +21,6 @@
   font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
   font-family: 'et-book';
   font-style: normal;
-  font-weight: 700;
+  font-weight: 600;
   src: url('etbookot-bold-webfont.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }

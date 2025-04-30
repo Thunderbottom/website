@@ -1,5 +1,1 @@
-<label for="marginnote-{{ id }}" class="margin-toggle sidenote-ref" data-footnote-id="⊕">⊕</label>
-<input type="checkbox" id="marginnote-{{ id }}" class="margin-toggle" />
-<span class="marginnote">
-  {{ body | markdown(inline=true) | safe }}
-</span>
+<label for="marginnote-{{ id }}" class="margin-toggle sidenote-ref"></label><input type="checkbox" id="marginnote-{{ id }}" class="margin-toggle" /><span class="marginnote">{{ body | markdown(inline=true) | safe }}</span>

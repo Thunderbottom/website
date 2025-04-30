@@ -15,7 +15,6 @@
   font-weight: 600;
   font-display: auto;
   src: local(''),
-       url('playfair-display-v22-latin-600-cmprs.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
        url('playfair-display-v22-latin-600.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
 }
 
