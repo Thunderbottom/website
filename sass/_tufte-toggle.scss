@@ -1,22 +1,11 @@
-/* Toggle functionality for Tufte CSS sidenotes and marginnotes */
-
-/* Hide checkbox inputs */
-.sidenote-toggle, .margin-toggle {
-  display: none;
-}
-
-/* For small screens, show the toggles */
 @media (max-width: $min-width-breakpoint) {
-  /* Common styles for all toggle references */
   .sidenote-ref, label.margin-toggle.sidenote-ref {
     display: inline;
     cursor: pointer;
-    color: $link-color;
     font-size: 0.85rem;
     position: relative;
   }
   
-  /* Style for notes when toggled visible on mobile */
   .margin-toggle:checked + .sidenote,
   .margin-toggle:checked + .marginnote,
   .sidenote-toggle:checked + .sidenote {
@@ -32,7 +21,6 @@
     font-size: 0.85rem;
   }
 
-  /* Ensure sidenote numbers and toggle symbols are consistent */
   .sidenote-number:after {
     content: counter(sidenote-counter);
     font-size: 0.85rem;
@@ -41,13 +29,11 @@
     top: 0;
   }
 
-  /* Consistent spacing around toggle symbols */
   .sidenote-ref:after {
     content: " ⊕";
     color: $link-color;
   }
 
-  /* Apply same styling to both toggle types */
   label.margin-toggle.sidenote-ref,
   .sidenote-ref {
     margin: 0 0.2em;
@@ -56,7 +42,6 @@
   }
 }
 
-/* Full-width figure toggle */
 .fullwidth-toggle {
   display: none;
 }

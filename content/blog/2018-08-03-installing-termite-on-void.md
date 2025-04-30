@@ -6,7 +6,7 @@ description = "Simple instructions for building and installing the Termite termi
 tags  = "void linux, termite, terminal, linux, systems"
 +++
 
-Termite is a VTE-based terminal emulator for GNU/Linux, which is available as a package on most Linux distribution repositories, but not on Void Linux. This is because termite uses a custom VTE build which isn't (and won't be) included in the void packages repository.[^void-packages]
+Termite is a VTE-based terminal emulator for GNU/Linux, which is available as a package on most Linux distribution repositories, but not on Void Linux. This is because termite uses a custom VTE build which isn't (and won't be) included in the void packages repository.{% sidenote(id="1") %}[Void Linux GitHub](https://github.com/void-linux/void-packages/issues/9769#issuecomment-472585514) - On why termite won't be included in void-packages{% end %}
 
 In this post, I'll show you how to build and install termite on Void Linux.
 
@@ -72,5 +72,3 @@ $ sudo make install
 ```
 
 That's all. If everything goes well, you should end up with termite installed on your system.
-
-[^void-packages]: [GitHub: On why termite won't be included in void-packages](https://github.com/void-linux/void-packages/issues/9769#issuecomment-472585514)

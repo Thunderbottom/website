@@ -31,7 +31,7 @@ h4, h5, h6 {
 
 p {
   margin-top: 0;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 li > p {
@@ -88,6 +88,7 @@ blockquote {
   margin: .8rem 0;
   color: $blockquote-color;
   border-left: .25rem solid $blockquote-border-color;
+  font-style: italic;
 
   p:last-child {
     margin-bottom: 0;
@@ -141,7 +142,7 @@ a[href^="#fnref:"] {
 }
 
 .sidenote-marker {
-  font-size: 0.75em;
+  font-size: 0.85em;
   vertical-align: super;
   color: $link-color;
   cursor: pointer;
@@ -174,8 +175,6 @@ a[href^="#fnref:"] {
   }
 }
 
-// For smaller screens, we can use a different approach like
-// tooltips or expandable notes instead of margin notes
 @media (max-width: $min-width-breakpoint) {
   .sidenote-marker {
     border-bottom: 1px dotted $link-color;

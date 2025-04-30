@@ -9,7 +9,7 @@ html {
   line-height: $line-height;
 
   @media (min-width: $min-width-breakpoint) {
-    font-size: 22px;
+    font-size: $font-size;
   }
 
   @media screen and (prefers-reduced-motion: no-preference) {
@@ -22,7 +22,7 @@ body {
   color: $font-color;
   background-color: $background-color;
   -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
   line-height: $line-height;
 }
 
@@ -34,7 +34,11 @@ a {
   &:hover,
   &:focus {
     background-color: $link-hover-color;
-    color: $link-color-masthead; // white
+    color: $link-color-masthead;
+  }
+
+  &:has(code) {
+    border-bottom: none;
   }
 
   code, strong {

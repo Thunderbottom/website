@@ -11,7 +11,7 @@ build_search_index = false
 generate_feeds = true
 feed_filenames = ["rss.xml"]
 # minify is broken for code blocks, works on the `next` branch
-# minify_html = true
+minify_html = true
 
 [markdown]
 external_links_no_follow = true

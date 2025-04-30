@@ -1,8 +1,3 @@
-/* Tufte CSS-inspired sidenotes for Zola
- * This file implements Tufte-style sidenotes and margin notes
- */
-
-/* Base styling for both sidenotes and marginnotes */
 .sidenote, .marginnote {
   float: right;
   clear: right;
@@ -10,19 +5,15 @@
   width: 25%;
   margin-top: 0;
   margin-bottom: 0.5rem;
-  /* Adjusted for et-book font */
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   line-height: $line-height;
   vertical-align: baseline;
   position: relative;
   color: $blockquote-color;
   font-style: italic;
-  
-  /* Add some subtle styling */
   padding-left: 0.5rem;
   border-left: 1px solid $divider-color;
 
-  /* On smaller screens, convert to popover footnotes */
   @media (max-width: $min-width-breakpoint) {
     float: none;
     display: none;
@@ -38,28 +29,18 @@
   }
 }
 
-/* Sidenote numbers */
 .sidenote-number {
-  /* Instead of auto-incrementing, we'll use the manual ID */
-  /* counter-increment: sidenote-counter; */
-  
   &::after {
-    /* Use attr() to get the ID from the data attribute */
     content: attr(data-footnote-id);
-    /* Adjusted for et-book font */
     font-size: 0.85rem;
     position: relative;
     vertical-align: super;
     font-weight: bold;
-    color: $link-color;
     top: -0.3em;
   }
   
-  /* Style the sidenote number in the sidenote as well */
   .sidenote &::after {
-    /* Also use the ID for the note */
     content: attr(data-footnote-id) ". ";
-    /* Adjusted for et-book font */
     font-size: 0.85rem;
     position: relative;
     vertical-align: baseline;
@@ -68,12 +49,10 @@
   }
 }
 
-/* Reset sidenote counter at the beginning of the article */
 article, .post {
   counter-reset: sidenote-counter;
 }
 
-/* Margin toggle styling to match sidenote toggles */
 label.margin-toggle.sidenote-ref {
   color: $link-color;
   font-size: 0.85rem;
@@ -81,7 +60,6 @@ label.margin-toggle.sidenote-ref {
   position: relative;
 }
 
-/* Compatibility with existing footnotes */
 .footnote-definition {
   float: right;
   clear: right;
@@ -114,13 +92,11 @@ label.margin-toggle.sidenote-ref {
     margin: 0;
   }
   
-  /* Hide "return to text" links since we're showing in the margin anyway */
   a[href^="#fnref"] {
     display: none;
   }
 }
 
-/* Hide checkbox inputs */
 .sidenote-toggle, .margin-toggle {
   display: none;
 }

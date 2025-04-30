@@ -68,9 +68,11 @@
 
 .masthead {
   margin-bottom: 2rem;
+  padding-top: 1rem;
+  text-align: right;
 
   a {
-      color: $link-color-masthead;
+    color: $link-color-masthead;
   }
 
   @media screen and (max-width: $min-width-breakpoint) {
@@ -101,7 +103,6 @@
       float: inherit;
       text-align: inherit;
     }
-
   }
 
   .masthead-nav {
@@ -124,10 +125,6 @@
       padding-top: 1rem;
     }
   }
-
-  padding-top: 1rem;
-  text-align: right;
-
 }
 
 .footer {
@@ -144,15 +141,14 @@
 
   .icon-square {
     color: transparent;
-  }
 
-  .icon-square:hover {
-    color: #252525;
+    &:hover {
+      color: #252525;
+    }
   }
 
   p {
-
-    >span {
+    > span {
       font-size: 110%;
 
       a {
@@ -165,7 +161,7 @@
       }
     }
 
-    p:last-child {
+    &:last-child {
       margin-bottom: 0;
     }
   }
@@ -180,7 +176,6 @@
     }
 
     .posts-item-header {
-
       @media (min-width: $min-width-breakpoint) {
         display: flex;
         align-items: center;
@@ -221,7 +216,6 @@
   font-weight: 600;
   font-size: 20px;
   transition: transform 0.3s ease-out;
-
 }
 
 .next {
