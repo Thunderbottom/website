@@ -84,7 +84,7 @@ abbr {
 }
 
 blockquote {
-  padding: .5rem 1rem;
+  padding: .5rem 0.5rem;
   margin: .8rem 0;
   color: $blockquote-color;
   border-left: .25rem solid $blockquote-border-color;
@@ -101,6 +101,7 @@ blockquote {
   @media (min-width: $min-width-breakpoint) {
     padding-right: 5rem;
     padding-left: 1.25rem;
+    max-width: none !important;
   }
 }
 

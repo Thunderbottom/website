@@ -3,7 +3,7 @@ title = "Set up Void Linux with Full-Disk Encryption"
 description = "A step-by-step guide to setting up Void Linux with full disk encryption, including encrypted boot partition, for enhanced system security."
 date  = 2018-08-21T21:13:46+05:30
 [extra]
-tags  = "machine learning, tensorflow"
+tags  = "void linux, installation, encryption, security"
 +++
 
 A comprehensive guide to installing Void Linux on your system with <abbr title="Full-Disk Encryption">FDE</abbr>, including an encrypted boot partition.
