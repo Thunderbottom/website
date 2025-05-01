@@ -10,6 +10,8 @@
         <meta name="description" content="{{ page.description }}">
     {% elif page.summary %}
         <meta name="description" content="{{ page.summary | striptags }}">
+    {% else %}
+        <meta name="description" content="{{ config.description }}">
     {% endif %}
 
     {% if page.extra.tags %}
@@ -18,13 +20,29 @@
 {% endblock description %}
 
 {% block og_card %}
-    {{ super() }}
+    <meta property="og:type" content="article">
+    {% if current_url %}
+    <meta property="og:url" content="{{ current_url }}">
+    {% else %}
+    <meta property="og:site_name" content="{{ config.title }}">
+    {% endif %}
+
     <meta property="og:title" content="{{ page.title }}">
+
+    {% if page.description %}
+        <meta property="og:description" content="{{ page.description }}">
+    {% elif page.summary %}
+        <meta property="og:description" content="{{ page.summary | striptags }}">
+    {% else %}
+        <meta property="og:description" content="{{ config.description }}">
+    {% endif %}
 {% endblock og_card %}
 
 {% block og_image %}
     {% if page.image %}
         <meta property="og:image" content="{{ get_url(path=page.image, cachebust=true) }}">
+    {% else %}
+        <meta property="og:image" content="/logo.png">
     {% endif %}
 {% endblock og_image %}
 
