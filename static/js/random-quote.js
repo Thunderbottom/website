@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
   
   const quoteElement = document.getElementById('random-quote');
   if (quoteElement) {
+    const maxQuoteLength = Math.max(...quotes.map(q => q.length));
+    const estimatedHeight = Math.ceil(maxQuoteLength / 50) * 24;
+    quoteElement.style.minHeight = `${estimatedHeight}px`;
+    
     const randomIndex = Math.floor(Math.random() * quotes.length);
     quoteElement.innerHTML = "\"" + quotes[randomIndex] + "\"";
   }
