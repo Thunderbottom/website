@@ -18,6 +18,6 @@ export default defineConfig({
     smartypants: true,
   },
   build: {
-    format: "file",
+    format: "directory",
   },
 });
