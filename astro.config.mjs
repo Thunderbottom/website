@@ -6,7 +6,13 @@ import tailwind from "@astrojs/tailwind";
 // https://astro.build/config
 export default defineConfig({
   site: "https://maych.in",
-  integrations: [mdx(), tailwind()],
+  integrations: [
+    mdx(),
+    tailwind({
+      // Apply Tailwind config with optimizations
+      applyBaseStyles: false, // We're inlining critical CSS
+    }),
+  ],
   markdown: {
     remarkPlugins: [remarkReadingTime],
     shikiConfig: {
@@ -19,5 +25,67 @@ export default defineConfig({
   },
   build: {
     format: "directory",
+    assets: "_astro", // Organize built assets
+    inlineStylesheets: "auto", // Inline small CSS files automatically
+  },
+  vite: {
+    build: {
+      // Optimize bundle splitting
+      rollupOptions: {
+        output: {
+          // Add content hashes for cache busting
+          assetFileNames: (assetInfo) => {
+            const extType = assetInfo.name.split(".").pop();
+            // Organize assets by type for better caching
+            if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+              return `assets/images/[name].[hash][extname]`;
+            }
+            if (/woff2?|eot|ttf|otf/i.test(extType)) {
+              return `assets/fonts/[name].[hash][extname]`;
+            }
+            return `assets/[name].[hash][extname]`;
+          },
+          chunkFileNames: "assets/js/[name].[hash].js",
+          entryFileNames: "assets/js/[name].[hash].js",
+        },
+      },
+      // Enable CSS code splitting
+      cssCodeSplit: true,
+      // Optimize chunk size
+      chunkSizeWarningLimit: 1000,
+    },
+    css: {
+      // PostCSS optimizations
+      postcss: {
+        plugins: [
+          // Add autoprefixer if needed
+          // require('autoprefixer'),
+          // Add cssnano for production builds
+          process.env.NODE_ENV === "production" &&
+            require("cssnano")({
+              preset: [
+                "default",
+                {
+                  discardComments: { removeAll: true },
+                  normalizeWhitespace: true,
+                },
+              ],
+            }),
+        ].filter(Boolean),
+      },
+    },
+    server: {
+      // Development optimizations
+      fs: {
+        strict: false,
+      },
+    },
+  },
+  // Enable compression
+  compressHTML: true,
+  // Prefetch settings for better navigation
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "viewport",
   },
 });

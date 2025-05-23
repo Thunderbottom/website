@@ -100,6 +100,26 @@ article {
   html.dark pre {
     background-color: var(--shiki-dark-bg, #0d1117) !important;
   }
+
+  /* jetbrains-mono-regular - latin */
+  @font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: "JetBrains Mono";
+    font-style: normal;
+    font-weight: 400;
+    src: url("/fonts/jetbrains-mono/jetbrains-mono-v20-latin-regular.woff2")
+      format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  }
+
+  /* playfair-display-600 - latin */
+  @font-face {
+    font-family: "Playfair Display";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/fonts/playfair-display/playfair-display-v22-latin-600.woff2")
+      format("woff2"); /* Chrome 26+, Opera 23+, Firefox 39+ */
+  }
 }
 
 /* ===== ANIMATIONS ===== */

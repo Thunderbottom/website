@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "build:prod": "NODE_ENV=production astro build"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
