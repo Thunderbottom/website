@@ -19,24 +19,20 @@ import { NAVIGATION, SITE } from "@lib/constants";
           {
             NAVIGATION.map((item, index) => (
               <>
-                <Link
+                <a
                   href={item.url}
                   class="font-display text-text-primary dark:text-text-primary-dark hover:text-link dark:hover:text-link-dark transition-colors font-medium"
-                  underline={false}
                 >
                   {item.name.toLowerCase()}
-                </Link>
+                </a>
                 {index < NAVIGATION.length - 1 && (
-                  <span class="text-text-muted dark:text-text-muted-dark mx-2">
-                    /
-                  </span>
+                  <span class="text-text-muted dark:text-text-muted-dark mx-1" />
                 )}
               </>
             ))
           }
         </nav>
 
-        <!-- Improved Theme Toggle Button with better contrast -->
         <button
           id="theme-toggle"
           aria-label="Toggle theme"
