@@ -1,0 +1,17 @@
+---
+import { formatDate } from "@lib/utils";
+
+interface Props {
+  date: Date | string;
+  format?: string;
+}
+
+const { date, format = "%B %d, %Y" } = Astro.props;
+
+const formattedDate = formatDate(date, format);
+const isoDate = typeof date === "string" ? date : date.toISOString();
+---
+
+<time datetime={isoDate} class="text-text-secondary">
+  {formattedDate}
+</time>

@@ -1,0 +1,223 @@
+---
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+import BackToTop from "@components/BackToTop.astro";
+import { SITE, AUTHOR } from "@lib/constants";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  ogType?: string;
+  ogImage?: string;
+  currentPath?: string;
+}
+
+const {
+  title = "Home",
+  description = SITE.DESCRIPTION,
+  keywords = "astro, blog, technology, life, linux",
+  ogType = "website",
+  ogImage = "/logo.png",
+  currentPath = "",
+} = Astro.props;
+
+const pageTitle = title === SITE.NAME ? title : `${title} | ${SITE.NAME}`;
+const canonicalURL = new URL(currentPath, SITE.URL);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <!-- CRITICAL: Theme script MUST run before body renders -->
+    <script is:inline>
+      (function () {
+        const THEMES = ["light", "dark", "system"];
+
+        function getSystemTheme() {
+          return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+
+        function applyTheme(theme) {
+          const actualTheme = theme === "system" ? getSystemTheme() : theme;
+          const isDark = actualTheme === "dark";
+
+          document.documentElement.classList.toggle("dark", isDark);
+          document.documentElement.style.colorScheme = actualTheme;
+        }
+
+        function getCurrentTheme() {
+          return localStorage.getItem("theme") || "system";
+        }
+
+        function setTheme(newTheme) {
+          localStorage.setItem("theme", newTheme);
+          applyTheme(newTheme);
+          updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+          const currentTheme = getCurrentTheme();
+          const icons = {
+            light: document.getElementById("light-icon"),
+            dark: document.getElementById("dark-icon"),
+            system: document.getElementById("system-icon"),
+          };
+
+          // Hide all icons
+          Object.values(icons).forEach((icon) => icon?.classList.add("hidden"));
+
+          // Show current theme icon
+          icons[currentTheme]?.classList.remove("hidden");
+        }
+
+        function cycleTheme() {
+          const currentTheme = getCurrentTheme();
+          const currentIndex = THEMES.indexOf(currentTheme);
+          const nextTheme = THEMES[(currentIndex + 1) % THEMES.length];
+          setTheme(nextTheme);
+        }
+
+        function initTheme() {
+          const currentTheme = getCurrentTheme();
+          applyTheme(currentTheme);
+
+          // Listen for system theme changes
+          window
+            .matchMedia("(prefers-color-scheme: dark)")
+            .addEventListener("change", () => {
+              if (getCurrentTheme() === "system") {
+                applyTheme("system");
+              }
+            });
+        }
+
+        // Initialize immediately
+        initTheme();
+
+        // Make functions available globally
+        window.themeManager = {
+          cycle: cycleTheme,
+          set: setTheme,
+          get: getCurrentTheme,
+          updateIcon: updateThemeIcon,
+          init: initTheme,
+        };
+      })();
+    </script>
+
+    <!-- Primary Meta Tags -->
+    <title>{pageTitle}</title>
+    <meta name="title" content={pageTitle} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content={AUTHOR.NAME} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- RSS Feed -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="RSS"
+      href="/rss.xml"
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content={SITE.NAME} />
+
+    <!-- Favicons -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="/icons/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link rel="shortcut icon" href="/icons/favicon/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/icons/favicon/apple-touch-icon.png"
+    />
+    <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
+    <link rel="manifest" href="/icons/favicon/site.webmanifest" />
+
+    <!-- Font Preloads -->
+    <link
+      rel="preload"
+      href="/fonts/playfair-display/playfair-display-v22-latin-600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/jetbrains-mono/jetbrains-mono-v20-latin-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- Disable FLoC -->
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
+  </head>
+
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <BackToTop />
+
+    <script is:inline>
+      function init() {
+        animate();
+        onScroll();
+        setupThemeToggle();
+        document.addEventListener("scroll", onScroll);
+      }
+
+      function animate() {
+        const animateElements = document.querySelectorAll(".animate");
+        animateElements.forEach((element, index) => {
+          setTimeout(() => {
+            element.classList.add("show");
+          }, index * 100);
+        });
+      }
+
+      function onScroll() {
+        document.documentElement.classList.toggle(
+          "scrolled",
+          window.scrollY > 0,
+        );
+      }
+
+      function setupThemeToggle() {
+        const themeToggle = document.getElementById("theme-toggle");
+        if (themeToggle) {
+          themeToggle.addEventListener("click", window.themeManager.cycle);
+        }
+
+        // Update icon to match current theme
+        window.themeManager.updateIcon();
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+      document.addEventListener("astro:after-swap", init);
+    </script>
+  </body>
+</html>

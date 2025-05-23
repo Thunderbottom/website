@@ -1,0 +1,43 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import ProjectArrowCard from "@components/ProjectArrowCard.astro";
+import { PROJECTS_CONFIG, PROJECTS } from "@lib/constants";
+
+// Sort projects by date descending
+const sortedProjects = PROJECTS.sort(
+  (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
+);
+---
+
+<PageLayout
+  title={PROJECTS_CONFIG.TITLE}
+  description={PROJECTS_CONFIG.DESCRIPTION}
+  currentPath="/projects/"
+>
+  <Container>
+    <div class="space-y-12">
+      <div class="animate">
+        <h1 class="font-display text-2xl font-semibold text-text-primary">
+          {PROJECTS_CONFIG.TITLE}
+        </h1>
+      </div>
+
+      <div class="animate space-y-6">
+        {
+          sortedProjects.map((project) => (
+            <ProjectArrowCard project={project} />
+          ))
+        }
+      </div>
+
+      {
+        sortedProjects.length === 0 && (
+          <div class="animate text-center py-12">
+            <p class="text-text-secondary">No projects found.</p>
+          </div>
+        )
+      }
+    </div>
+  </Container>
+</PageLayout>

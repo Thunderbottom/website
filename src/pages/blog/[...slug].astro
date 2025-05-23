@@ -1,0 +1,91 @@
+---
+import { getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import Message from "@components/Message.astro";
+import Sidenote from "@components/Sidenote.astro";
+
+// Get all blog entries
+export async function getStaticPaths() {
+  const blogEntries = await getCollection("blog", ({ data }) => {
+    return !data.draft;
+  });
+
+  return blogEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+// Get the blog post data
+const { entry } = Astro.props;
+const { Content, headings, remarkPluginFrontmatter } = await entry.render();
+
+// Use reading time from remark plugin (falls back to default if not available)
+const readingTime = remarkPluginFrontmatter?.minutesRead || "1 min read";
+
+// Define custom components for rendering
+const components = {
+  Message,
+  Sidenote,
+};
+---
+
+<PageLayout
+  title={entry.data.title}
+  description={entry.data.description || entry.data.summary}
+  currentPath={`/blog/${entry.slug}/`}
+>
+  <Container>
+    <div class="space-y-8">
+      <div class="animate">
+        <BackToPrev href="/blog"> Back to blog </BackToPrev>
+      </div>
+
+      <div class="space-y-4">
+        <div
+          class="animate flex items-center gap-2 text-sm text-text-secondary"
+        >
+          <FormattedDate date={entry.data.date} format="%B %d, %Y" />
+          <span>•</span>
+          <span>{readingTime}</span>
+          {
+            entry.data.last_modified_at && (
+              <>
+                <span>•</span>
+                <span>
+                  Updated:{" "}
+                  <FormattedDate
+                    date={entry.data.last_modified_at}
+                    format="%B %d, %Y"
+                  />
+                </span>
+              </>
+            )
+          }
+        </div>
+
+        <div class="animate">
+          <h1
+            class="font-display text-3xl font-semibold text-text-primary leading-tight"
+          >
+            {entry.data.title}
+          </h1>
+        </div>
+      </div>
+
+      <article class="animate prose prose-lg max-w-none">
+        <Content components={components} />
+      </article>
+
+      <div class="animate pt-8 border-t border-border text-center">
+        <p class="text-text-secondary text-lg">
+          Got any questions or comments, or just want to say hi?<br />Drop by on
+          my email!
+        </p>
+      </div>
+    </div>
+  </Container>
+</PageLayout>

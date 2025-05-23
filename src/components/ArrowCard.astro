@@ -1,0 +1,54 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "@lib/utils";
+
+interface Props {
+  entry: CollectionEntry<"blog">;
+}
+
+const { entry } = Astro.props;
+---
+
+<a
+  href={`/blog/${entry.slug}/`}
+  class="group relative flex items-start gap-4 p-4 rounded-lg border border-border dark:border-border-dark bg-card dark:bg-card-dark hover:border-text-secondary dark:hover:border-text-secondary-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+>
+  <div class="flex-1 min-w-0">
+    <div
+      class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark mb-1 group-hover:text-link dark:group-hover:text-link-dark transition-colors"
+    >
+      {entry.data.title}
+    </div>
+    <div class="text-sm text-text-secondary dark:text-text-secondary-dark mb-2">
+      {formatDate(new Date(entry.data.date), "%B %d, %Y")}
+    </div>
+    {
+      entry.data.description && (
+        <div class="text-text-secondary dark:text-text-secondary-dark text-sm leading-relaxed">
+          {entry.data.description}
+        </div>
+      )
+    }
+  </div>
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    class="w-5 h-5 text-text-muted dark:text-text-muted-dark group-hover:text-link dark:group-hover:text-link-dark transition-all duration-300 flex-shrink-0 mt-1"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+  >
+    <line
+      x1="5"
+      y1="12"
+      x2="19"
+      y2="12"
+      class="translate-x-1 group-hover:translate-x-0 scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
+    ></line>
+    <polyline
+      points="12 5 19 12 12 19"
+      class="-translate-x-0.5 group-hover:translate-x-0 transition-transform duration-300"
+    ></polyline>
+  </svg>
+</a>

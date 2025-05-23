@@ -1,0 +1,26 @@
+---
+export interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+---
+
+<span class="sidenote-container">
+  <label
+    for={`sidenote-${id}`}
+    class="sidenote-number sidenote-ref"
+    data-footnote-id={id}></label>
+  <input type="checkbox" id={`sidenote-${id}`} class="sidenote-toggle" />
+  <span class="sidenote">
+    <label for={`sidenote-${id}`} class="sidenote-number" data-footnote-id={id}
+    ></label>
+    <slot />
+  </span>
+</span>
+
+<style>
+  .sidenote-container {
+    display: inline;
+  }
+</style>

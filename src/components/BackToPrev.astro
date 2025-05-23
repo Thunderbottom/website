@@ -1,0 +1,38 @@
+---
+interface Props {
+  href: string;
+}
+
+const { href } = Astro.props;
+---
+
+<a
+  href={href}
+  class="group relative inline-flex items-center gap-2 pl-8 pr-3 py-2 rounded-lg border border-border dark:border-border-dark bg-card dark:bg-card-dark hover:border-text-secondary dark:hover:border-text-secondary-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted dark:text-text-muted-dark group-hover:text-link dark:group-hover:text-link-dark transition-all duration-300"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+  >
+    <line
+      x1="5"
+      y1="12"
+      x2="19"
+      y2="12"
+      class="translate-x-1 group-hover:translate-x-0 scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
+    ></line>
+    <polyline
+      points="12 5 5 12 12 19"
+      class="translate-x-0.5 group-hover:translate-x-0 transition-transform duration-300"
+    ></polyline>
+  </svg>
+  <span
+    class="text-sm text-text-secondary dark:text-text-secondary-dark group-hover:text-text-primary dark:group-hover:text-text-primary-dark transition-colors"
+  >
+    <slot />
+  </span>
+</a>

@@ -1,0 +1,145 @@
+---
+import { getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+import ProjectArrowCard from "@components/ProjectArrowCard.astro";
+import Link from "@components/Link.astro";
+import { SITE, SOCIALS, PROJECTS } from "@lib/constants";
+
+// Get recent blog posts
+const blog = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort(
+    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
+  )
+  .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+
+// Get recent projects
+const recentProjects = PROJECTS.sort(
+  (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
+).slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+---
+
+<PageLayout currentPath="/">
+  <Container>
+    <div class="space-y-16">
+      <section class="animate">
+        <h3 class="font-display text-xl font-semibold text-text-primary mb-6">
+          {SITE.NAME}
+        </h3>
+
+        <div class="space-y-6">
+          <article class="prose prose-lg max-w-none">
+            <p>
+              I make servers go beep boop. Also a hobbyist photographer,
+              part-time gamer, and a full-time golden retriever dad. This is my
+              personal page, where I post my thoughts on engineering,
+              philosophy, and system design.
+            </p>
+
+            <p>
+              Outside of work I'm interested in everything *nix, open-source
+              projects, privacy in tech, and infrastructure that just works. In
+              my free time, I get lost in video games, read the occasional book,
+              and sometimes <Link
+                href="https://soundcloud.com/harmonicseventhnoiseprotocol"
+                external>make music</Link
+              >. Want to see what I'm currently working on? Check out what I'm
+              up to <Link href="/now">now</Link>.
+            </p>
+
+            <p><em>"El camarón que se duerme se lo lleva la corriente"</em></p>
+          </article>
+        </div>
+      </section>
+
+      {
+        blog.length > 0 && (
+          <section class="animate space-y-6">
+            <div class="flex flex-wrap gap-y-2 items-center justify-between">
+              <h5 class="font-display text-lg font-semibold text-text-primary">
+                Latest posts
+              </h5>
+              <Link href="/blog" class="text-sm">
+                See all posts
+              </Link>
+            </div>
+            <ul class="flex flex-col gap-4">
+              {blog.map((post) => (
+                <li>
+                  <ArrowCard entry={post} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        recentProjects.length > 0 && (
+          <section class="animate space-y-6">
+            <div class="flex flex-wrap gap-y-2 items-center justify-between">
+              <h5 class="font-display text-lg font-semibold text-text-primary">
+                Recent projects
+              </h5>
+              <Link href="/projects" class="text-sm">
+                See all projects
+              </Link>
+            </div>
+            <div class="flex flex-col gap-6">
+              {recentProjects.map((project) => (
+                <ProjectArrowCard project={project} />
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <section class="animate space-y-6">
+        <h5 class="font-display text-lg font-semibold text-text-primary">
+          Let's Connect
+        </h5>
+        <article class="prose prose-lg max-w-none">
+          <p>
+            If you want to get in touch with me about something or just to say
+            hi, reach out on social media or send me an email.
+          </p>
+        </article>
+        <ul class="flex flex-wrap gap-2">
+          {
+            SOCIALS.map((social, index) => (
+              <li class="flex gap-x-2 text-nowrap">
+                <Link
+                  href={social.href}
+                  external
+                  aria-label={`${SITE.NAME} on ${social.name}`}
+                  class="text-sm"
+                  underline
+                >
+                  {social.name}
+                </Link>
+                {index < SOCIALS.length - 1 && (
+                  <span class="text-text-muted dark:text-text-muted-dark mr-2">
+                    {" "}
+                  </span>
+                )}
+              </li>
+            ))
+          }
+          <li class="flex gap-x-2">
+            <span class="text-text-muted"> </span>
+            <Link
+              href={`mailto:${SITE.EMAIL}`}
+              aria-label={`Email ${SITE.NAME}`}
+              class="text-sm"
+              underline
+            >
+              Email
+            </Link>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </Container>
+</PageLayout>

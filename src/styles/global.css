@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  overflow-y: scroll;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html,
+body {
+  @apply size-full;
+}
+
+body {
+  @apply font-serif antialiased;
+  @apply flex flex-col;
+  @apply bg-background dark:bg-background-dark;
+  @apply text-text-primary dark:text-text-primary-dark;
+  @apply transition-colors duration-200;
+  font-size: 1.25rem;
+  line-height: 1.7;
+}
+
+header {
+  @apply fixed top-0 left-0 right-0 z-50 py-5;
+  @apply bg-background/80 dark:bg-background-dark/80;
+  @apply backdrop-blur-sm;
+  @apply border-b border-border/20 dark:border-border-dark/20;
+}
+
+main {
+  @apply flex-1 pt-32 pb-16;
+}
+
+footer {
+  @apply py-5 text-sm;
+}
+
+/* ===== HEADINGS ===== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply text-text-primary dark:text-text-primary-dark;
+  @apply font-display font-semibold;
+}
+
+/* ===== PROSE CUSTOMIZATION ===== */
+article {
+  @apply max-w-full prose prose-lg dark:prose-invert;
+  @apply prose-headings:font-display prose-headings:font-semibold;
+  @apply prose-headings:text-text-primary dark:prose-headings:text-text-primary-dark;
+  @apply prose-p:font-serif prose-p:text-text-primary dark:prose-p:text-text-primary-dark;
+  @apply prose-a:text-link dark:prose-a:text-link-dark prose-a:no-underline prose-a:border-b prose-a:border-link dark:prose-a:border-link-dark;
+  @apply prose-code:font-mono prose-code:text-red-600 dark:prose-code:text-red-400;
+  @apply prose-pre:font-mono;
+}
+
+@layer utilities {
+  article a:hover,
+  .prose a:hover {
+    @apply bg-link-hover dark:bg-link-hover-dark text-text-primary dark:text-text-primary-dark border-text-primary dark:border-text-primary-dark;
+  }
+}
+
+/* ===== SHIKI THEME SWITCHING ===== */
+@layer base {
+  /* Light theme (default) */
+  pre code,
+  pre code span {
+    color: var(--shiki-light, inherit) !important;
+    background-color: var(--shiki-light-bg, transparent) !important;
+    font-style: var(--shiki-light-font-style, inherit) !important;
+    font-weight: var(--shiki-light-font-weight, inherit) !important;
+    text-decoration: var(--shiki-light-text-decoration, inherit) !important;
+  }
+
+  /* Dark theme */
+  html.dark pre code,
+  html.dark pre code span {
+    color: var(--shiki-dark, inherit) !important;
+    background-color: var(--shiki-dark-bg, transparent) !important;
+    font-style: var(--shiki-dark-font-style, inherit) !important;
+    font-weight: var(--shiki-dark-font-weight, inherit) !important;
+    text-decoration: var(--shiki-dark-text-decoration, inherit) !important;
+  }
+
+  /* Pre backgrounds */
+  pre {
+    background-color: var(--shiki-light-bg, #fafafa) !important;
+  }
+
+  html.dark pre {
+    background-color: var(--shiki-dark-bg, #0d1117) !important;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+.animate {
+  @apply opacity-0 translate-y-3;
+  @apply transition-all duration-700 ease-out;
+}
+
+.animate.show {
+  @apply opacity-100 translate-y-0;
+}
+
+html #back-to-top {
+  @apply opacity-0 pointer-events-none;
+}
+
+html.scrolled #back-to-top {
+  @apply opacity-100 pointer-events-auto;
+}
+
+/* ===== TUFTE-STYLE SIDENOTES ===== */
+.sidenote,
+.marginnote {
+  float: right;
+  clear: right;
+  margin-right: -35%;
+  width: 30%;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.7;
+  vertical-align: baseline;
+  position: relative;
+  @apply text-text-secondary dark:text-text-secondary-dark;
+  font-style: italic;
+  padding-left: 0.5rem;
+  @apply border-l border-border dark:border-border-dark;
+}
+
+/* Mobile sidenotes */
+@media (max-width: 42rem) {
+  .sidenote,
+  .marginnote {
+    float: none;
+    display: none;
+    width: 95%;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    @apply border-l-2 border-border dark:border-border-dark;
+    font-size: 0.85rem;
+  }
+
+  .sidenote.active,
+  .marginnote.active {
+    display: block;
+  }
+}
+
+.sidenote-number::after {
+  content: attr(data-footnote-id);
+  font-size: 0.85rem;
+  position: relative;
+  vertical-align: super;
+  font-weight: bold;
+  top: -0.25em;
+}
+
+.sidenote .sidenote-number::after {
+  content: attr(data-footnote-id) ". ";
+  font-size: 0.85rem;
+  position: relative;
+  vertical-align: baseline;
+  font-weight: bold;
+  top: 0;
+}
+
+article,
+.post {
+  counter-reset: sidenote-counter;
+}
+
+label.margin-toggle.sidenote-ref {
+  @apply text-link dark:text-link-dark;
+  font-size: 0.75rem;
+  vertical-align: super;
+  position: relative;
+}
+
+.sidenote-toggle,
+.margin-toggle {
+  display: none;
+}
+
+/* Mobile sidenote toggles */
+@media (max-width: 42rem) {
+  .sidenote-ref,
+  label.margin-toggle.sidenote-ref {
+    display: inline;
+    cursor: pointer;
+    font-size: 0.85rem;
+    position: relative;
+  }
+
+  .margin-toggle:checked + .sidenote,
+  .margin-toggle:checked + .marginnote,
+  .sidenote-toggle:checked + .sidenote {
+    display: block;
+    float: left;
+    left: 0;
+    clear: both;
+    width: 95%;
+    margin: 1rem 2.5%;
+    position: relative;
+    padding: 0.5rem;
+    @apply border-l-2 border-border dark:border-border-dark;
+    font-size: 0.85rem;
+  }
+
+  .sidenote-ref:after {
+    content: "⊕";
+    @apply text-link dark:text-link-dark;
+  }
+
+  label.margin-toggle.sidenote-ref,
+  .sidenote-ref {
+    margin: 0 0.2em;
+    padding: 0;
+    line-height: 1;
+  }
+}
+
+/* ===== MESSAGE COMPONENTS ===== */
+.message-title {
+  @apply font-display font-bold mt-0 mb-2;
+}
+
+.message-content p:last-child {
+  @apply mb-0;
+}
+
+.message > *:first-child {
+  @apply mt-0 !important;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 42rem) {
+  body {
+    font-size: 1.125rem;
+  }
+
+  article {
+    @apply prose-base;
+  }
+}

@@ -1,0 +1,40 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import { NOW, NOW_DATA } from "@lib/constants";
+---
+
+<PageLayout title={NOW.TITLE} description={NOW.DESCRIPTION} currentPath="/now/">
+  <Container>
+    <div class="space-y-8">
+      <div class="animate">
+        <h1 class="font-display text-2xl font-semibold text-text-primary">
+          {NOW.TITLE}
+        </h1>
+      </div>
+      <div class="animate space-y-6">
+        <article class="text-center prose prose-lg max-w-none">
+          <em
+            >"Here lieth a liste, certes in no certaine ordre or prioritie, of
+            that which I might be about in this presente houre"</em
+          >
+        </article>
+      </div>
+
+      <article class="animate prose prose-lg max-w-none">
+        {
+          NOW_DATA.map((section) => (
+            <div>
+              <h3>{section.title}</h3>
+              <ul>
+                {section.items.map((item) => (
+                  <li set:html={item} />
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </article>
+    </div>
+  </Container>
+</PageLayout>

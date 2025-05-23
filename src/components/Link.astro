@@ -1,0 +1,36 @@
+---
+interface Props {
+  href: string;
+  external?: boolean;
+  underline?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  external = false,
+  underline = false,
+  class: className = "",
+  ...rest
+} = Astro.props;
+
+const baseClasses =
+  "text-link dark:text-link-dark transition-all duration-200 ease-in-out";
+const underlineClasses = underline
+  ? "border-b border-link dark:border-link-dark hover:bg-link-hover dark:hover:bg-link-hover-dark hover:text-text-primary dark:hover:text-text-primary-dark hover:border-text-primary dark:hover:border-text-primary-dark"
+  : "hover:opacity-80";
+
+const linkClasses = [baseClasses, underlineClasses, className]
+  .filter(Boolean)
+  .join(" ");
+---
+
+<a
+  href={href}
+  target={external ? "_blank" : "_self"}
+  rel={external ? "noopener noreferrer" : undefined}
+  class={linkClasses}
+  {...rest}
+>
+  <slot />
+</a>

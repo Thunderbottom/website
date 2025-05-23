@@ -1,0 +1,63 @@
+---
+import { formatDate } from "@lib/utils";
+import Link from "@components/Link.astro";
+import type { ProjectItem } from "@lib/constants";
+
+interface Props {
+  project: ProjectItem;
+}
+
+const { project } = Astro.props;
+---
+
+<div
+  class="group relative flex flex-col gap-4 p-4 rounded-lg border border-border dark:border-border-dark bg-card dark:bg-card-dark hover:border-text-secondary dark:hover:border-text-secondary-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+>
+  <div class="flex-1 min-w-0">
+    <div
+      class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark mb-1 group-hover:text-link dark:group-hover:text-link-dark transition-colors"
+    >
+      {project.title}
+    </div>
+    <div class="text-sm text-text-secondary dark:text-text-secondary-dark mb-2">
+      {formatDate(new Date(project.date), "%B %d, %Y")}
+    </div>
+    <div
+      class="text-text-secondary dark:text-text-secondary-dark text-sm leading-relaxed mb-3"
+    >
+      {project.description}
+    </div>
+
+    {
+      project.tags && project.tags.length > 0 && (
+        <div class="flex flex-wrap gap-1 mb-3">
+          {project.tags.map((tag) => (
+            <span class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-text-muted dark:text-text-muted-dark">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )
+    }
+
+    {
+      (project.demoURL || project.repoURL) && (
+        <nav class="flex gap-1 text-sm">
+          {project.demoURL && (
+            <Link href={project.demoURL} external underline>
+              demo
+            </Link>
+          )}
+          {project.demoURL && project.repoURL && (
+            <span class="text-text-muted dark:text-text-muted-dark">/</span>
+          )}
+          {project.repoURL && (
+            <Link href={project.repoURL} external underline>
+              source code
+            </Link>
+          )}
+        </nav>
+      )
+    }
+  </div>
+</div>

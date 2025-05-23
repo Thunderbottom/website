@@ -1,0 +1,171 @@
+export interface SiteConfig {
+  NAME: string;
+  EMAIL: string;
+  URL: string;
+  DOMAIN: string;
+  DESCRIPTION: string;
+  NUM_POSTS_ON_HOMEPAGE: number;
+  NUM_PROJECTS_ON_HOMEPAGE: number;
+}
+
+export interface PageConfig {
+  TITLE: string;
+  DESCRIPTION: string;
+}
+
+export interface NavigationItem {
+  name: string;
+  url: string;
+}
+
+export interface SocialLink {
+  name: string;
+  href: string;
+}
+
+export interface AuthorConfig {
+  NAME: string;
+}
+
+export interface ProjectItem {
+  title: string;
+  description: string;
+  date: string;
+  demoURL?: string;
+  repoURL?: string;
+  tags?: string[];
+}
+
+// Main site configuration
+export const SITE: SiteConfig = {
+  NAME: "Chinmay D. Pai",
+  EMAIL: "chinmaydpai@gmail.com",
+  URL: "https://maych.in",
+  DOMAIN: "maych.in",
+  DESCRIPTION: "Musings on life, tech, and other interests",
+  NUM_POSTS_ON_HOMEPAGE: 3,
+  NUM_PROJECTS_ON_HOMEPAGE: 3,
+};
+
+// Page-specific configurations
+export const PAGES = {
+  HOME: {
+    TITLE: "Home",
+    DESCRIPTION: "Musings on life, tech, and other interests",
+  } as PageConfig,
+  BLOG: {
+    TITLE: "Blog",
+    DESCRIPTION: "A collection of articles on topics I am passionate about.",
+  } as PageConfig,
+  NOW: {
+    TITLE: "Now",
+    DESCRIPTION: "What I'm up to right now.",
+  } as PageConfig,
+  PROJECTS: {
+    TITLE: "Projects",
+    DESCRIPTION:
+      "A collection of my projects, with links to repositories and demos.",
+  } as PageConfig,
+};
+
+// Navigation configuration
+export const NAVIGATION: NavigationItem[] = [
+  { name: "Blog", url: "/blog" },
+  { name: "Projects", url: "/projects" },
+  { name: "Now", url: "/now" },
+];
+
+// Social media links
+export const SOCIALS: SocialLink[] = [
+  {
+    name: "Bsky",
+    href: "https://bsky.app/profile/maych.in",
+  },
+  {
+    name: "GitHub",
+    href: "https://github.com/Thunderbottom",
+  },
+  {
+    name: "Lobsters",
+    href: "https://lobste.rs/u/Thunderbottom",
+  },
+  {
+    name: "Forgejo",
+    href: "https://git.deku.moe",
+  },
+];
+
+// Author information
+export const AUTHOR: AuthorConfig = {
+  NAME: "Chinmay D. Pai",
+};
+
+// Projects data
+export const PROJECTS: ProjectItem[] = [
+  {
+    title: "umami-alerts",
+    description:
+      "A fast, efficient daily analytics report generator for Umami Analytics. This tool fetches your analytics data and sends simple, detailed email reports",
+    date: "2025-03-01",
+    repoURL: "https://github.com/Thunderbottom/umami-alerts",
+    tags: ["Rust", "Analytics", "Automation"],
+  },
+  {
+    title: "damon",
+    description:
+      "A Nomad operator to automate deployment workflows and reduce manual gruntwork.",
+    date: "2024-12-01",
+    repoURL: "https://github.com/Thunderbottom/damon",
+    tags: ["Go", "Nomad", "Automation", "DevOps"],
+  },
+  {
+    title: "NixOS Flakes",
+    description:
+      "Personal NixOS configuration flakes for reproducible system management.",
+    date: "2024-10-15",
+    repoURL: "https://git.deku.moe/thunderbottom/flakes",
+    tags: ["Nix", "NixOS", "System Configuration"],
+  },
+];
+
+// Legacy compatibility exports (for gradual migration)
+export const HOME = PAGES.HOME;
+export const BLOG = PAGES.BLOG;
+export const NOW = PAGES.NOW;
+export const PROJECTS_CONFIG = PAGES.PROJECTS;
+
+export interface NowSection {
+  title: string;
+  items: string[];
+}
+
+// Helper function to create links with the same styling as your Link component
+function createLink(href: string, text: string, external = true): string {
+  const target = external ? ' target="_blank"' : "";
+  const rel = external ? ' rel="noopener noreferrer"' : "";
+  // Using the same classes as your Link component
+  return `<a href="${href}"${target}${rel} class="text-link transition-all duration-200 ease-in-out hover:opacity-80">${text}</a>`;
+}
+
+export const NOW_DATA: NowSection[] = [
+  {
+    title: "Personal",
+    items: [
+      `Perpetually <abbr title="Please kill me.">learning Nix</abbr> and setting up ${createLink("https://git.deku.moe/thunderbottom/flakes", "NixOS")}.`,
+      `Working on ${createLink("https://github.com/Thunderbottom/damon", "damon")} as a Nomad operator to automate gruntwork.`,
+    ],
+  },
+  {
+    title: "Reading",
+    items: [
+      `${createLink("https://www.goodreads.com/book/show/38485991-the-skeptics-guide-to-the-universe", "The Skeptic's Guide to the Universe")}, by Steven Novella`,
+      `${createLink("https://www.goodreads.com/book/show/350.Stranger_in_a_Strange_Land", "Stranger in a Strange Land")}, by Robert A. Heinlein`,
+    ],
+  },
+  {
+    title: "Playing",
+    items: [
+      `${createLink("https://mintrock.et/en/davethediver/platform", "Dave the Diver")} on repeat.`,
+    ],
+  },
+];

@@ -1,0 +1,24 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import Link from "@components/Link.astro";
+---
+
+<PageLayout currentPath="/">
+  <Container>
+    <div class="space-y-16">
+      <section class="text-center animate space-y-6">
+        <h5 class="font-display text-lg font-semibold text-text-primary">
+          Uh-oh!
+        </h5>
+        <article class="prose prose-lg max-w-none">
+          <p>
+            Sorry, we've misplaced that URL or it's pointing to something that
+            doesn't exist. <Link href="/">Head back home</Link> to try finding it
+            again.
+          </p>
+        </article>
+      </section>
+    </div>
+  </Container>
+</PageLayout>

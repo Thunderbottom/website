@@ -1,0 +1,23 @@
+---
+import Container from "@components/Container.astro";
+import { SITE } from "@lib/constants";
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer
+  class="animate mt-10 mb-10 pt-8 border-t border-border dark:border-border-dark"
+>
+  <Container>
+    <div class="space-y-4">
+      <div class="relative">
+        <div class="absolute right-0 -top-12"></div>
+      </div>
+      <div class="text-center text-sm">
+        <div class="text-sm text-text-secondary dark:text-text-secondary-dark">
+          &copy; {currentYear} | {SITE.NAME}
+        </div>
+      </div>
+    </div>
+  </Container>
+</footer>

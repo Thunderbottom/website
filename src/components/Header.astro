@@ -1,0 +1,152 @@
+---
+import Container from "@components/Container.astro";
+import Link from "@components/Link.astro";
+import { NAVIGATION, SITE } from "@lib/constants";
+---
+
+<header>
+  <Container>
+    <div class="flex flex-wrap gap-y-2 justify-between items-center">
+      <a
+        href="/"
+        class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark hover:text-link dark:hover:text-link-dark transition-colors"
+      >
+        {SITE.DOMAIN}
+      </a>
+
+      <div class="flex items-center gap-4">
+        <nav class="flex gap-1 items-center text-base">
+          {
+            NAVIGATION.map((item, index) => (
+              <>
+                <Link
+                  href={item.url}
+                  class="font-display text-text-secondary dark:text-text-secondary-dark hover:text-link no-underline dark:hover:text-link-dark transition-colors"
+                >
+                  {item.name.toLowerCase()}
+                </Link>
+                {index < NAVIGATION.length - 1 && (
+                  <span class="text-text-muted dark:text-text-muted-dark mr-2">
+                    {" "}
+                  </span>
+                )}
+              </>
+            ))
+          }
+        </nav>
+
+        <!-- Simplified Theme Toggle Button -->
+        <button
+          id="theme-toggle"
+          aria-label="Toggle theme"
+          class="group size-6 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+        >
+          <!-- Light Theme Icon -->
+          <svg
+            id="light-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-text-secondary dark:text-text-secondary-dark group-hover:text-text-primary dark:group-hover:text-text-primary-dark transition-colors duration-200 hidden"
+          >
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+
+          <!-- Dark Theme Icon -->
+          <svg
+            id="dark-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-text-secondary dark:text-text-secondary-dark group-hover:text-text-primary dark:group-hover:text-text-primary-dark transition-colors duration-200 hidden"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+
+          <!-- System Theme Icon -->
+          <svg
+            id="system-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-text-secondary dark:text-text-secondary-dark group-hover:text-text-primary dark:group-hover:text-text-primary-dark transition-colors duration-200 hidden"
+          >
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </Container>
+</header>
+
+<!-- Immediate icon update script -->
+<script is:inline>
+  // This runs immediately after the header HTML is parsed
+  (function () {
+    function updateThemeIconImmediate() {
+      const currentTheme = localStorage.getItem("theme") || "system";
+      const icons = {
+        light: document.getElementById("light-icon"),
+        dark: document.getElementById("dark-icon"),
+        system: document.getElementById("system-icon"),
+      };
+
+      // Only proceed if icons exist
+      if (!icons.light || !icons.dark || !icons.system) return;
+
+      // Hide all icons
+      Object.values(icons).forEach((icon) => icon?.classList.add("hidden"));
+
+      // Show current theme icon
+      icons[currentTheme]?.classList.remove("hidden");
+    }
+
+    // Try to update immediately
+    updateThemeIconImmediate();
+
+    // Also try after a minimal delay to catch any timing issues
+    setTimeout(updateThemeIconImmediate, 0);
+  })();
+</script>
+
+<!-- Regular initialization script -->
+<script>
+  function setupHeader() {
+    // Theme toggle is handled by the global theme manager
+    // Update icon again to be sure
+    if (window.themeManager) {
+      window.themeManager.updateIcon();
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", setupHeader);
+  document.addEventListener("astro:after-swap", setupHeader);
+</script>

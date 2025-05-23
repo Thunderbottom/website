@@ -1,0 +1,79 @@
+---
+import { getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+import { BLOG } from "@lib/constants";
+
+// Get all blog posts and filter out drafts
+const allPosts = await getCollection("blog", ({ data }) => {
+  return !data.draft;
+});
+
+// Sort by date descending
+const sortedPosts = allPosts.sort(
+  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
+);
+
+// Group posts by year
+const postsByYear = sortedPosts.reduce(
+  (acc, post) => {
+    const year = new Date(post.data.date).getFullYear();
+    if (!acc[year]) {
+      acc[year] = [];
+    }
+    acc[year].push(post);
+    return acc;
+  },
+  {} as Record<number, typeof sortedPosts>,
+);
+
+// Sort years in descending order
+const years = Object.keys(postsByYear)
+  .map(Number)
+  .sort((a, b) => b - a);
+---
+
+<PageLayout
+  title={BLOG.TITLE}
+  description={BLOG.DESCRIPTION}
+  currentPath="/blog/"
+>
+  <Container>
+    <div class="space-y-12">
+      <div class="animate">
+        <h1 class="font-display text-2xl font-semibold text-text-primary">
+          {BLOG.TITLE}
+        </h1>
+      </div>
+
+      <div class="space-y-12">
+        {
+          years.map((year) => (
+            <section class="animate space-y-6">
+              <div class="flex justify-end">
+                <h2 class="font-display text-xl font-semibold text-text-primary">
+                  {year}
+                </h2>
+              </div>
+
+              <div class="space-y-4">
+                {postsByYear[year].map((post) => (
+                  <ArrowCard entry={post} />
+                ))}
+              </div>
+            </section>
+          ))
+        }
+      </div>
+
+      {
+        sortedPosts.length === 0 && (
+          <div class="animate text-center py-12">
+            <p class="text-text-secondary">No blog posts found.</p>
+          </div>
+        )
+      }
+    </div>
+  </Container>
+</PageLayout>
