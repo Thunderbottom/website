@@ -15,7 +15,7 @@ export default {
       colors: {
         background: {
           DEFAULT: "#f8fafc", // Slightly lighter for better contrast
-          dark: "#0f172a", // Darker for better contrast
+          dark: "#0f0f19", // Darker for better contrast
         },
         text: {
           primary: {

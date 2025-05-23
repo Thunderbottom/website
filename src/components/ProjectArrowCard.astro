@@ -32,7 +32,7 @@ const { project } = Astro.props;
       project.tags && project.tags.length > 0 && (
         <div class="flex flex-wrap gap-1 mb-3">
           {project.tags.map((tag) => (
-            <span class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-text-muted dark:text-text-muted-dark">
+            <span class="text-xs px-2 py-1 rounded-md bg-gray-200 dark:bg-gray-700 text-text-secondary dark:text-text-secondary-dark font-medium">
               {tag}
             </span>
           ))}
@@ -49,7 +49,9 @@ const { project } = Astro.props;
             </Link>
           )}
           {project.demoURL && project.repoURL && (
-            <span class="text-text-muted dark:text-text-muted-dark">/</span>
+            <span class="text-text-secondary dark:text-text-secondary-dark">
+              /
+            </span>
           )}
           {project.repoURL && (
             <Link href={project.repoURL} external underline>
