@@ -41,7 +41,7 @@
 
           # Skip npm audit and other unnecessary checks
           dontNpmInstall = false;
-          npmBuildScript = "build";
+          npmBuildScript = "build:prod";
 
           meta = with pkgs.lib; {
             description = "Personal blog and website built with Astro";
