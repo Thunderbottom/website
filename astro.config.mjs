@@ -54,26 +54,6 @@ export default defineConfig({
       // Optimize chunk size
       chunkSizeWarningLimit: 1000,
     },
-    css: {
-      // PostCSS optimizations
-      postcss: {
-        plugins: [
-          // Add autoprefixer if needed
-          // require('autoprefixer'),
-          // Add cssnano for production builds
-          process.env.NODE_ENV === "production" &&
-            require("cssnano")({
-              preset: [
-                "default",
-                {
-                  discardComments: { removeAll: true },
-                  normalizeWhitespace: true,
-                },
-              ],
-            }),
-        ].filter(Boolean),
-      },
-    },
     server: {
       // Development optimizations
       fs: {
