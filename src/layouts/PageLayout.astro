@@ -33,6 +33,15 @@ const canonicalURL = new URL(currentPath, SITE.URL);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
 
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#f4f4f5" />
+    <meta
+      name="theme-color"
+      content="#0f0f19"
+      media="(prefers-color-scheme: dark)"
+    />
+
     <!-- CRITICAL: Theme script MUST run before body renders -->
     <script is:inline>
       (function () {
@@ -50,6 +59,13 @@ const canonicalURL = new URL(currentPath, SITE.URL);
 
           document.documentElement.classList.toggle("dark", isDark);
           document.documentElement.style.colorScheme = actualTheme;
+
+          const themeColorMeta = document.querySelector(
+            'meta[name="theme-color"]:not([media])',
+          );
+          if (themeColorMeta) {
+            themeColorMeta.content = isDark ? "#0f0f19" : "#f4f4f5";
+          }
         }
 
         function getCurrentTheme() {
