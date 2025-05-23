@@ -14,34 +14,34 @@ export default {
       },
       colors: {
         background: {
-          DEFAULT: "#f4f4f5",
-          dark: "#0f0f19",
+          DEFAULT: "#f8fafc", // Slightly lighter for better contrast
+          dark: "#0f172a", // Darker for better contrast
         },
         text: {
           primary: {
-            DEFAULT: "#1e212b",
-            dark: "#e2e8f0",
+            DEFAULT: "#0f172a", // Much darker for better contrast (was #1e212b)
+            dark: "#f1f5f9", // Lighter for better contrast (was #e2e8f0)
           },
           secondary: {
-            DEFAULT: "#64748b",
-            dark: "#94a3b8",
+            DEFAULT: "#475569", // Darker for better contrast (was #64748b)
+            dark: "#cbd5e1", // Lighter for better contrast (was #94a3b8)
           },
           muted: {
-            DEFAULT: "#94a3b8",
-            dark: "#64748b",
+            DEFAULT: "#64748b", // Darker for better contrast (was #94a3b8)
+            dark: "#94a3b8", // Keep as is
           },
         },
         link: {
-          DEFAULT: "#1c6ae2",
-          dark: "#60a5fa",
+          DEFAULT: "#1d4ed8", // Darker blue for better contrast (was #1c6ae2)
+          dark: "#3b82f6", // Slightly darker blue (was #60a5fa)
         },
         "link-hover": {
-          DEFAULT: "#dbe8f6",
-          dark: "#1e3a8a",
+          DEFAULT: "#dbeafe", // Keep as is
+          dark: "#1e40af", // Darker blue for better contrast
         },
         border: {
-          DEFAULT: "#e2e8f0",
-          dark: "#334155",
+          DEFAULT: "#d1d5db", // Slightly darker (was #e2e8f0)
+          dark: "#475569", // Lighter for better contrast (was #334155)
         },
         card: {
           DEFAULT: "#ffffff",
@@ -55,46 +55,53 @@ export default {
         DEFAULT: {
           css: {
             maxWidth: "none",
-            "--tw-prose-body": "#1e212b",
-            "--tw-prose-headings": "#1e212b",
-            "--tw-prose-links": "#1c6ae2",
+            "--tw-prose-body": "#0f172a", // Much darker
+            "--tw-prose-headings": "#0f172a", // Much darker
+            "--tw-prose-links": "#1d4ed8", // Darker blue
             "--tw-prose-code": "#dc2626",
-            "--tw-prose-pre-bg": "#fafafa",
-            "--tw-prose-quote-borders": "#e2e8f0",
+            "--tw-prose-pre-bg": "#f8fafc",
+            "--tw-prose-quote-borders": "#d1d5db",
             fontFamily: "Georgia, serif",
             fontSize: "1.25rem",
             lineHeight: "1.7",
             h1: {
               fontFamily: "Playfair Display, serif",
               fontWeight: "600",
+              color: "#0f172a", // Ensure headings are dark enough
             },
             h2: {
               fontFamily: "Playfair Display, serif",
               fontWeight: "600",
               borderBottomWidth: "1px",
-              borderBottomColor: "#e2e8f0",
+              borderBottomColor: "#d1d5db",
               paddingBottom: "0.5rem",
+              color: "#0f172a",
             },
             h3: {
               fontFamily: "Playfair Display, serif",
               fontWeight: "600",
+              color: "#0f172a",
             },
             h4: {
               fontFamily: "Playfair Display, serif",
               fontWeight: "600",
+              color: "#0f172a",
             },
             h5: {
               fontFamily: "Playfair Display, serif",
               fontWeight: "600",
+              color: "#0f172a",
             },
             h6: {
               fontFamily: "Playfair Display, serif",
               fontWeight: "600",
+              color: "#0f172a",
             },
             code: {
               fontFamily: "JetBrains Mono, monospace",
               fontSize: "0.875em",
               fontWeight: "400",
+              color: "#dc2626", // Keep red for code
             },
             pre: {
               fontFamily: "JetBrains Mono, monospace",
@@ -102,35 +109,53 @@ export default {
             },
             blockquote: {
               fontStyle: "italic",
-              borderLeftColor: "#e2e8f0",
+              borderLeftColor: "#d1d5db",
+              color: "#374151", // Darker for better contrast
             },
             a: {
               textDecoration: "none",
               borderBottom: "1px solid currentColor",
+              color: "#1d4ed8", // Darker blue
               "&:hover": {
-                backgroundColor: "#dbe8f6",
+                backgroundColor: "#dbeafe",
+                color: "#1e40af", // Even darker on hover
               },
+            },
+            strong: {
+              color: "#0f172a", // Ensure bold text is dark enough
             },
           },
         },
         invert: {
           css: {
-            "--tw-prose-body": "#e2e8f0",
-            "--tw-prose-headings": "#e2e8f0",
-            "--tw-prose-links": "#60a5fa",
+            "--tw-prose-body": "#f1f5f9", // Lighter
+            "--tw-prose-headings": "#f1f5f9", // Lighter
+            "--tw-prose-links": "#3b82f6", // Slightly darker blue
             "--tw-prose-code": "#f87171",
             "--tw-prose-pre-bg": "#1e293b",
-            "--tw-prose-quote-borders": "#334155",
+            "--tw-prose-quote-borders": "#475569",
+            h1: { color: "#f1f5f9" },
             h2: {
-              borderBottomColor: "#334155",
+              borderBottomColor: "#475569",
+              color: "#f1f5f9",
             },
+            h3: { color: "#f1f5f9" },
+            h4: { color: "#f1f5f9" },
+            h5: { color: "#f1f5f9" },
+            h6: { color: "#f1f5f9" },
             blockquote: {
-              borderLeftColor: "#334155",
+              borderLeftColor: "#475569",
+              color: "#cbd5e1", // Better contrast
             },
             a: {
+              color: "#3b82f6",
               "&:hover": {
-                backgroundColor: "#1e3a8a",
+                backgroundColor: "#1e40af",
+                color: "#f1f5f9",
               },
+            },
+            strong: {
+              color: "#f1f5f9", // Ensure bold text is light enough
             },
           },
         },

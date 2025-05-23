@@ -21,13 +21,14 @@ import { NAVIGATION, SITE } from "@lib/constants";
               <>
                 <Link
                   href={item.url}
-                  class="font-display text-text-secondary dark:text-text-secondary-dark hover:text-link no-underline dark:hover:text-link-dark transition-colors"
+                  class="font-display text-text-primary dark:text-text-primary-dark hover:text-link dark:hover:text-link-dark transition-colors font-medium"
+                  underline={false}
                 >
                   {item.name.toLowerCase()}
                 </Link>
                 {index < NAVIGATION.length - 1 && (
-                  <span class="text-text-muted dark:text-text-muted-dark mr-2">
-                    {" "}
+                  <span class="text-text-muted dark:text-text-muted-dark mx-2">
+                    /
                   </span>
                 )}
               </>
@@ -35,11 +36,11 @@ import { NAVIGATION, SITE } from "@lib/constants";
           }
         </nav>
 
-        <!-- Simplified Theme Toggle Button -->
+        <!-- Improved Theme Toggle Button with better contrast -->
         <button
           id="theme-toggle"
           aria-label="Toggle theme"
-          class="group size-6 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+          class="group size-8 flex items-center justify-center rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 border border-border dark:border-border-dark"
         >
           <!-- Light Theme Icon -->
           <svg
@@ -53,7 +54,7 @@ import { NAVIGATION, SITE } from "@lib/constants";
             stroke-width="1.5"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="text-text-secondary dark:text-text-secondary-dark group-hover:text-text-primary dark:group-hover:text-text-primary-dark transition-colors duration-200 hidden"
+            class="text-text-primary dark:text-text-primary-dark group-hover:text-link dark:group-hover:text-link-dark transition-colors duration-200 hidden"
           >
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -78,7 +79,7 @@ import { NAVIGATION, SITE } from "@lib/constants";
             stroke-width="1.5"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="text-text-secondary dark:text-text-secondary-dark group-hover:text-text-primary dark:group-hover:text-text-primary-dark transition-colors duration-200 hidden"
+            class="text-text-primary dark:text-text-primary-dark group-hover:text-link dark:group-hover:text-link-dark transition-colors duration-200 hidden"
           >
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
@@ -95,7 +96,7 @@ import { NAVIGATION, SITE } from "@lib/constants";
             stroke-width="1.5"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="text-text-secondary dark:text-text-secondary-dark group-hover:text-text-primary dark:group-hover:text-text-primary-dark transition-colors duration-200 hidden"
+            class="text-text-primary dark:text-text-primary-dark group-hover:text-link dark:group-hover:text-link-dark transition-colors duration-200 hidden"
           >
             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
             <line x1="8" y1="21" x2="16" y2="21"></line>
@@ -109,7 +110,6 @@ import { NAVIGATION, SITE } from "@lib/constants";
 
 <!-- Immediate icon update script -->
 <script is:inline>
-  // This runs immediately after the header HTML is parsed
   (function () {
     function updateThemeIconImmediate() {
       const currentTheme = localStorage.getItem("theme") || "system";
@@ -119,29 +119,19 @@ import { NAVIGATION, SITE } from "@lib/constants";
         system: document.getElementById("system-icon"),
       };
 
-      // Only proceed if icons exist
       if (!icons.light || !icons.dark || !icons.system) return;
 
-      // Hide all icons
       Object.values(icons).forEach((icon) => icon?.classList.add("hidden"));
-
-      // Show current theme icon
       icons[currentTheme]?.classList.remove("hidden");
     }
 
-    // Try to update immediately
     updateThemeIconImmediate();
-
-    // Also try after a minimal delay to catch any timing issues
     setTimeout(updateThemeIconImmediate, 0);
   })();
 </script>
 
-<!-- Regular initialization script -->
 <script>
   function setupHeader() {
-    // Theme toggle is handled by the global theme manager
-    // Update icon again to be sure
     if (window.themeManager) {
       window.themeManager.updateIcon();
     }

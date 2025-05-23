@@ -14,11 +14,13 @@ const {
   ...rest
 } = Astro.props;
 
+// Improved contrast classes
 const baseClasses =
   "text-link dark:text-link-dark transition-all duration-200 ease-in-out";
+
 const underlineClasses = underline
   ? "border-b border-link dark:border-link-dark hover:bg-link-hover dark:hover:bg-link-hover-dark hover:text-text-primary dark:hover:text-text-primary-dark hover:border-text-primary dark:hover:border-text-primary-dark"
-  : "hover:opacity-80";
+  : "hover:text-text-primary dark:hover:text-text-primary-dark";
 
 const linkClasses = [baseClasses, underlineClasses, className]
   .filter(Boolean)

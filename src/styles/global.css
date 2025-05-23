@@ -28,9 +28,9 @@ body {
 
 header {
   @apply fixed top-0 left-0 right-0 z-50 py-5;
-  @apply bg-background/80 dark:bg-background-dark/80;
+  @apply bg-background/90 dark:bg-background-dark/90;
   @apply backdrop-blur-sm;
-  @apply border-b border-border/20 dark:border-border-dark/20;
+  @apply border-b border-border/30 dark:border-border-dark/30;
 }
 
 main {
@@ -61,12 +61,31 @@ article {
   @apply prose-a:text-link dark:prose-a:text-link-dark prose-a:no-underline prose-a:border-b prose-a:border-link dark:prose-a:border-link-dark;
   @apply prose-code:font-mono prose-code:text-red-600 dark:prose-code:text-red-400;
   @apply prose-pre:font-mono;
+  @apply prose-strong:text-text-primary dark:prose-strong:text-text-primary-dark;
 }
 
 @layer utilities {
   article a:hover,
   .prose a:hover {
     @apply bg-link-hover dark:bg-link-hover-dark text-text-primary dark:text-text-primary-dark border-text-primary dark:border-text-primary-dark;
+  }
+
+  /* Ensure all interactive elements have sufficient contrast */
+  .text-secondary {
+    @apply text-text-secondary dark:text-text-secondary-dark;
+  }
+
+  .text-muted {
+    @apply text-text-muted dark:text-text-muted-dark;
+  }
+
+  /* Override any low-contrast utility classes */
+  .text-gray-500 {
+    @apply text-text-secondary dark:text-text-secondary-dark;
+  }
+
+  .text-gray-400 {
+    @apply text-text-muted dark:text-text-muted-dark;
   }
 }
 
@@ -94,31 +113,11 @@ article {
 
   /* Pre backgrounds */
   pre {
-    background-color: var(--shiki-light-bg, #fafafa) !important;
+    background-color: var(--shiki-light-bg, #f8fafc) !important;
   }
 
   html.dark pre {
-    background-color: var(--shiki-dark-bg, #0d1117) !important;
-  }
-
-  /* jetbrains-mono-regular - latin */
-  @font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: "JetBrains Mono";
-    font-style: normal;
-    font-weight: 400;
-    src: url("/fonts/jetbrains-mono/jetbrains-mono-v20-latin-regular.woff2")
-      format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-  }
-
-  /* playfair-display-600 - latin */
-  @font-face {
-    font-family: "Playfair Display";
-    font-style: normal;
-    font-weight: 600;
-    font-display: swap;
-    src: url("/fonts/playfair-display/playfair-display-v22-latin-600.woff2")
-      format("woff2"); /* Chrome 26+, Opera 23+, Firefox 39+ */
+    background-color: var(--shiki-dark-bg, #0f172a) !important;
   }
 }
 
@@ -185,6 +184,7 @@ html.scrolled #back-to-top {
   vertical-align: super;
   font-weight: bold;
   top: -0.25em;
+  @apply text-link dark:text-link-dark;
 }
 
 .sidenote .sidenote-number::after {
@@ -194,6 +194,7 @@ html.scrolled #back-to-top {
   vertical-align: baseline;
   font-weight: bold;
   top: 0;
+  @apply text-link dark:text-link-dark;
 }
 
 article,
@@ -206,6 +207,7 @@ label.margin-toggle.sidenote-ref {
   font-size: 0.75rem;
   vertical-align: super;
   position: relative;
+  font-weight: 600; /* Make it bolder for better contrast */
 }
 
 .sidenote-toggle,
@@ -221,6 +223,7 @@ label.margin-toggle.sidenote-ref {
     cursor: pointer;
     font-size: 0.85rem;
     position: relative;
+    font-weight: 600; /* Better contrast */
   }
 
   .margin-toggle:checked + .sidenote,
@@ -241,6 +244,7 @@ label.margin-toggle.sidenote-ref {
   .sidenote-ref:after {
     content: "⊕";
     @apply text-link dark:text-link-dark;
+    font-weight: 700; /* Bolder for better contrast */
   }
 
   label.margin-toggle.sidenote-ref,
@@ -254,6 +258,7 @@ label.margin-toggle.sidenote-ref {
 /* ===== MESSAGE COMPONENTS ===== */
 .message-title {
   @apply font-display font-bold mt-0 mb-2;
+  @apply text-text-primary dark:text-text-primary-dark; /* Ensure high contrast */
 }
 
 .message-content p:last-child {
@@ -272,5 +277,19 @@ label.margin-toggle.sidenote-ref {
 
   article {
     @apply prose-base;
+  }
+}
+
+/* ===== FOCUS STYLES FOR ACCESSIBILITY ===== */
+@layer utilities {
+  .focus-visible\:ring-2:focus-visible {
+    @apply ring-2 ring-link dark:ring-link-dark ring-offset-2 ring-offset-background dark:ring-offset-background-dark;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-link dark:ring-link-dark ring-offset-2 ring-offset-background dark:ring-offset-background-dark;
   }
 }
