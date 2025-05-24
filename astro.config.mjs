@@ -9,8 +9,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     tailwind({
-      // Apply Tailwind config with optimizations
-      applyBaseStyles: false, // We're inlining critical CSS
+      applyBaseStyles: false,
     }),
   ],
   markdown: {
