@@ -158,7 +158,7 @@ $ chroot /mnt xbps-reconfigure -f glibc-locales
 
 We then need to add the filesystems entries to `/mnt/etc/fstab`. You are expected to responsibly replace all the values in the configuration below, as per your system's configuration.
 
-```ini
+```ini title="/etc/fstab"
 /dev/mapper/vgpool-boot  /boot  ext4   defaults                        0 2
 /dev/mapper/vgpool-swap  none   swap   sw                              0 0
 /dev/mapper/vgpool-root  /      ext4   defaults                        0 1

@@ -1,26 +1,30 @@
 ---
 export interface Props {
   id: string;
+  ariaLabel?: string;
 }
 
-const { id } = Astro.props;
+const { id, ariaLabel = `Sidenote ${id}` } = Astro.props;
 ---
 
 <span class="sidenote-container">
   <label
     for={`sidenote-${id}`}
     class="sidenote-number sidenote-ref"
-    data-footnote-id={id}></label>
-  <input type="checkbox" id={`sidenote-${id}`} class="sidenote-toggle" />
-  <span class="sidenote">
+    data-footnote-id={id}
+    aria-label={ariaLabel}
+    tabindex="0"
+    role="button"
+    aria-expanded="false"></label>
+  <input
+    type="checkbox"
+    id={`sidenote-${id}`}
+    class="sidenote-toggle"
+    aria-hidden="true"
+  />
+  <span class="sidenote" role="note" aria-label={ariaLabel}>
     <label for={`sidenote-${id}`} class="sidenote-number" data-footnote-id={id}
     ></label>
     <slot />
   </span>
 </span>
-
-<style>
-  .sidenote-container {
-    display: inline;
-  }
-</style>
