@@ -21,7 +21,7 @@
           version = "25.05";
           src = ./.;
 
-          npmDepsHash = "sha256-L2Lg+mDto1c11Ea0dJl/zGXVGTw/iXMU1UADC69O00o=";
+          npmDepsHash = "sha256-XIk2TYhyXMigki0koCr26o74mnB4GA+S+XpPiQcIf0I=";
 
           nativeBuildInputs = with pkgs; [
             nodejs_20

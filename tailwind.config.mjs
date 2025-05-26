@@ -14,34 +14,34 @@ export default {
       },
       colors: {
         background: {
-          DEFAULT: "#f8fafc", // Slightly lighter for better contrast
-          dark: "#0f0f19", // Darker for better contrast
+          DEFAULT: "#f8fafc",
+          dark: "#0f0f19",
         },
         text: {
           primary: {
-            DEFAULT: "#0f172a", // Much darker for better contrast (was #1e212b)
-            dark: "#f1f5f9", // Lighter for better contrast (was #e2e8f0)
+            DEFAULT: "#0f172a",
+            dark: "#f1f5f9",
           },
           secondary: {
-            DEFAULT: "#475569", // Darker for better contrast (was #64748b)
-            dark: "#cbd5e1", // Lighter for better contrast (was #94a3b8)
+            DEFAULT: "#475569",
+            dark: "#cbd5e1",
           },
           muted: {
-            DEFAULT: "#64748b", // Darker for better contrast (was #94a3b8)
-            dark: "#94a3b8", // Keep as is
+            DEFAULT: "#64748b",
+            dark: "#94a3b8",
           },
         },
         link: {
-          DEFAULT: "#1d4ed8", // Darker blue for better contrast (was #1c6ae2)
-          dark: "#3b82f6", // Slightly darker blue (was #60a5fa)
+          DEFAULT: "#1d4ed8",
+          dark: "#3b82f6",
         },
         "link-hover": {
-          DEFAULT: "#dbeafe", // Keep as is
-          dark: "#1e40af", // Darker blue for better contrast
+          DEFAULT: "#dbeafe",
+          dark: "#1e40af",
         },
         border: {
-          DEFAULT: "#d1d5db", // Slightly darker (was #e2e8f0)
-          dark: "#475569", // Lighter for better contrast (was #334155)
+          DEFAULT: "#d1d5db",
+          dark: "#475569",
         },
         card: {
           DEFAULT: "#ffffff",
@@ -55,9 +55,9 @@ export default {
         DEFAULT: {
           css: {
             maxWidth: "none",
-            "--tw-prose-body": "#0f172a", // Much darker
-            "--tw-prose-headings": "#0f172a", // Much darker
-            "--tw-prose-links": "#1d4ed8", // Darker blue
+            "--tw-prose-body": "#0f172a",
+            "--tw-prose-headings": "#0f172a",
+            "--tw-prose-links": "#1d4ed8",
             "--tw-prose-code": "#dc2626",
             "--tw-prose-pre-bg": "#f8fafc",
             "--tw-prose-quote-borders": "#d1d5db",
@@ -67,7 +67,7 @@ export default {
             h1: {
               fontFamily: "Playfair Display, serif",
               fontWeight: "600",
-              color: "#0f172a", // Ensure headings are dark enough
+              color: "#0f172a",
             },
             h2: {
               fontFamily: "Playfair Display, serif",
@@ -101,7 +101,7 @@ export default {
               fontFamily: "JetBrains Mono, monospace",
               fontSize: "0.875em",
               fontWeight: "400",
-              color: "#dc2626", // Keep red for code
+              color: "#dc2626",
             },
             pre: {
               fontFamily: "JetBrains Mono, monospace",
@@ -110,27 +110,27 @@ export default {
             blockquote: {
               fontStyle: "italic",
               borderLeftColor: "#d1d5db",
-              color: "#374151", // Darker for better contrast
+              color: "#374151",
             },
             a: {
               textDecoration: "none",
               borderBottom: "1px solid currentColor",
-              color: "#1d4ed8", // Darker blue
+              color: "#1d4ed8",
               "&:hover": {
                 backgroundColor: "#dbeafe",
-                color: "#1e40af", // Even darker on hover
+                color: "#1e40af",
               },
             },
             strong: {
-              color: "#0f172a", // Ensure bold text is dark enough
+              color: "#0f172a",
             },
           },
         },
         invert: {
           css: {
-            "--tw-prose-body": "#f1f5f9", // Lighter
-            "--tw-prose-headings": "#f1f5f9", // Lighter
-            "--tw-prose-links": "#3b82f6", // Slightly darker blue
+            "--tw-prose-body": "#f1f5f9",
+            "--tw-prose-headings": "#f1f5f9",
+            "--tw-prose-links": "#3b82f6",
             "--tw-prose-code": "#f87171",
             "--tw-prose-pre-bg": "#1e293b",
             "--tw-prose-quote-borders": "#475569",
@@ -145,7 +145,7 @@ export default {
             h6: { color: "#f1f5f9" },
             blockquote: {
               borderLeftColor: "#475569",
-              color: "#cbd5e1", // Better contrast
+              color: "#cbd5e1",
             },
             a: {
               color: "#3b82f6",
@@ -155,7 +155,7 @@ export default {
               },
             },
             strong: {
-              color: "#f1f5f9", // Ensure bold text is light enough
+              color: "#f1f5f9",
             },
           },
         },

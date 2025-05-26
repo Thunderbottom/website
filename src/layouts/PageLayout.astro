@@ -42,90 +42,112 @@ const canonicalURL = new URL(currentPath, SITE.URL);
       media="(prefers-color-scheme: dark)"
     />
 
-    <!-- CRITICAL: Theme script MUST run before body renders -->
     <script is:inline>
-      (function () {
-        const THEMES = ["light", "dark", "system"];
+      const storageKey = "theme-preference";
 
-        function getSystemTheme() {
+      const getColorPreference = () => {
+        if (localStorage.getItem(storageKey))
+          return localStorage.getItem(storageKey);
+        else
           return window.matchMedia("(prefers-color-scheme: dark)").matches
             ? "dark"
             : "light";
+      };
+
+      const setPreference = () => {
+        localStorage.setItem(storageKey, theme.value);
+        reflectPreference();
+      };
+
+      const reflectPreference = () => {
+        // Use class-based approach to work with your existing CSS
+        document.documentElement.classList.toggle(
+          "dark",
+          theme.value === "dark",
+        );
+
+        // Also set data-theme for the button styling
+        document.firstElementChild.setAttribute("data-theme", theme.value);
+
+        // Update theme-color meta tag
+        const metaThemeColor = document.querySelector(
+          'meta[name="theme-color"]:not([media])',
+        );
+        if (metaThemeColor) {
+          metaThemeColor.content =
+            theme.value === "dark" ? "#0f0f19" : "#f8fafc";
         }
 
-        function applyTheme(theme) {
-          const actualTheme = theme === "system" ? getSystemTheme() : theme;
-          const isDark = actualTheme === "dark";
+        // Update button aria-label for accessibility
+        document
+          .querySelector("#theme-toggle")
+          ?.setAttribute("aria-label", theme.value);
+      };
 
-          document.documentElement.classList.toggle("dark", isDark);
-          document.documentElement.style.colorScheme = actualTheme;
+      const theme = {
+        value: getColorPreference(),
+      };
 
-          const themeColorMeta = document.querySelector(
-            'meta[name="theme-color"]:not([media])',
-          );
-          if (themeColorMeta) {
-            themeColorMeta.content = isDark ? "#0f0f19" : "#f4f4f5";
-          }
-        }
+      // Set early so no page flashes / CSS is made aware
+      reflectPreference();
 
-        function getCurrentTheme() {
-          return localStorage.getItem("theme") || "system";
-        }
+      const onClick = () => {
+        theme.value = theme.value === "light" ? "dark" : "light";
+        setPreference();
+      };
 
-        function setTheme(newTheme) {
-          localStorage.setItem("theme", newTheme);
-          applyTheme(newTheme);
-          updateThemeIcon();
-        }
+      // Set up everything when DOM is ready
+      window.addEventListener("DOMContentLoaded", () => {
+        // Set on load so screen readers can see latest value on the button
+        reflectPreference();
 
-        function updateThemeIcon() {
-          const currentTheme = getCurrentTheme();
-          const icons = {
-            light: document.getElementById("light-icon"),
-            dark: document.getElementById("dark-icon"),
-            system: document.getElementById("system-icon"),
-          };
+        // Now this script can find and listen for clicks on the control
+        document
+          .querySelector("#theme-toggle")
+          ?.addEventListener("click", onClick);
+      });
 
-          // Hide all icons
-          Object.values(icons).forEach((icon) => icon?.classList.add("hidden"));
+      // Sync with system changes
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", ({ matches: isDark }) => {
+          theme.value = isDark ? "dark" : "light";
+          setPreference();
+        });
 
-          // Show current theme icon
-          icons[currentTheme]?.classList.remove("hidden");
-        }
+      // Handle Astro page transitions
+      document.addEventListener("astro:after-swap", () => {
+        reflectPreference();
+        document
+          .querySelector("#theme-toggle")
+          ?.addEventListener("click", onClick);
+      });
 
-        function cycleTheme() {
-          const currentTheme = getCurrentTheme();
-          const currentIndex = THEMES.indexOf(currentTheme);
-          const nextTheme = THEMES[(currentIndex + 1) % THEMES.length];
-          setTheme(nextTheme);
-        }
+      // Animation and scroll functions
+      function animate() {
+        const animateElements = document.querySelectorAll(".animate");
+        animateElements.forEach((element, index) => {
+          setTimeout(() => {
+            element.classList.add("show");
+          }, index * 100);
+        });
+      }
 
-        function initTheme() {
-          const currentTheme = getCurrentTheme();
-          applyTheme(currentTheme);
+      function onScroll() {
+        document.documentElement.classList.toggle(
+          "scrolled",
+          window.scrollY > 0,
+        );
+      }
 
-          // Listen for system theme changes
-          window
-            .matchMedia("(prefers-color-scheme: dark)")
-            .addEventListener("change", () => {
-              if (getCurrentTheme() === "system") {
-                applyTheme("system");
-              }
-            });
-        }
+      function init() {
+        animate();
+        onScroll();
+        document.addEventListener("scroll", onScroll);
+      }
 
-        // Initialize immediately
-        initTheme();
-
-        // Make functions available globally
-        window.themeManager = {
-          cycle: cycleTheme,
-          set: setTheme,
-          get: getCurrentTheme,
-          updateIcon: updateThemeIcon,
-          init: initTheme,
-        };
-      })();
+      window.addEventListener("DOMContentLoaded", init);
+      document.addEventListener("astro:after-swap", init);
     </script>
 
     <!-- Primary Meta Tags -->
@@ -133,7 +155,7 @@ const canonicalURL = new URL(currentPath, SITE.URL);
     <meta name="title" content={pageTitle} />
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
-    <meta name="author" content={AUTHOR.NAME} />
+    <meta name="author" content={SITE.NAME} />
 
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />
@@ -197,43 +219,5 @@ const canonicalURL = new URL(currentPath, SITE.URL);
     </main>
     <Footer />
     <BackToTop />
-
-    <script is:inline>
-      function init() {
-        animate();
-        onScroll();
-        setupThemeToggle();
-        document.addEventListener("scroll", onScroll);
-      }
-
-      function animate() {
-        const animateElements = document.querySelectorAll(".animate");
-        animateElements.forEach((element, index) => {
-          setTimeout(() => {
-            element.classList.add("show");
-          }, index * 100);
-        });
-      }
-
-      function onScroll() {
-        document.documentElement.classList.toggle(
-          "scrolled",
-          window.scrollY > 0,
-        );
-      }
-
-      function setupThemeToggle() {
-        const themeToggle = document.getElementById("theme-toggle");
-        if (themeToggle) {
-          themeToggle.addEventListener("click", window.themeManager.cycle);
-        }
-
-        // Update icon to match current theme
-        window.themeManager.updateIcon();
-      }
-
-      document.addEventListener("DOMContentLoaded", init);
-      document.addEventListener("astro:after-swap", init);
-    </script>
   </body>
 </html>

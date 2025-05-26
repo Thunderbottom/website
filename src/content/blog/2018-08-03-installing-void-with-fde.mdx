@@ -156,13 +156,13 @@ $ echo "en_US.UTF8 UTF8" >> /mnt/etc/default/libc-locales
 $ chroot /mnt xbps-reconfigure -f glibc-locales
 ```
 
-We then need to add the filesystems entries to `/mnt/etc/fstab`. I expect you to responsibly replace all the values in the configuration below, as per your system's configuration.
+We then need to add the filesystems entries to `/mnt/etc/fstab`. You are expected to responsibly replace all the values in the configuration below, as per your system's configuration.
 
-```
-/dev/mapper/vgpool-boot		/boot	ext4	defaults			0 2
-/dev/mapper/vgpool-swap		none	swap	sw				0 0
-/dev/mapper/vgpool-root		/	ext4	defaults			0 1
-tmpfs				/tmp	tmpfs	tsize=1G,defaults,nodev,nosuid	0 0
+```ini
+/dev/mapper/vgpool-boot  /boot  ext4   defaults                        0 2
+/dev/mapper/vgpool-swap  none   swap   sw                              0 0
+/dev/mapper/vgpool-root  /      ext4   defaults                        0 1
+tmpfs                    /tmp   tmpfs  tsize=1G,defaults,nodev,nosuid  0 0
 ```
 
 We also need to add the ESP to the fstab for UEFI systems.
@@ -177,7 +177,7 @@ We now need to `chroot`<Sidenote id="4">[chroot: arch wiki](https://wiki.archlin
 $ chroot /mnt /bin/bash
 ```
 
-This should put you in a shell inside your newly installed system.
+PThis should put you in a shell inside your newly installed system.
 
 We now need to create a keyfile to automatically decrypt the encrypted partition on booting up the system. Not doing so will require you to type the password twice on UEFI systems. This is because only the `/boot/efi` is unencrypted, and the `/boot` partition still needs to be decrypted to continue booting. You then need to enter the password again to decrpt the rootfs.
 
