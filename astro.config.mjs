@@ -6,6 +6,7 @@ import mdx from "@astrojs/mdx";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import robotsTxt from "astro-robots-txt";
+import node from "@astrojs/node";
 
 // Expressive Code
 import astroExpressiveCode from "astro-expressive-code";
@@ -52,8 +53,6 @@ const markdownConfig = {
 
 // Build configuration
 const buildConfig = {
-  format: "directory",
-  assets: "_astro",
   inlineStylesheets: "auto",
   splitting: true,
 };
@@ -78,75 +77,49 @@ const imageConfig = {
 
 // Vite configuration
 const viteConfig = {
-  build: {
-    // Optimize chunk splitting for better caching
-    rollupOptions: {
-      output: {
-        assetFileNames: (assetInfo) => {
-          const extType = assetInfo.name.split(".").pop();
-          if (/png|jpe?g|svg|gif|tiff|bmp|ico|webp|avif/i.test(extType)) {
-            return `assets/images/[name].[hash][extname]`;
-          }
-          if (/woff2?|eot|ttf|otf/i.test(extType)) {
-            return `assets/fonts/[name].[hash][extname]`;
-          }
-          if (/css/i.test(extType)) {
-            return `assets/styles/[name].[hash][extname]`;
-          }
-          return `assets/[name].[hash][extname]`;
-        },
-        chunkFileNames: "assets/js/[name].[hash].js",
-        entryFileNames: "assets/js/[name].[hash].js",
-        // Optimize chunk splitting for better caching
-        manualChunks: (id) => {
-          // Vendor libraries
-          if (id.includes("node_modules")) {
-            if (id.includes("react") || id.includes("preact")) {
-              return "vendor-react";
-            }
-            if (id.includes("astro")) {
-              return "vendor-astro";
-            }
-            return "vendor";
-          }
+  // build: {
+  //   // Optimize chunk splitting for better caching
+  //   // rollupOptions: {
+  //   //   output: {
+  //   //     assetFileNames: (assetInfo) => {
+  //   //       const extType = assetInfo.name.split(".").pop();
+  //   //       if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+  //   //         return `assets/images/[name].[hash][extname]`;
+  //   //       }
+  //   //       if (/woff2?|eot|ttf|otf/i.test(extType)) {
+  //   //         return `assets/fonts/[name].[hash][extname]`;
+  //   //       }
+  //   //       return `assets/[name].[hash][extname]`;
+  //   //     },
+  //   //     chunkFileNames: "assets/js/[name].[hash].js",
+  //   //     entryFileNames: "assets/js/[name].[hash].js",
+  //   //   },
+  //   // },
+  //   // Enable CSS code splitting for better performance
+  //   cssCodeSplit: true,
 
-          // Photo-related code
-          if (id.includes("photo") || id.includes("lightbox")) {
-            return "photo-features";
-          }
+  //   // Optimize chunk size warnings
+  //   chunkSizeWarningLimit: 1000,
 
-          // Core app functionality
-          if (id.includes("src/components") || id.includes("src/layouts")) {
-            return "app-components";
-          }
-        },
-      },
-    },
-    // Enable CSS code splitting for better performance
-    cssCodeSplit: true,
+  //   // Production minification
+  //   minify: "terser",
+  //   terserOptions: {
+  //     compress: {
+  //       drop_console: true, // Remove console.log in production
+  //       drop_debugger: true,
+  //       pure_funcs: ["console.log", "console.info", "console.debug"],
+  //     },
+  //     mangle: {
+  //       safari10: true, // Fix Safari 10 issues
+  //     },
+  //     format: {
+  //       comments: false, // Remove comments
+  //     },
+  //   },
 
-    // Optimize chunk size warnings
-    chunkSizeWarningLimit: 1000,
-
-    // Production minification
-    minify: "terser",
-    terserOptions: {
-      compress: {
-        drop_console: true, // Remove console.log in production
-        drop_debugger: true,
-        pure_funcs: ["console.log", "console.info", "console.debug"],
-      },
-      mangle: {
-        safari10: true, // Fix Safari 10 issues
-      },
-      format: {
-        comments: false, // Remove comments
-      },
-    },
-
-    // Enable source maps for debugging (set to false for production)
-    sourcemap: process.env.NODE_ENV === "development",
-  },
+  //   // Enable source maps for debugging (set to false for production)
+  //   sourcemap: process.env.NODE_ENV === "development",
+  // },
 
   // Development server configuration
   server: {
@@ -154,6 +127,9 @@ const viteConfig = {
       strict: false,
     },
     host: true, // Allow external connections
+    headers: {
+      'Cache-Control': 'public, max-age=31536000, immutable'
+    }
   },
 
   // Production optimizations
@@ -197,7 +173,11 @@ export default defineConfig({
 
   // Static site generation with selective SSR
   // API routes will use SSR via prerender: false
-  output: "static",
+  output: "server",
+
+  adapter: node({
+    mode: "standalone",
+  }),
 
   // Security configuration
   security: securityConfig,

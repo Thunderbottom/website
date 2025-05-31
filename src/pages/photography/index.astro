@@ -140,8 +140,8 @@ const totalPhotos = sortedPhotos.length;
         class="animate hidden py-8 text-center"
         aria-live="polite"
       >
-        <p class="text-text-secondary dark:text-text-secondary-dark">
-          That's all the photos! 📸
+        <p class="italic text-text-secondary dark:text-text-secondary-dark">
+          That's all folks!
         </p>
       </div>
 
@@ -184,6 +184,11 @@ const totalPhotos = sortedPhotos.length;
     const errorIndicator = document.getElementById("error-indicator");
     const endIndicator = document.getElementById("end-indicator");
     const retryButton = document.getElementById("retry-button");
+
+    window.hasMorePhotos = hasMorePhotos;
+    window.isLoading = false;
+    window.currentPage = 1;
+    window.retryCount = 0;
 
     // Validate required elements are present
     if (
@@ -235,21 +240,43 @@ const totalPhotos = sortedPhotos.length;
     /**
      * Load more photos from the API
      */
-    async function loadMorePhotos() {
-      if (isLoading || !hasMorePhotos) return;
+    window.loadMorePhotos = async function () {
+      console.log(
+        `[Photography] loadMorePhotos called - current state: isLoading=${window.isLoading}, hasMorePhotos=${window.hasMorePhotos}, currentPage=${window.currentPage}`,
+      );
 
-      isLoading = true;
+      if (window.isLoading || !window.hasMorePhotos) {
+        console.log(
+          "[Photography] Cannot load more: isLoading =",
+          window.isLoading,
+          "hasMorePhotos =",
+          window.hasMorePhotos,
+        );
+        return;
+      }
+
+      const oldPage = window.currentPage;
+      window.currentPage++;
+      console.log(
+        `[Photography] Incremented page from ${oldPage} to ${window.currentPage}`,
+      );
+
+      window.isLoading = true;
       showLoading();
 
       try {
-        currentPage++;
-        const response = await fetchPhotos(currentPage, CONFIG.PHOTOS_PER_PAGE);
+        console.log(`[Photography] About to fetch page ${window.currentPage}`);
+        const response = await fetchPhotos(
+          window.currentPage,
+          CONFIG.PHOTOS_PER_PAGE,
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json();
+        console.log(`[Photography] API returned data for page ${data.page}`);
 
         if (data.error) {
           throw new Error(data.message || "API returned an error");
@@ -258,16 +285,20 @@ const totalPhotos = sortedPhotos.length;
         await handleApiResponse(data);
 
         // Reset retry count on success
-        retryCount = 0;
+        window.retryCount = 0;
+
+        console.log(
+          `[Photography] Successfully loaded page ${window.currentPage}, hasMorePhotos: ${window.hasMorePhotos}`,
+        );
       } catch (error) {
         console.error("[Photography] Failed to load more photos:", error);
         handleLoadError();
-        currentPage--; // Reset page counter on error
+        window.currentPage = oldPage; // Reset to the previous page number on error
       } finally {
-        isLoading = false;
+        window.isLoading = false;
         hideLoading();
       }
-    }
+    };
 
     /**
      * Fetch photos from the API
@@ -278,7 +309,10 @@ const totalPhotos = sortedPhotos.length;
       url.searchParams.set("limit", limit.toString());
       url.searchParams.set("t", Date.now().toString());
 
-      console.log(`[Photography] Fetching page ${page}: ${url.toString()}`);
+      console.log(
+        `[Photography] fetchPhotos called with page=${page}, limit=${limit}`,
+      );
+      console.log(`[Photography] Fetching URL: ${url.toString()}`);
 
       return fetch(url.toString(), {
         headers: {
@@ -303,7 +337,7 @@ const totalPhotos = sortedPhotos.length;
       // Check if we have photos to render
       if (data.loaded === 0) {
         console.log("[Photography] No photos in this batch");
-        hasMorePhotos = false;
+        window.hasMorePhotos = false;
         showEndIndicator();
         return;
       }
@@ -323,7 +357,7 @@ const totalPhotos = sortedPhotos.length;
       // Update state based on API response
       if (!data.hasMore) {
         console.log("[Photography] No more photos after this batch");
-        hasMorePhotos = false;
+        window.hasMorePhotos = false;
         showEndIndicator();
       }
 
@@ -423,16 +457,16 @@ const totalPhotos = sortedPhotos.length;
         <div class="group relative flex flex-col rounded-lg border border-border dark:border-border-dark bg-card dark:bg-card-dark hover:border-text-secondary dark:hover:border-text-secondary-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden">
           <div class="relative cursor-pointer" 
                data-photo-trigger
-               data-full-image="${photo.images.lightbox.avif.src}"
+               data-full-image="${photo.images.lightbox.webp.src}"
                data-title="${escapeHtml(photo.data.title)}"
                data-content="${escapeHtml(photo.body || "")}"
                tabindex="0"
                role="button"
                aria-label="View photo: ${escapeHtml(photo.data.title)}">
             <picture>
-              <source srcset="${photo.images.thumbnail.avif.src}" type="image/avif" 
-                      width="${photo.images.thumbnail.avif.attributes.width}" 
-                      height="${photo.images.thumbnail.avif.attributes.height}">
+              <source srcset="${photo.images.thumbnail.webp.src}" type="image/webp" 
+                      width="${photo.images.thumbnail.webp.attributes.width}" 
+                      height="${photo.images.thumbnail.webp.attributes.height}">
               <source srcset="${photo.images.thumbnail.webp.src}" type="image/webp" 
                       width="${photo.images.thumbnail.webp.attributes.width}" 
                       height="${photo.images.thumbnail.webp.attributes.height}">
@@ -440,9 +474,10 @@ const totalPhotos = sortedPhotos.length;
                    alt="${escapeHtml(photo.data.title)}"
                    width="${photo.images.thumbnail.webp.attributes.width}"
                    height="${photo.images.thumbnail.webp.attributes.height}"
-                   class="w-full h-auto object-contain transition-transform duration-300"
+                   class="w-full h-auto object-contain transition-transform duration-300 img-loading"
                    loading="lazy" 
-                   decoding="async">
+                   decoding="async"
+                   onload="this.classList.remove('img-loading')"
             </picture>
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
               <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 dark:bg-black/90 rounded-full p-2">
@@ -543,11 +578,11 @@ const totalPhotos = sortedPhotos.length;
      * Handle load errors with exponential backoff retry
      */
     function handleLoadError() {
-      retryCount++;
+      window.retryCount++;
 
-      if (retryCount <= CONFIG.MAX_RETRIES) {
+      if (window.retryCount <= CONFIG.MAX_RETRIES) {
         console.log(
-          `[Photography] Auto-retry ${retryCount}/${CONFIG.MAX_RETRIES}`,
+          `[Photography] Auto-retry ${window.retryCount}/${CONFIG.MAX_RETRIES}`,
         );
 
         // Auto-retry with exponential backoff
@@ -584,7 +619,7 @@ const totalPhotos = sortedPhotos.length;
       // Setup retry button
       retryButton.addEventListener("click", () => {
         hideError();
-        retryCount = 0; // Reset retry count for manual retry
+        window.retryCount = 0; // Reset retry count for manual retry
         loadMorePhotos();
       });
 

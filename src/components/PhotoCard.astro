@@ -39,16 +39,16 @@ const formattedDate = formatDate(displayDate, "%B %d, %Y");
   <div
     class="relative cursor-pointer"
     data-photo-trigger
-    data-full-image={lightboxImage.avif.src}
+    data-full-image={lightboxImage.webp.src}
     data-title={data.title}
     data-content={entry.body}
   >
     <picture>
       <source
-        srcset={thumbnailImage.avif.src}
-        type="image/avif"
-        width={thumbnailImage.avif.attributes.width}
-        height={thumbnailImage.avif.attributes.height}
+        srcset={thumbnailImage.webp.src}
+        type="image/webp"
+        width={thumbnailImage.webp.attributes.width}
+        height={thumbnailImage.webp.attributes.height}
       />
       <source
         srcset={thumbnailImage.webp.src}
@@ -61,10 +61,8 @@ const formattedDate = formatDate(displayDate, "%B %d, %Y");
         alt={data.title}
         width={thumbnailImage.webp.attributes.width}
         height={thumbnailImage.webp.attributes.height}
-        class="h-auto w-full object-contain transition-transform duration-300"
-        loading="lazy"
-        decoding="async"
-        fetchpriority="low"
+        class="img-loading h-auto w-full object-contain transition-transform duration-300"
+        onload="this.classList.remove('img-loading')"
       />
     </picture>
 

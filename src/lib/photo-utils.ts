@@ -28,14 +28,14 @@ export const IMAGE_SETTINGS = {
   THUMBNAIL: {
     WIDTH: 800,
     QUALITY: 75,
-    FORMAT: "avif" as const,
-    FALLBACK_FORMAT: "webp" as const,
+    FORMAT: "webp" as const,
+    FALLBACK_FORMAT: "avif" as const,
   },
   LIGHTBOX: {
-    WIDTH: 1280,
-    QUALITY: 85,
-    FORMAT: "avif" as const,
-    FALLBACK_FORMAT: "webp" as const,
+    WIDTH: 1080,
+    QUALITY: 80,
+    FORMAT: "webp" as const,
+    FALLBACK_FORMAT: "avif" as const,
   },
 } as const;
 
@@ -122,7 +122,7 @@ export async function extractExifData(imagePath: string): Promise<ExifData> {
       exifData.focalLength = `${Math.round(rawExif.FocalLength)}mm`;
     }
     if (rawExif.FNumber) {
-      exifData.aperture = `f/${rawExif.FNumber}`;
+      exifData.aperture = `f/${Number((Math.round(rawExif.FNumber * 10) / 10).toFixed(1))}`;
     }
     if (rawExif.ExposureTime) {
       const exposure = rawExif.ExposureTime;

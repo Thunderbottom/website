@@ -7,6 +7,8 @@ import BackToPrev from "@components/BackToPrev.astro";
 import Message from "@components/Message.astro";
 import Sidenote from "@components/Sidenote.astro";
 
+export const prerender = true;
+
 // Get all blog entries
 export async function getStaticPaths() {
   const blogEntries = await getCollection("blog", ({ data }) => {
