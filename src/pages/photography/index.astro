@@ -5,6 +5,7 @@ import Container from "@components/Container.astro";
 import PhotoCard from "@components/PhotoCard.astro";
 import PhotoLightbox from "@components/PhotoLightbox.astro";
 import { PHOTOGRAPHY } from "@lib/constants.ts";
+import { generateImageStructuredData } from "@lib/photo-utils";
 
 const allPhotos = await getCollection("photography", ({ data }) => {
   return !data.draft;
@@ -30,34 +31,55 @@ const photosByYear = sortedPhotos.reduce(
 const years = Object.keys(photosByYear)
   .map(Number)
   .sort((a, b) => b - a);
+
+const structuredData = generateImageStructuredData(sortedPhotos);
 ---
 
 <PageLayout
   title={PHOTOGRAPHY.TITLE}
   description={PHOTOGRAPHY.DESCRIPTION}
   currentPath="/photography/"
+  ogType="website"
+  keywords="photography, photos, art, creative, visual"
 >
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(structuredData)}
+  />
+
   <Container>
     <div class="space-y-12">
       <div class="animate">
         <h1 class="font-display text-2xl font-semibold text-text-primary">
           {PHOTOGRAPHY.TITLE}
         </h1>
+        <p class="mt-4 text-text-secondary dark:text-text-secondary-dark">
+          {PHOTOGRAPHY.DESCRIPTION}
+        </p>
       </div>
 
       <div class="space-y-12">
         {
           years.map((year) => (
-            <section class="animate space-y-6">
+            <section class="animate space-y-6" aria-labelledby={`year-${year}`}>
               <div class="flex justify-end">
-                <h2 class="font-display text-xl font-semibold text-text-primary">
+                <h2
+                  id={`year-${year}`}
+                  class="font-display text-xl font-semibold text-text-primary"
+                >
                   {year}
                 </h2>
               </div>
 
-              <div class="space-y-4">
+              <div
+                class="space-y-4"
+                role="list"
+                aria-label={`Photos from ${year}`}
+              >
                 {photosByYear[year].map((photo) => (
-                  <PhotoCard entry={photo} />
+                  <div role="listitem">
+                    <PhotoCard entry={photo} />
+                  </div>
                 ))}
               </div>
             </section>

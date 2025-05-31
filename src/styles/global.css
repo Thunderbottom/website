@@ -231,26 +231,60 @@
   }
 }
 
-/* ===== ANIMATIONS ===== */
-.animate {
-  @apply opacity-0 translate-y-3;
-  @apply transition-all duration-700 ease-out;
-}
-
-.animate.show {
-  @apply opacity-100 translate-y-0;
-}
-
-html #back-to-top {
-  @apply opacity-0 pointer-events-none;
-}
-
-html.scrolled #back-to-top {
-  @apply opacity-100 pointer-events-auto;
-}
-
 /* ===== UTILITIES ===== */
 @layer utilities {
+  /* Image loading optimization */
+  .img-loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+  }
+
+  .dark .img-loading {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+    background-size: 200% 100%;
+  }
+
+  @keyframes loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Optimized focus styles */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-link dark:focus:ring-link-dark focus:ring-offset-2 focus:ring-offset-background dark:focus:ring-offset-background-dark;
+  }
+
+  /* Performance-friendly hover effects */
+  .hover-lift {
+    @apply transition-transform duration-200 ease-out;
+    will-change: transform;
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-0.5;
+  }
+
+  /* Optimized animations */
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   /* Link Hover Effects */
   article a:hover,
   .prose a:hover {
@@ -285,5 +319,85 @@ html.scrolled #back-to-top {
   input:focus-visible,
   textarea:focus-visible {
     @apply outline-none ring-2 ring-link dark:ring-link-dark ring-offset-2 ring-offset-background dark:ring-offset-background-dark;
+  }
+
+  /* Skip links for accessibility */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:dark:bg-gray-900 focus:px-4 focus:py-2 focus:rounded;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+.animate {
+  @apply opacity-0 translate-y-3;
+  @apply transition-all duration-700 ease-out;
+}
+
+.animate.show {
+  @apply opacity-100 translate-y-0;
+}
+
+html #back-to-top {
+  @apply opacity-0 pointer-events-none;
+}
+
+html.scrolled #back-to-top {
+  @apply opacity-100 pointer-events-auto;
+}
+
+/* ===== REDUCED MOTION SUPPORT ===== */
+@media (prefers-reduced-motion: reduce) {
+  .animate,
+  .transition-all,
+  .transition-transform,
+  .transition-colors,
+  .transition-opacity,
+  .group-hover\:scale-105,
+  .hover-lift,
+  .animate-fade-in {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .hover\:-translate-y-0\.5:hover,
+  .group-hover\:scale-105:hover {
+    transform: none !important;
+  }
+
+  /* Preserve essential animations for accessibility */
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .no-print,
+  header,
+  footer,
+  .lightbox,
+  button {
+    display: none !important;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.2;
+    color: black !important;
+    background: white !important;
+  }
+
+  article {
+    max-width: none !important;
+  }
+
+  .sidenote,
+  .marginnote {
+    float: none !important;
+    margin: 1rem 0 !important;
+    width: 100% !important;
+    border-left: 2px solid #ccc !important;
+    padding-left: 0.5rem !important;
   }
 }

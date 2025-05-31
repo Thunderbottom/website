@@ -7,6 +7,9 @@
   class="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300"
   aria-hidden="true"
   role="dialog"
+  aria-modal="true"
+  aria-labelledby="lightbox-title"
+  aria-describedby="lightbox-content"
 >
   <!-- Close button -->
   <button
@@ -68,13 +71,14 @@
         id="lightbox-image"
         src=""
         alt=""
-        class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+        class="max-w-full max-h-full object-contain rounded-lg shadow-2xl opacity-0 transition-opacity duration-300"
         style="image-orientation: from-image; width: auto; height: auto;"
       />
 
       <div
         id="lightbox-loading"
         class="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg"
+        style="display: flex;"
       >
         <div
           class="animate-spin rounded-full h-8 w-8 border-2 border-white border-t-transparent"
@@ -150,23 +154,26 @@
 
       lightboxTitle.textContent = title;
 
-      // Set content as plain text
       if (content && lightboxContent) {
         lightboxContent.textContent = content.trim();
       } else if (lightboxContent) {
         lightboxContent.textContent = "";
       }
 
-      lightboxLoading.classList.remove("hidden");
+      lightboxLoading.style.display = "flex";
+      lightboxImage.style.opacity = "0";
 
       const img = new Image();
       img.onload = () => {
         lightboxImage.src = img.src;
         lightboxImage.alt = title;
-        lightboxLoading.classList.add("hidden");
+
+        lightboxLoading.style.display = "none";
+        lightboxImage.style.opacity = "1";
       };
       img.onerror = () => {
-        lightboxLoading.classList.add("hidden");
+        lightboxLoading.style.display = "none";
+        lightboxImage.style.opacity = "1";
       };
       img.src = fullImage;
 
@@ -204,7 +211,8 @@
       window.scrollTo(0, scrollPosition);
 
       lightboxImage.src = "";
-      lightboxLoading.classList.remove("hidden");
+      lightboxImage.style.opacity = "0";
+      lightboxLoading.style.display = "flex";
     }
 
     function goToNextPhoto() {

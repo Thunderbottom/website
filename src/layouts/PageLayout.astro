@@ -42,6 +42,21 @@ const canonicalURL = new URL(currentPath, SITE.URL);
       media="(prefers-color-scheme: dark)"
     />
 
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+      default-src 'self';
+      img-src 'self' data: https:;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval';
+      style-src 'self' 'unsafe-inline';
+      font-src 'self' data:;
+      connect-src 'self' https:;
+    "
+    />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
+
     <script is:inline>
       const storageKey = "theme-preference";
 
@@ -60,16 +75,12 @@ const canonicalURL = new URL(currentPath, SITE.URL);
       };
 
       const reflectPreference = () => {
-        // Use class-based approach to work with your existing CSS
         document.documentElement.classList.toggle(
           "dark",
           theme.value === "dark",
         );
-
-        // Also set data-theme for the button styling
         document.firstElementChild.setAttribute("data-theme", theme.value);
 
-        // Update theme-color meta tag
         const metaThemeColor = document.querySelector(
           'meta[name="theme-color"]:not([media])',
         );
@@ -78,7 +89,6 @@ const canonicalURL = new URL(currentPath, SITE.URL);
             theme.value === "dark" ? "#0f0f19" : "#f8fafc";
         }
 
-        // Update button aria-label for accessibility
         document
           .querySelector("#theme-toggle")
           ?.setAttribute("aria-label", theme.value);
@@ -88,7 +98,6 @@ const canonicalURL = new URL(currentPath, SITE.URL);
         value: getColorPreference(),
       };
 
-      // Set early so no page flashes / CSS is made aware
       reflectPreference();
 
       const onClick = () => {
@@ -96,18 +105,13 @@ const canonicalURL = new URL(currentPath, SITE.URL);
         setPreference();
       };
 
-      // Set up everything when DOM is ready
       window.addEventListener("DOMContentLoaded", () => {
-        // Set on load so screen readers can see latest value on the button
         reflectPreference();
-
-        // Now this script can find and listen for clicks on the control
         document
           .querySelector("#theme-toggle")
           ?.addEventListener("click", onClick);
       });
 
-      // Sync with system changes
       window
         .matchMedia("(prefers-color-scheme: dark)")
         .addEventListener("change", ({ matches: isDark }) => {
@@ -115,7 +119,6 @@ const canonicalURL = new URL(currentPath, SITE.URL);
           setPreference();
         });
 
-      // Handle Astro page transitions
       document.addEventListener("astro:after-swap", () => {
         reflectPreference();
         document
@@ -123,13 +126,12 @@ const canonicalURL = new URL(currentPath, SITE.URL);
           ?.addEventListener("click", onClick);
       });
 
-      // Animation and scroll functions
       function animate() {
         const animateElements = document.querySelectorAll(".animate");
         animateElements.forEach((element, index) => {
           setTimeout(() => {
             element.classList.add("show");
-          }, index * 100);
+          }, index * 50);
         });
       }
 
@@ -176,6 +178,20 @@ const canonicalURL = new URL(currentPath, SITE.URL);
     <meta property="og:image" content={ogImage} />
     <meta property="og:site_name" content={SITE.NAME} />
 
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
+
+    <!-- Preconnect to critical third-party origins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+
     <!-- Favicons -->
     <link
       rel="icon"
@@ -207,17 +223,30 @@ const canonicalURL = new URL(currentPath, SITE.URL);
       type="font/woff2"
       crossorigin
     />
-
-    <!-- Disable FLoC -->
-    <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
   </head>
 
   <body>
+    <a href="#main-content" class="skip-link"> Skip to main content </a>
+    <a href="#navigation" class="skip-link"> Skip to navigation </a>
     <Header />
-    <main>
+    <main id="main-content" tabindex="-1">
       <slot />
     </main>
     <Footer />
     <BackToTop />
+    <script>
+      if ("serviceWorker" in navigator && location.hostname !== "localhost") {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+              console.log("SW registered: ", registration);
+            })
+            .catch((registrationError) => {
+              console.log("SW registration failed: ", registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

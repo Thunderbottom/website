@@ -1,8 +1,11 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { formatDate } from "@lib/utils";
-import { Image, getImage } from "astro:assets";
-import exifr from "exifr";
+import {
+  generatePhotoImages,
+  extractExifData,
+  formatExifItems,
+} from "@lib/photo-utils";
 
 interface Props {
   entry: CollectionEntry<"photography">;
@@ -14,72 +17,16 @@ const { data } = entry;
 const photoImage = await import(
   `../content/photography/images/${data.image}.jpg`
 );
+const { thumbnailImage, lightboxImage } = await generatePhotoImages(
+  photoImage.default,
+);
 
-const thumbnailImage = await getImage({
-  src: photoImage.default,
-  width: 800,
-  format: "webp",
-  quality: 75,
-});
+const exifData = await extractExifData(
+  `./src/content/photography/images/${data.image}.jpg`,
+);
+const exifItems = formatExifItems(exifData);
 
-const lightboxImage = await getImage({
-  src: photoImage.default,
-  width: 1920,
-  format: "webp",
-  quality: 80,
-});
-
-let exifData = {};
-try {
-  const imagePath = `./src/content/photography/images/${data.image}.jpg`;
-
-  const rawExif = await exifr.parse(imagePath, {
-    pick: [
-      "Make",
-      "Model",
-      "LensModel",
-      "FocalLength",
-      "FNumber",
-      "ExposureTime",
-      "ISO",
-      "DateTimeOriginal",
-    ],
-  });
-
-  if (rawExif) {
-    if (rawExif.Make && rawExif.Model) {
-      exifData.camera = `${rawExif.Make} ${rawExif.Model}`;
-    }
-    if (rawExif.LensModel) {
-      exifData.lens = rawExif.LensModel;
-    }
-    if (rawExif.FocalLength) {
-      exifData.focalLength = `${Math.round(rawExif.FocalLength)}mm`;
-    }
-    if (rawExif.FNumber) {
-      exifData.aperture = `f/${rawExif.FNumber}`;
-    }
-    if (rawExif.ExposureTime) {
-      const exposure = rawExif.ExposureTime;
-      exifData.shutterSpeed =
-        exposure < 1 ? `1/${Math.round(1 / exposure)}s` : `${exposure}s`;
-    }
-    if (rawExif.ISO) {
-      exifData.iso = rawExif.ISO.toString();
-    }
-  }
-} catch (error) {
-  console.warn(`Failed to extract EXIF for ${data.image}:`, error.message);
-}
-
-const exifItems = [
-  exifData.camera,
-  exifData.lens,
-  exifData.aperture,
-  exifData.shutterSpeed,
-  exifData.iso ? `ISO ${exifData.iso}` : null,
-  exifData.focalLength,
-].filter(Boolean);
+const formattedDate = formatDate(new Date(data.date), "%B %d, %Y");
 ---
 
 <div
@@ -99,7 +46,34 @@ const exifItems = [
       height={thumbnailImage.attributes.height}
       class="w-full h-auto object-contain transition-transform duration-300"
       loading="lazy"
+      decoding="async"
+      fetchpriority="low"
     />
+
+    <div
+      class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center"
+    >
+      <div
+        class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 dark:bg-black/90 rounded-full p-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-text-primary dark:text-text-primary-dark"
+          aria-hidden="true"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
+    </div>
   </div>
 
   <div class="flex items-start gap-4 p-4">
@@ -110,11 +84,12 @@ const exifItems = [
         >
           {data.title}
         </div>
-        <div
+        <time
+          datetime={new Date(data.date).toISOString()}
           class="text-sm text-text-secondary dark:text-text-secondary-dark whitespace-nowrap"
         >
-          {formatDate(new Date(data.date), "%B %d, %Y")}
-        </div>
+          {formattedDate}
+        </time>
       </div>
 
       {

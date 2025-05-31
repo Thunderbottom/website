@@ -59,6 +59,7 @@ const buildConfig = {
   format: "directory",
   assets: "_astro",
   inlineStylesheets: "auto",
+  splitting: true,
 };
 
 const imageConfig = {
@@ -88,10 +89,19 @@ const viteConfig = {
         },
         chunkFileNames: "assets/js/[name].[hash].js",
         entryFileNames: "assets/js/[name].[hash].js",
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+        },
       },
     },
     cssCodeSplit: true,
     chunkSizeWarningLimit: 1000,
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+      },
+    },
   },
   server: {
     fs: {
