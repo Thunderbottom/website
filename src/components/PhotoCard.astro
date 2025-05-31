@@ -1,0 +1,133 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "@lib/utils";
+import { Image, getImage } from "astro:assets";
+import exifr from "exifr";
+
+interface Props {
+  entry: CollectionEntry<"photography">;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+
+const photoImage = await import(
+  `../content/photography/images/${data.image}.jpg`
+);
+
+const thumbnailImage = await getImage({
+  src: photoImage.default,
+  width: 800,
+  format: "webp",
+  quality: 75,
+});
+
+const lightboxImage = await getImage({
+  src: photoImage.default,
+  width: 1920,
+  format: "webp",
+  quality: 80,
+});
+
+let exifData = {};
+try {
+  const imagePath = `./src/content/photography/images/${data.image}.jpg`;
+
+  const rawExif = await exifr.parse(imagePath, {
+    pick: [
+      "Make",
+      "Model",
+      "LensModel",
+      "FocalLength",
+      "FNumber",
+      "ExposureTime",
+      "ISO",
+      "DateTimeOriginal",
+    ],
+  });
+
+  if (rawExif) {
+    if (rawExif.Make && rawExif.Model) {
+      exifData.camera = `${rawExif.Make} ${rawExif.Model}`;
+    }
+    if (rawExif.LensModel) {
+      exifData.lens = rawExif.LensModel;
+    }
+    if (rawExif.FocalLength) {
+      exifData.focalLength = `${Math.round(rawExif.FocalLength)}mm`;
+    }
+    if (rawExif.FNumber) {
+      exifData.aperture = `f/${rawExif.FNumber}`;
+    }
+    if (rawExif.ExposureTime) {
+      const exposure = rawExif.ExposureTime;
+      exifData.shutterSpeed =
+        exposure < 1 ? `1/${Math.round(1 / exposure)}s` : `${exposure}s`;
+    }
+    if (rawExif.ISO) {
+      exifData.iso = rawExif.ISO.toString();
+    }
+  }
+} catch (error) {
+  console.warn(`Failed to extract EXIF for ${data.image}:`, error.message);
+}
+
+const exifItems = [
+  exifData.camera,
+  exifData.lens,
+  exifData.aperture,
+  exifData.shutterSpeed,
+  exifData.iso ? `ISO ${exifData.iso}` : null,
+  exifData.focalLength,
+].filter(Boolean);
+---
+
+<div
+  class="group relative flex flex-col rounded-lg border border-border dark:border-border-dark bg-card dark:bg-card-dark hover:border-text-secondary dark:hover:border-text-secondary-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden"
+>
+  <div
+    class="relative cursor-pointer"
+    data-photo-trigger
+    data-full-image={lightboxImage.src}
+    data-title={data.title}
+    data-content={entry.body}
+  >
+    <img
+      src={thumbnailImage.src}
+      alt={data.title}
+      width={thumbnailImage.attributes.width}
+      height={thumbnailImage.attributes.height}
+      class="w-full h-auto object-contain transition-transform duration-300"
+      loading="lazy"
+    />
+  </div>
+
+  <div class="flex items-start gap-4 p-4">
+    <div class="flex-1 min-w-0">
+      <div class="flex items-start justify-between gap-4 mb-2">
+        <div
+          class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark group-hover:text-link dark:group-hover:text-link-dark transition-colors"
+        >
+          {data.title}
+        </div>
+        <div
+          class="text-sm text-text-secondary dark:text-text-secondary-dark whitespace-nowrap"
+        >
+          {formatDate(new Date(data.date), "%B %d, %Y")}
+        </div>
+      </div>
+
+      {
+        exifItems.length > 0 && (
+          <div class="flex flex-wrap gap-2 text-xs justify-center">
+            {exifItems.map((item) => (
+              <span class="px-2 py-1 rounded-md font-mono bg-gray-200 dark:bg-gray-700 text-text-secondary dark:text-text-secondary-dark">
+                {item}
+              </span>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </div>
+</div>

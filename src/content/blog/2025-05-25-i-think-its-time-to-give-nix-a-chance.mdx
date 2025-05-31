@@ -121,6 +121,7 @@ $ ls /nix/store | rg nodejs-.\[0\-9.\]+drv
 /nix/store/2znhzcp5ran8q5mzyqgz6lxi3a56rgva-nodejs-20.18.1.drv
 /nix/store/4rk85a5rsladhcc3ffpyfnx2kwglvs0i-nodejs-20.19.2.drv
 ```
+
 This isolation extends beyond simple version conflicts. Each package includes its complete dependency tree in isolation, meaning you can run applications with entirely different versions of fundamental libraries like glibc simultaneously. The Nix store's immutable design ensures that once built, packages never change, eliminating an entire class of "it worked yesterday" problems.
 
 Simply put, each project can use a different Node.js version, present on the system, without conflicts. The hash `2v66xkgfmdipzpwgl813n4mqgck6w3fd` in this case encodes not just Node.js 22.14.0, but the exact glibc version, compiler flags, and every dependency used to build it. This can be confirmed by running a simple `nix-store --query` on both derivations:
@@ -204,6 +205,7 @@ With cache, the first environment activation might take up to a few minutes to d
 After reading this far, you might be wondering if Nix is right for your situation. But what I talked about in this post is barely scratching the surface of what Nix is capable of.
 
 Nix provides the most value when:
+
 - **Environment drift is costly**: Financial services, healthcare, or any domain where debugging production issues has high stakes
 - **Onboarding takes days**: Complex stacks with multiple databases, language runtimes, and system dependencies that require extensive setup documentation
 - **Cross-platform development**: Teams mixing Linux, macOS, and WSL with different package managers and library versions
@@ -212,6 +214,7 @@ Nix provides the most value when:
 - **Legacy system maintenance**: Managing multiple versions of the same software for different clients or product versions
 
 Nix might be overkill if:
+
 - You're working on simple projects with minimal, standard dependencies
 - Your team already has smooth onboarding and deployment processes
 - Time-to-market pressure outweighs technical debt concerns
@@ -260,7 +263,7 @@ And as for the documentation or general readings on Nix:
 - [Nix Pills](https://nixos.org/guides/nix-pills/) - Explains what Nix is in brief
 - [NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world/) - A good starting point to understand more about Nix Flakes
 - [nix.dev](https://nix.dev/) - Official Nix Documentation
-- [NixOS Wiki](https://wiki.nixos.org/) - Wiki for Nix and NixOS-related stuff 
+- [NixOS Wiki](https://wiki.nixos.org/) - Wiki for Nix and NixOS-related stuff
 - [Noogle](https://noogle.dev) - Google, but for Nix functions
 - [NixOS Search](https://search.nixos.org) - Search packages in the official nixpkgs repository
 - [Zero to Nix](https://zero-to-nix.com/) - A general guide for Nix and Flakes

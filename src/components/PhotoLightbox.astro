@@ -1,0 +1,268 @@
+---
+
+---
+
+<div
+  id="photo-lightbox"
+  class="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300"
+  aria-hidden="true"
+  role="dialog"
+>
+  <!-- Close button -->
+  <button
+    id="lightbox-close"
+    class="absolute top-4 right-4 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+    aria-label="Close photo viewer"
+  >
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <path d="M18 6L6 18M6 6l12 12"></path>
+    </svg>
+  </button>
+
+  <!-- Previous button -->
+  <button
+    id="lightbox-prev"
+    class="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors opacity-75 hover:opacity-100"
+    aria-label="Previous photo"
+  >
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  </button>
+
+  <!-- Next button -->
+  <button
+    id="lightbox-next"
+    class="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors opacity-75 hover:opacity-100"
+    aria-label="Next photo"
+  >
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </button>
+
+  <div class="absolute inset-0 flex items-center justify-center p-4 pb-32">
+    <div class="relative w-full h-full flex items-center justify-center">
+      <img
+        id="lightbox-image"
+        src=""
+        alt=""
+        class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+        style="image-orientation: from-image; width: auto; height: auto;"
+      />
+
+      <div
+        id="lightbox-loading"
+        class="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg"
+      >
+        <div
+          class="animate-spin rounded-full h-8 w-8 border-2 border-white border-t-transparent"
+        >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/95 via-black/80 to-transparent text-white"
+  >
+    <div class="max-w-4xl mx-auto">
+      <h2
+        id="lightbox-title"
+        class="font-display text-gray-200 text-xl font-semibold mb-2"
+      >
+      </h2>
+      <div id="lightbox-content" class="text-gray-300 text-sm leading-relaxed">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupPhotoLightbox() {
+    const lightbox = document.getElementById("photo-lightbox");
+    const lightboxImage = document.getElementById(
+      "lightbox-image",
+    ) as HTMLImageElement;
+    const lightboxTitle = document.getElementById("lightbox-title");
+    const lightboxContent = document.getElementById("lightbox-content");
+    const lightboxLoading = document.getElementById("lightbox-loading");
+    const closeButton = document.getElementById("lightbox-close");
+    const prevButton = document.getElementById("lightbox-prev");
+    const nextButton = document.getElementById("lightbox-next");
+
+    let scrollPosition = 0;
+    let currentPhotoIndex = 0;
+    let allPhotos: HTMLElement[] = [];
+
+    if (
+      !lightbox ||
+      !lightboxImage ||
+      !lightboxTitle ||
+      !lightboxContent ||
+      !lightboxLoading ||
+      !closeButton ||
+      !prevButton ||
+      !nextButton
+    ) {
+      return;
+    }
+
+    function getAllPhotos() {
+      return Array.from(
+        document.querySelectorAll("[data-photo-trigger]"),
+      ) as HTMLElement[];
+    }
+
+    function updateNavigationButtons() {
+      prevButton.style.display = currentPhotoIndex > 0 ? "block" : "none";
+      nextButton.style.display =
+        currentPhotoIndex < allPhotos.length - 1 ? "block" : "none";
+    }
+
+    function loadPhoto(photoElement: HTMLElement) {
+      const fullImage = photoElement.getAttribute("data-full-image");
+      const title = photoElement.getAttribute("data-title");
+      const content = photoElement.getAttribute("data-content");
+
+      if (!fullImage || !title) return;
+
+      lightboxTitle.textContent = title;
+
+      // Set content as plain text
+      if (content && lightboxContent) {
+        lightboxContent.textContent = content.trim();
+      } else if (lightboxContent) {
+        lightboxContent.textContent = "";
+      }
+
+      lightboxLoading.classList.remove("hidden");
+
+      const img = new Image();
+      img.onload = () => {
+        lightboxImage.src = img.src;
+        lightboxImage.alt = title;
+        lightboxLoading.classList.add("hidden");
+      };
+      img.onerror = () => {
+        lightboxLoading.classList.add("hidden");
+      };
+      img.src = fullImage;
+
+      updateNavigationButtons();
+    }
+
+    function openLightbox(trigger: HTMLElement) {
+      allPhotos = getAllPhotos();
+      currentPhotoIndex = allPhotos.indexOf(trigger);
+
+      if (currentPhotoIndex === -1) return;
+
+      scrollPosition = window.pageYOffset;
+
+      lightbox.classList.remove("opacity-0", "pointer-events-none");
+      lightbox.setAttribute("aria-hidden", "false");
+
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollPosition}px`;
+      document.body.style.width = "100%";
+
+      loadPhoto(trigger);
+    }
+
+    function closeLightbox() {
+      lightbox.classList.add("opacity-0", "pointer-events-none");
+      lightbox.setAttribute("aria-hidden", "true");
+
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+
+      window.scrollTo(0, scrollPosition);
+
+      lightboxImage.src = "";
+      lightboxLoading.classList.remove("hidden");
+    }
+
+    function goToNextPhoto() {
+      if (currentPhotoIndex < allPhotos.length - 1) {
+        currentPhotoIndex++;
+        loadPhoto(allPhotos[currentPhotoIndex]);
+      }
+    }
+
+    function goToPrevPhoto() {
+      if (currentPhotoIndex > 0) {
+        currentPhotoIndex--;
+        loadPhoto(allPhotos[currentPhotoIndex]);
+      }
+    }
+
+    closeButton.addEventListener("click", closeLightbox);
+    prevButton.addEventListener("click", goToPrevPhoto);
+    nextButton.addEventListener("click", goToNextPhoto);
+
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (!lightbox.classList.contains("pointer-events-none")) {
+        switch (e.key) {
+          case "Escape":
+            closeLightbox();
+            break;
+          case "ArrowLeft":
+            goToPrevPhoto();
+            break;
+          case "ArrowRight":
+            goToNextPhoto();
+            break;
+        }
+      }
+    });
+
+    function setupPhotoTriggers() {
+      document.querySelectorAll("[data-photo-trigger]").forEach((trigger) => {
+        trigger.addEventListener("click", () => {
+          openLightbox(trigger as HTMLElement);
+        });
+      });
+    }
+
+    setupPhotoTriggers();
+    document.addEventListener("astro:after-swap", setupPhotoTriggers);
+  }
+
+  document.addEventListener("DOMContentLoaded", setupPhotoLightbox);
+  document.addEventListener("astro:after-swap", setupPhotoLightbox);
+</script>
+
+<style>
+  .hidden {
+    display: none !important;
+  }
+</style>

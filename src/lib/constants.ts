@@ -60,9 +60,15 @@ export const PROJECTS_CONFIG: PageConfig = {
     "A collection of my projects, with links to repositories and demos.",
 };
 
+export const PHOTOGRAPHY: PageConfig = {
+  TITLE: "Photography",
+  DESCRIPTION: "A collection of moments captured through the lens.",
+};
+
 // Navigation
 export const NAVIGATION: NavigationItem[] = [
   { name: "Blog", url: "/blog" },
+  { name: "Photos", url: "/photography" },
   { name: "Projects", url: "/projects" },
   { name: "Now", url: "/now" },
 ];

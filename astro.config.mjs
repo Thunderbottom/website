@@ -61,6 +61,16 @@ const buildConfig = {
   inlineStylesheets: "auto",
 };
 
+const imageConfig = {
+  domains: ["maych.in"],
+  remotePatterns: [
+    {
+      protocol: "https",
+      hostname: "**.maych.in",
+    },
+  ],
+};
+
 // Vite configuration
 const viteConfig = {
   build: {
@@ -109,6 +119,7 @@ export default defineConfig({
 
   markdown: markdownConfig,
   build: buildConfig,
+  image: imageConfig,
   vite: viteConfig,
   compressHTML: true,
   prefetch: prefetchConfig,
