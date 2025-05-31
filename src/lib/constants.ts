@@ -56,13 +56,12 @@ export const NOW: PageConfig = {
 
 export const PROJECTS_CONFIG: PageConfig = {
   TITLE: "Projects",
-  DESCRIPTION:
-    "A collection of my projects, with links to repositories and demos.",
+  DESCRIPTION: "A collection of what I have been working on.",
 };
 
 export const PHOTOGRAPHY: PageConfig = {
   TITLE: "Photography",
-  DESCRIPTION: "A collection of moments captured through the lens.",
+  DESCRIPTION: "A collection of moments straight off the camera.",
 };
 
 // Navigation

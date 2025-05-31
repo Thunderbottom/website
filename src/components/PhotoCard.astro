@@ -35,20 +35,34 @@ const formattedDate = formatDate(new Date(data.date), "%B %d, %Y");
   <div
     class="relative cursor-pointer"
     data-photo-trigger
-    data-full-image={lightboxImage.src}
+    data-full-image={lightboxImage.avif.src}
     data-title={data.title}
     data-content={entry.body}
   >
-    <img
-      src={thumbnailImage.src}
-      alt={data.title}
-      width={thumbnailImage.attributes.width}
-      height={thumbnailImage.attributes.height}
-      class="w-full h-auto object-contain transition-transform duration-300"
-      loading="lazy"
-      decoding="async"
-      fetchpriority="low"
-    />
+    <picture>
+      <source
+        srcset={thumbnailImage.avif.src}
+        type="image/avif"
+        width={thumbnailImage.avif.attributes.width}
+        height={thumbnailImage.avif.attributes.height}
+      />
+      <source
+        srcset={thumbnailImage.webp.src}
+        type="image/webp"
+        width={thumbnailImage.webp.attributes.width}
+        height={thumbnailImage.webp.attributes.height}
+      />
+      <img
+        src={thumbnailImage.webp.src}
+        alt={data.title}
+        width={thumbnailImage.webp.attributes.width}
+        height={thumbnailImage.webp.attributes.height}
+        class="w-full h-auto object-contain transition-transform duration-300"
+        loading="lazy"
+        decoding="async"
+        fetchpriority="low"
+      />
+    </picture>
 
     <div
       class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center"

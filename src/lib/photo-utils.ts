@@ -3,8 +3,14 @@ import type { ImageMetadata } from "astro";
 import { PHOTOGRAPHY, SITE } from "@lib/constants";
 
 export interface ImageSet {
-  thumbnailImage: any;
-  lightboxImage: any;
+  thumbnailImage: {
+    avif: any;
+    webp: any;
+  };
+  lightboxImage: {
+    avif: any;
+    webp: any;
+  };
 }
 
 export interface ExifData {
@@ -21,12 +27,14 @@ export const IMAGE_SETTINGS = {
   THUMBNAIL: {
     WIDTH: 800,
     QUALITY: 75,
-    FORMAT: "webp" as const,
+    FORMAT: "avif" as const,
+    FALLBACK_FORMAT: "webp" as const,
   },
   LIGHTBOX: {
     WIDTH: 1280,
     QUALITY: 85,
-    FORMAT: "webp" as const,
+    FORMAT: "avif" as const,
+    FALLBACK_FORMAT: "webp" as const,
   },
 } as const;
 
@@ -36,22 +44,38 @@ export const IMAGE_SETTINGS = {
 export async function generatePhotoImages(
   photoImage: ImageMetadata,
 ): Promise<ImageSet> {
-  const [thumbnailImage, lightboxImage] = await Promise.all([
-    getImage({
-      src: photoImage,
-      width: IMAGE_SETTINGS.THUMBNAIL.WIDTH,
-      format: IMAGE_SETTINGS.THUMBNAIL.FORMAT,
-      quality: IMAGE_SETTINGS.THUMBNAIL.QUALITY,
-    }),
-    getImage({
-      src: photoImage,
-      width: IMAGE_SETTINGS.LIGHTBOX.WIDTH,
-      format: IMAGE_SETTINGS.LIGHTBOX.FORMAT,
-      quality: IMAGE_SETTINGS.LIGHTBOX.QUALITY,
-    }),
-  ]);
+  const [thumbnailAvif, thumbnailWebp, lightboxAvif, lightboxWebp] =
+    await Promise.all([
+      getImage({
+        src: photoImage,
+        width: IMAGE_SETTINGS.THUMBNAIL.WIDTH,
+        format: IMAGE_SETTINGS.THUMBNAIL.FORMAT,
+        quality: IMAGE_SETTINGS.THUMBNAIL.QUALITY,
+      }),
+      getImage({
+        src: photoImage,
+        width: IMAGE_SETTINGS.THUMBNAIL.WIDTH,
+        format: IMAGE_SETTINGS.THUMBNAIL.FALLBACK_FORMAT,
+        quality: IMAGE_SETTINGS.THUMBNAIL.QUALITY,
+      }),
+      getImage({
+        src: photoImage,
+        width: IMAGE_SETTINGS.LIGHTBOX.WIDTH,
+        format: IMAGE_SETTINGS.LIGHTBOX.FORMAT,
+        quality: IMAGE_SETTINGS.LIGHTBOX.QUALITY,
+      }),
+      getImage({
+        src: photoImage,
+        width: IMAGE_SETTINGS.LIGHTBOX.WIDTH,
+        format: IMAGE_SETTINGS.LIGHTBOX.FALLBACK_FORMAT,
+        quality: IMAGE_SETTINGS.LIGHTBOX.QUALITY,
+      }),
+    ]);
 
-  return { thumbnailImage, lightboxImage };
+  return {
+    thumbnailImage: { avif: thumbnailAvif, webp: thumbnailWebp },
+    lightboxImage: { avif: lightboxAvif, webp: lightboxWebp },
+  };
 }
 
 /**
