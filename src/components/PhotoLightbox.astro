@@ -117,9 +117,9 @@
 
 <script>
   /**
-   * Production-ready photo lightbox with accessibility and performance optimizations
+   * Static photo lightbox - simplified for client-side only navigation
    */
-  class PhotoLightbox {
+  class StaticPhotoLightbox {
     constructor() {
       this.elements = this.getElements();
       this.state = {
@@ -184,9 +184,9 @@
 
       // Expose methods globally for infinite scroll integration
       window.setupPhotoLightboxTriggers = this.setupPhotoTriggers.bind(this);
-      window.photoLightboxInstance = this;
+      window.staticPhotoLightboxInstance = this;
 
-      console.log("[PhotoLightbox] Initialized successfully");
+      console.log("[StaticPhotoLightbox] Initialized successfully");
     }
 
     /**
@@ -257,7 +257,7 @@
      * Update navigation button visibility
      */
     updateNavigationButtons() {
-      // Refresh the photos list to include any newly loaded photos
+      // Always refresh the photos list to include any newly loaded photos
       this.state.allPhotos = this.getAllPhotos();
 
       const { prevButton, nextButton } = this.elements;
@@ -291,7 +291,7 @@
       const content = photoElement.getAttribute("data-content");
 
       if (!fullImage || !title) {
-        console.warn("[PhotoLightbox] Missing required photo data");
+        console.warn("[StaticPhotoLightbox] Missing required photo data");
         return;
       }
 
@@ -320,7 +320,7 @@
       };
 
       img.onerror = () => {
-        console.error("[PhotoLightbox] Failed to load image:", fullImage);
+        console.error("[StaticPhotoLightbox] Failed to load image:", fullImage);
         lightboxLoading.style.display = "none";
         lightboxImage.style.opacity = "1";
 
@@ -342,7 +342,9 @@
       this.state.currentPhotoIndex = this.state.allPhotos.indexOf(trigger);
 
       if (this.state.currentPhotoIndex === -1) {
-        console.warn("[PhotoLightbox] Photo trigger not found in collection");
+        console.warn(
+          "[StaticPhotoLightbox] Photo trigger not found in collection",
+        );
         return;
       }
 
@@ -372,7 +374,7 @@
       }, 100);
 
       console.log(
-        `[PhotoLightbox] Opened photo ${this.state.currentPhotoIndex + 1} of ${this.state.allPhotos.length}`,
+        `[StaticPhotoLightbox] Opened photo ${this.state.currentPhotoIndex + 1} of ${this.state.allPhotos.length}`,
       );
     }
 
@@ -400,70 +402,43 @@
       this.elements.lightboxImage.style.opacity = "0";
       this.elements.lightboxLoading.style.display = "flex";
 
-      console.log("[PhotoLightbox] Closed");
+      console.log("[StaticPhotoLightbox] Closed");
     }
 
     /**
      * Navigate to next photo
      */
-    async goToNextPhoto() {
-      const currentPhoto = this.state.allPhotos[this.state.currentPhotoIndex];
-
-      // Refresh photos list
+    goToNextPhoto() {
+      // Always refresh photos list to include any newly loaded photos
       this.state.allPhotos = this.getAllPhotos();
 
-      // Find the current photo's new index in the refreshed list
-      const newCurrentIndex = this.state.allPhotos.indexOf(currentPhoto);
-
-      if (newCurrentIndex !== -1) {
-        this.state.currentPhotoIndex = newCurrentIndex;
-      }
-
-      // Check if we're at the last photo and need to load more
-      if (this.state.currentPhotoIndex >= this.state.allPhotos.length - 1) {
-        console.log("[PhotoLightbox] At last photo, trying to load more...");
-
-        // Try to load more photos if available
-        if (
-          window.hasMorePhotos &&
-          !window.isLoading &&
-          window.loadMorePhotos
-        ) {
-          console.log("[PhotoLightbox] Loading more photos...");
-
-          try {
-            // Wait for photos to load
-            await window.loadMorePhotos();
-
-            // Refresh the photo list after loading
-            this.state.allPhotos = this.getAllPhotos();
-
-            // Find our current photo again in the updated list
-            const updatedCurrentIndex =
-              this.state.allPhotos.indexOf(currentPhoto);
-            if (updatedCurrentIndex !== -1) {
-              this.state.currentPhotoIndex = updatedCurrentIndex;
-            }
-
-            console.log(
-              `[PhotoLightbox] After loading: ${this.state.allPhotos.length} total photos`,
-            );
-          } catch (error) {
-            console.error("[PhotoLightbox] Failed to load more photos:", error);
-          }
-        }
-      }
-
-      // Now try to navigate to next photo
       if (this.state.currentPhotoIndex < this.state.allPhotos.length - 1) {
         this.state.currentPhotoIndex++;
         this.loadPhoto(this.state.allPhotos[this.state.currentPhotoIndex]);
 
         console.log(
-          `[PhotoLightbox] Next photo: ${this.state.currentPhotoIndex + 1} of ${this.state.allPhotos.length}`,
+          `[StaticPhotoLightbox] Next photo: ${this.state.currentPhotoIndex + 1} of ${this.state.allPhotos.length}`,
         );
       } else {
-        console.log("[PhotoLightbox] No more photos available");
+        // If we're at the end and there's a static loader, trigger loading more photos
+        if (
+          window.staticPhotoLoader &&
+          window.staticPhotoLoader.hasMorePhotos()
+        ) {
+          window.staticPhotoLoader.loadMorePhotos().then(() => {
+            // After loading, try to go to next photo again
+            this.state.allPhotos = this.getAllPhotos();
+            if (
+              this.state.currentPhotoIndex <
+              this.state.allPhotos.length - 1
+            ) {
+              this.state.currentPhotoIndex++;
+              this.loadPhoto(
+                this.state.allPhotos[this.state.currentPhotoIndex],
+              );
+            }
+          });
+        }
       }
     }
 
@@ -471,35 +446,16 @@
      * Navigate to previous photo
      */
     goToPrevPhoto() {
-      const currentPhoto = this.state.allPhotos[this.state.currentPhotoIndex];
-
       // Refresh photos list
       this.state.allPhotos = this.getAllPhotos();
-
-      // Find the current photo's new index in the refreshed list
-      const newCurrentIndex = this.state.allPhotos.indexOf(currentPhoto);
-
-      if (newCurrentIndex !== -1) {
-        this.state.currentPhotoIndex = newCurrentIndex;
-      }
 
       if (this.state.currentPhotoIndex > 0) {
         this.state.currentPhotoIndex--;
         this.loadPhoto(this.state.allPhotos[this.state.currentPhotoIndex]);
 
         console.log(
-          `[PhotoLightbox] Previous photo: ${this.state.currentPhotoIndex + 1} of ${this.state.allPhotos.length}`,
+          `[StaticPhotoLightbox] Previous photo: ${this.state.currentPhotoIndex + 1} of ${this.state.allPhotos.length}`,
         );
-      }
-    }
-
-    triggerLoadMorePhotos() {
-      // Check if there are more photos to load by looking at the page state
-      if (window.hasMorePhotos && !window.isLoading && window.loadMorePhotos) {
-        console.log("[PhotoLightbox] Triggering load more photos...");
-        window.loadMorePhotos();
-      } else {
-        console.warn("[PhotoLightbox] loadMorePhotos function not found");
       }
     }
 
@@ -560,28 +516,28 @@
 
       // Remove global references
       delete window.setupPhotoLightboxTriggers;
-      delete window.photoLightboxInstance;
+      delete window.staticPhotoLightboxInstance;
 
-      console.log("[PhotoLightbox] Destroyed");
+      console.log("[StaticPhotoLightbox] Destroyed");
     }
   }
 
   // Initialize lightbox
-  function initLightbox() {
+  function initStaticLightbox() {
     // Destroy existing instance if it exists
-    if (window.photoLightboxInstance) {
-      window.photoLightboxInstance.destroy();
+    if (window.staticPhotoLightboxInstance) {
+      window.staticPhotoLightboxInstance.destroy();
     }
 
     // Create new instance
-    const lightbox = new PhotoLightbox();
+    const lightbox = new StaticPhotoLightbox();
 
     return lightbox;
   }
 
   // Initialize on DOM ready and after page navigation
-  document.addEventListener("DOMContentLoaded", initLightbox);
-  document.addEventListener("astro:after-swap", initLightbox);
+  document.addEventListener("DOMContentLoaded", initStaticLightbox);
+  document.addEventListener("astro:after-swap", initStaticLightbox);
 </script>
 
 <style>

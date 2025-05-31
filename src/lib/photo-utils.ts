@@ -3,14 +3,8 @@ import type { ImageMetadata } from "astro";
 import { PHOTOGRAPHY, SITE } from "@lib/constants";
 
 export interface ImageSet {
-  thumbnailImage: {
-    avif: any;
-    webp: any;
-  };
-  lightboxImage: {
-    avif: any;
-    webp: any;
-  };
+  thumbnailImage: any;
+  lightboxImage: any;
 }
 
 export interface ExifData {
@@ -23,59 +17,59 @@ export interface ExifData {
   date?: string;
 }
 
-// Image quality and size constants
+export interface ProcessedPhoto {
+  slug: string;
+  data: {
+    title: string;
+    date: string;
+    image: string;
+    tags?: string;
+    draft?: boolean;
+  };
+  body: string;
+  images: ImageSet;
+  exifItems: string[];
+  formattedDate: string;
+}
+
+// Image quality and size constants - WebP only for performance
 export const IMAGE_SETTINGS = {
   THUMBNAIL: {
     WIDTH: 800,
     QUALITY: 75,
     FORMAT: "webp" as const,
-    FALLBACK_FORMAT: "avif" as const,
   },
   LIGHTBOX: {
-    WIDTH: 1080,
-    QUALITY: 80,
+    WIDTH: 1280,
+    QUALITY: 85,
     FORMAT: "webp" as const,
-    FALLBACK_FORMAT: "avif" as const,
   },
 } as const;
 
 /**
- * Generate optimized images for both thumbnail and lightbox
+ * Generate optimized images for both thumbnail and lightbox (WebP only)
  */
 export async function generatePhotoImages(
   photoImage: ImageMetadata,
 ): Promise<ImageSet> {
-  const [thumbnailAvif, thumbnailWebp, lightboxAvif, lightboxWebp] =
-    await Promise.all([
-      getImage({
-        src: photoImage,
-        width: IMAGE_SETTINGS.THUMBNAIL.WIDTH,
-        format: IMAGE_SETTINGS.THUMBNAIL.FORMAT,
-        quality: IMAGE_SETTINGS.THUMBNAIL.QUALITY,
-      }),
-      getImage({
-        src: photoImage,
-        width: IMAGE_SETTINGS.THUMBNAIL.WIDTH,
-        format: IMAGE_SETTINGS.THUMBNAIL.FALLBACK_FORMAT,
-        quality: IMAGE_SETTINGS.THUMBNAIL.QUALITY,
-      }),
-      getImage({
-        src: photoImage,
-        width: IMAGE_SETTINGS.LIGHTBOX.WIDTH,
-        format: IMAGE_SETTINGS.LIGHTBOX.FORMAT,
-        quality: IMAGE_SETTINGS.LIGHTBOX.QUALITY,
-      }),
-      getImage({
-        src: photoImage,
-        width: IMAGE_SETTINGS.LIGHTBOX.WIDTH,
-        format: IMAGE_SETTINGS.LIGHTBOX.FALLBACK_FORMAT,
-        quality: IMAGE_SETTINGS.LIGHTBOX.QUALITY,
-      }),
-    ]);
+  const [thumbnailWebp, lightboxWebp] = await Promise.all([
+    getImage({
+      src: photoImage,
+      width: IMAGE_SETTINGS.THUMBNAIL.WIDTH,
+      format: IMAGE_SETTINGS.THUMBNAIL.FORMAT,
+      quality: IMAGE_SETTINGS.THUMBNAIL.QUALITY,
+    }),
+    getImage({
+      src: photoImage,
+      width: IMAGE_SETTINGS.LIGHTBOX.WIDTH,
+      format: IMAGE_SETTINGS.LIGHTBOX.FORMAT,
+      quality: IMAGE_SETTINGS.LIGHTBOX.QUALITY,
+    }),
+  ]);
 
   return {
-    thumbnailImage: { avif: thumbnailAvif, webp: thumbnailWebp },
-    lightboxImage: { avif: lightboxAvif, webp: lightboxWebp },
+    thumbnailImage: thumbnailWebp,
+    lightboxImage: lightboxWebp,
   };
 }
 
@@ -87,7 +81,7 @@ export async function extractExifData(imagePath: string): Promise<ExifData> {
     const exifr = (await import("exifr")).default;
 
     const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("EXIF extraction timeout")), 5000),
+      setTimeout(() => reject(new Error("EXIF extraction timeout")), 3000),
     );
 
     const rawExif = await Promise.race([
@@ -136,8 +130,7 @@ export async function extractExifData(imagePath: string): Promise<ExifData> {
     const dateTaken =
       rawExif.DateTimeOriginal || rawExif.CreateDate || rawExif.DateTime;
     if (dateTaken) {
-      // Convert to ISO string if it's a Date object
-      exifData.dateTaken =
+      exifData.date =
         dateTaken instanceof Date
           ? dateTaken.toISOString()
           : new Date(dateTaken).toISOString();
@@ -164,8 +157,54 @@ export function formatExifItems(exifData: ExifData): string[] {
     exifData.shutterSpeed,
     exifData.iso ? `ISO ${exifData.iso}` : null,
     exifData.focalLength,
-    exifData.date,
   ].filter(Boolean) as string[];
+}
+
+/**
+ * Process a single photo with all metadata and optimizations
+ */
+export async function processPhotoForStatic(
+  photo: any,
+  formatDate: (date: Date | string, format?: string) => string,
+): Promise<ProcessedPhoto | null> {
+  try {
+    // Import the photo image
+    const photoImage = await import(
+      `../content/photography/images/${photo.data.image}.jpg`
+    );
+
+    if (!photoImage?.default) {
+      console.error(`Failed to import image: ${photo.data.image}`);
+      return null;
+    }
+
+    // Generate optimized images
+    const images = await generatePhotoImages(photoImage.default);
+
+    // Extract EXIF data
+    let exifItems: string[] = [];
+    try {
+      const imagePath = `./src/content/photography/images/${photo.data.image}.jpg`;
+      const exifData = await extractExifData(imagePath);
+      exifItems = formatExifItems(exifData);
+    } catch (error) {
+      console.debug(`EXIF extraction failed for ${photo.data.image}:`, error);
+    }
+
+    const formattedDate = formatDate(new Date(photo.data.date), "%B %d, %Y");
+
+    return {
+      slug: photo.slug,
+      data: photo.data,
+      body: photo.body || "",
+      images,
+      exifItems,
+      formattedDate,
+    };
+  } catch (error) {
+    console.error(`Error processing photo ${photo.slug}:`, error);
+    return null;
+  }
 }
 
 /**

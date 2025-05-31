@@ -1,36 +1,13 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import { formatDate } from "@lib/utils";
-import {
-  generatePhotoImages,
-  extractExifData,
-  formatExifItems,
-} from "@lib/photo-utils";
+import type { ProcessedPhoto } from "@lib/photo-utils";
 
 interface Props {
-  entry: CollectionEntry<"photography">;
+  photo: ProcessedPhoto;
+  loading?: "lazy" | "eager";
 }
 
-const { entry } = Astro.props;
-const { data } = entry;
-
-const photoImage = await import(
-  `../content/photography/images/${data.image}.jpg`
-);
-const { thumbnailImage, lightboxImage } = await generatePhotoImages(
-  photoImage.default,
-);
-
-const exifData = await extractExifData(
-  `./src/content/photography/images/${data.image}.jpg`,
-);
-const exifItems = formatExifItems(exifData);
-
-const displayDate = exifData.dateTaken
-  ? new Date(exifData.dateTaken)
-  : new Date(data.date);
-
-const formattedDate = formatDate(displayDate, "%B %d, %Y");
+const { photo, loading = "lazy" } = Astro.props;
+const { data, images, exifItems, formattedDate } = photo;
 ---
 
 <div
@@ -39,32 +16,23 @@ const formattedDate = formatDate(displayDate, "%B %d, %Y");
   <div
     class="relative cursor-pointer"
     data-photo-trigger
-    data-full-image={lightboxImage.webp.src}
+    data-full-image={images.lightboxImage.src}
     data-title={data.title}
-    data-content={entry.body}
+    data-content={photo.body}
+    tabindex="0"
+    role="button"
+    aria-label={`View photo: ${data.title}`}
   >
-    <picture>
-      <source
-        srcset={thumbnailImage.webp.src}
-        type="image/webp"
-        width={thumbnailImage.webp.attributes.width}
-        height={thumbnailImage.webp.attributes.height}
-      />
-      <source
-        srcset={thumbnailImage.webp.src}
-        type="image/webp"
-        width={thumbnailImage.webp.attributes.width}
-        height={thumbnailImage.webp.attributes.height}
-      />
-      <img
-        src={thumbnailImage.webp.src}
-        alt={data.title}
-        width={thumbnailImage.webp.attributes.width}
-        height={thumbnailImage.webp.attributes.height}
-        class="img-loading h-auto w-full object-contain transition-transform duration-300"
-        onload="this.classList.remove('img-loading')"
-      />
-    </picture>
+    <img
+      src={images.thumbnailImage.src}
+      alt={data.title}
+      width={images.thumbnailImage.attributes.width}
+      height={images.thumbnailImage.attributes.height}
+      class="img-loading h-auto w-full object-contain transition-transform duration-300"
+      loading={loading}
+      decoding="async"
+      onload="this.classList.remove('img-loading')"
+    />
 
     <div
       class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/10"

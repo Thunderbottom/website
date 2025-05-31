@@ -6,7 +6,6 @@ import mdx from "@astrojs/mdx";
 import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import robotsTxt from "astro-robots-txt";
-import node from "@astrojs/node";
 
 // Expressive Code
 import astroExpressiveCode from "astro-expressive-code";
@@ -51,13 +50,13 @@ const markdownConfig = {
   smartypants: true,
 };
 
-// Build configuration
+// Build configuration optimized for static sites
 const buildConfig = {
   inlineStylesheets: "auto",
   splitting: true,
 };
 
-// Image optimization configuration
+// Image optimization configuration - WebP only for performance
 const imageConfig = {
   domains: ["maych.in"],
   remotePatterns: [
@@ -66,60 +65,61 @@ const imageConfig = {
       hostname: "**.maych.in",
     },
   ],
-  // Enable image optimization service
   service: {
     entrypoint: "astro/assets/services/sharp",
     config: {
       limitInputPixels: 268402689, // ~16K x 16K images
+      // Optimize for WebP only
+      webp: {
+        quality: 85,
+        effort: 6,
+      },
     },
   },
 };
 
-// Vite configuration
+// Vite configuration optimized for static builds
 const viteConfig = {
-  // build: {
-  //   // Optimize chunk splitting for better caching
-  //   // rollupOptions: {
-  //   //   output: {
-  //   //     assetFileNames: (assetInfo) => {
-  //   //       const extType = assetInfo.name.split(".").pop();
-  //   //       if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
-  //   //         return `assets/images/[name].[hash][extname]`;
-  //   //       }
-  //   //       if (/woff2?|eot|ttf|otf/i.test(extType)) {
-  //   //         return `assets/fonts/[name].[hash][extname]`;
-  //   //       }
-  //   //       return `assets/[name].[hash][extname]`;
-  //   //     },
-  //   //     chunkFileNames: "assets/js/[name].[hash].js",
-  //   //     entryFileNames: "assets/js/[name].[hash].js",
-  //   //   },
-  //   // },
-  //   // Enable CSS code splitting for better performance
-  //   cssCodeSplit: true,
-
-  //   // Optimize chunk size warnings
-  //   chunkSizeWarningLimit: 1000,
-
-  //   // Production minification
-  //   minify: "terser",
-  //   terserOptions: {
-  //     compress: {
-  //       drop_console: true, // Remove console.log in production
-  //       drop_debugger: true,
-  //       pure_funcs: ["console.log", "console.info", "console.debug"],
-  //     },
-  //     mangle: {
-  //       safari10: true, // Fix Safari 10 issues
-  //     },
-  //     format: {
-  //       comments: false, // Remove comments
-  //     },
-  //   },
-
-  //   // Enable source maps for debugging (set to false for production)
-  //   sourcemap: process.env.NODE_ENV === "development",
-  // },
+  build: {
+    // Optimize chunk splitting for better caching
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) => {
+          const extType = assetInfo.name.split(".").pop();
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico|webp/i.test(extType)) {
+            return `assets/images/[name].[hash][extname]`;
+          }
+          if (/woff2?|eot|ttf|otf/i.test(extType)) {
+            return `assets/fonts/[name].[hash][extname]`;
+          }
+          return `assets/[name].[hash][extname]`;
+        },
+        chunkFileNames: "assets/js/[name].[hash].js",
+        entryFileNames: "assets/js/[name].[hash].js",
+      },
+    },
+    // Enable CSS code splitting for better performance
+    cssCodeSplit: true,
+    // Optimize chunk size warnings
+    chunkSizeWarningLimit: 1000,
+    // Production minification
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.log in production
+        drop_debugger: true,
+        pure_funcs: ["console.log", "console.info", "console.debug"],
+      },
+      mangle: {
+        safari10: true, // Fix Safari 10 issues
+      },
+      format: {
+        comments: false, // Remove comments
+      },
+    },
+    // Enable source maps for debugging in development only
+    sourcemap: process.env.NODE_ENV === "development",
+  },
 
   // Development server configuration
   server: {
@@ -127,9 +127,6 @@ const viteConfig = {
       strict: false,
     },
     host: true, // Allow external connections
-    headers: {
-      'Cache-Control': 'public, max-age=31536000, immutable'
-    }
   },
 
   // Production optimizations
@@ -140,20 +137,13 @@ const viteConfig = {
   // Optimize dependency pre-bundling
   optimizeDeps: {
     include: [
-      // Pre-bundle commonly used dependencies
       "astro/assets",
+      "exifr", // Pre-bundle EXIF reader for photography pages
     ],
     exclude: [
-      // Don't pre-bundle large or problematic dependencies
-      "@astrojs/image",
+      "@astrojs/image", // Legacy image handling
     ],
   },
-};
-
-// Security configuration
-const securityConfig = {
-  // Enable origin checking for SSR routes
-  checkOrigin: true,
 };
 
 // Prefetch configuration for better performance
@@ -162,25 +152,11 @@ const prefetchConfig = {
   defaultStrategy: "viewport", // Prefetch when links enter viewport
 };
 
-// Redirects configuration
-const redirectsConfig = {
-  // Add any URL redirects here
-  // '/old-path': '/new-path',
-};
-
 export default defineConfig({
   site: "https://maych.in",
 
-  // Static site generation with selective SSR
-  // API routes will use SSR via prerender: false
-  output: "server",
-
-  adapter: node({
-    mode: "standalone",
-  }),
-
-  // Security configuration
-  security: securityConfig,
+  // Pure static site generation
+  output: "static",
 
   integrations: [
     astroExpressiveCode(expressiveCodeConfig),
@@ -191,7 +167,7 @@ export default defineConfig({
         {
           userAgent: "*",
           allow: "/",
-          disallow: ["/api/*"], // Don't crawl API routes
+          disallow: [], // No restrictions for static sites
         },
       ],
       sitemap: true,
@@ -204,10 +180,6 @@ export default defineConfig({
         "https://maych.in/photography/",
         "https://maych.in/projects/",
       ],
-      filter: (page) => {
-        // Exclude API routes from sitemap
-        return !page.includes("/api/");
-      },
       changefreq: "weekly",
       priority: 0.7,
       lastmod: new Date(),
@@ -224,9 +196,6 @@ export default defineConfig({
 
   // Configure prefetching for better performance
   prefetch: prefetchConfig,
-
-  // Add redirects if needed
-  redirects: redirectsConfig,
 
   // Performance monitoring (enable in development)
   devToolbar: {
