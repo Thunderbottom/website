@@ -6,27 +6,27 @@ import { NAVIGATION, SITE } from "@lib/constants";
 
 <header>
   <Container>
-    <div class="flex flex-wrap gap-y-2 justify-between items-center">
+    <div class="flex flex-wrap items-center justify-between gap-y-2">
       <a
         href="/"
-        class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark hover:text-link dark:hover:text-link-dark transition-colors"
+        class="font-display text-lg font-semibold text-text-primary transition-colors hover:text-link dark:text-text-primary-dark dark:hover:text-link-dark"
       >
         {SITE.DOMAIN}
       </a>
 
       <div class="flex items-center gap-4">
-        <nav class="flex gap-1 items-center text-base">
+        <nav class="flex items-center gap-1 text-base">
           {
             NAVIGATION.map((item, index) => (
               <>
                 <a
                   href={item.url}
-                  class="font-display text-text-primary dark:text-text-primary-dark hover:text-link dark:hover:text-link-dark transition-colors font-medium"
+                  class="font-display font-medium text-text-primary transition-colors hover:text-link dark:text-text-primary-dark dark:hover:text-link-dark"
                 >
                   {item.name.toLowerCase()}
                 </a>
                 {index < NAVIGATION.length - 1 && (
-                  <span class="text-text-muted dark:text-text-muted-dark mx-1" />
+                  <span class="mx-1 text-text-muted dark:text-text-muted-dark" />
                 )}
               </>
             ))
@@ -36,7 +36,7 @@ import { NAVIGATION, SITE } from "@lib/constants";
         <button
           id="theme-toggle"
           aria-label="light"
-          class="size-6 flex items-center justify-center rounded-md hover:bg-blue-300 dark:hover:bg-blue-800 transition-colors duration-200"
+          class="flex size-6 items-center justify-center rounded-md transition-colors duration-200 hover:bg-blue-300 dark:hover:bg-blue-800"
         >
           <svg
             class="sun-and-moon"

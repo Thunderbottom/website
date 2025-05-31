@@ -30,14 +30,14 @@
 
   /* Layout Elements */
   header {
-    @apply fixed top-0 left-0 right-0 z-50 py-5;
+    @apply fixed left-0 right-0 top-0 z-50 py-5;
     @apply bg-background/90 dark:bg-background-dark/90;
     @apply backdrop-blur-sm;
     @apply border-b border-border/30 dark:border-border-dark/30;
   }
 
   main {
-    @apply flex-1 pt-32 pb-16;
+    @apply flex-1 pb-16 pt-32;
   }
 
   footer {
@@ -57,11 +57,11 @@
 
   /* Prose Customization */
   article {
-    @apply max-w-full prose prose-lg dark:prose-invert;
+    @apply prose prose-lg max-w-full dark:prose-invert;
     @apply prose-headings:font-display prose-headings:font-semibold;
     @apply prose-headings:text-text-primary dark:prose-headings:text-text-primary-dark;
     @apply prose-p:font-serif prose-p:text-text-primary dark:prose-p:text-text-primary-dark;
-    @apply prose-a:text-link dark:prose-a:text-link-dark prose-a:no-underline prose-a:border-b prose-a:border-link dark:prose-a:border-link-dark;
+    @apply prose-a:border-b prose-a:border-link prose-a:text-link prose-a:no-underline dark:prose-a:border-link-dark dark:prose-a:text-link-dark;
     @apply prose-code:font-mono prose-code:text-red-600 dark:prose-code:text-red-400;
     @apply prose-pre:font-mono;
     @apply prose-strong:text-text-primary dark:prose-strong:text-text-primary-dark;
@@ -126,7 +126,7 @@
 
   /* Message Components */
   .message-title {
-    @apply font-display font-bold mt-0 mb-2;
+    @apply mb-2 mt-0 font-display font-bold;
     @apply text-text-primary dark:text-text-primary-dark;
   }
 
@@ -256,7 +256,7 @@
 
   /* Optimized focus styles */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-link dark:focus:ring-link-dark focus:ring-offset-2 focus:ring-offset-background dark:focus:ring-offset-background-dark;
+    @apply focus:outline-none focus:ring-2 focus:ring-link focus:ring-offset-2 focus:ring-offset-background dark:focus:ring-link-dark dark:focus:ring-offset-background-dark;
   }
 
   /* Performance-friendly hover effects */
@@ -288,7 +288,7 @@
   /* Link Hover Effects */
   article a:hover,
   .prose a:hover {
-    @apply bg-link-hover dark:bg-link-hover-dark text-text-primary dark:text-text-primary-dark border-text-primary dark:border-text-primary-dark;
+    @apply border-text-primary bg-link-hover text-text-primary dark:border-text-primary-dark dark:bg-link-hover-dark dark:text-text-primary-dark;
   }
 
   /* Text Color Utilities */
@@ -311,38 +311,38 @@
 
   /* Focus Styles for Accessibility */
   .focus-visible\:ring-2:focus-visible {
-    @apply ring-2 ring-link dark:ring-link-dark ring-offset-2 ring-offset-background dark:ring-offset-background-dark;
+    @apply ring-2 ring-link ring-offset-2 ring-offset-background dark:ring-link-dark dark:ring-offset-background-dark;
   }
 
   button:focus-visible,
   a:focus-visible,
   input:focus-visible,
   textarea:focus-visible {
-    @apply outline-none ring-2 ring-link dark:ring-link-dark ring-offset-2 ring-offset-background dark:ring-offset-background-dark;
+    @apply outline-none ring-2 ring-link ring-offset-2 ring-offset-background dark:ring-link-dark dark:ring-offset-background-dark;
   }
 
   /* Skip links for accessibility */
   .skip-link {
-    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:dark:bg-gray-900 focus:px-4 focus:py-2 focus:rounded;
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:dark:bg-gray-900;
   }
 }
 
 /* ===== ANIMATIONS ===== */
 .animate {
-  @apply opacity-0 translate-y-3;
+  @apply translate-y-3 opacity-0;
   @apply transition-all duration-700 ease-out;
 }
 
 .animate.show {
-  @apply opacity-100 translate-y-0;
+  @apply translate-y-0 opacity-100;
 }
 
 html #back-to-top {
-  @apply opacity-0 pointer-events-none;
+  @apply pointer-events-none opacity-0;
 }
 
 html.scrolled #back-to-top {
-  @apply opacity-100 pointer-events-auto;
+  @apply pointer-events-auto opacity-100;
 }
 
 /* ===== REDUCED MOTION SUPPORT ===== */

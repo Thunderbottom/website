@@ -25,7 +25,7 @@ const recentProjects = PROJECTS.sort(
   <Container>
     <div class="space-y-16">
       <section class="animate">
-        <h1 class="font-display text-xl font-semibold text-text-primary mb-6">
+        <h1 class="mb-6 font-display text-xl font-semibold text-text-primary">
           {SITE.NAME}
         </h1>
 
@@ -57,7 +57,7 @@ const recentProjects = PROJECTS.sort(
       {
         blog.length > 0 && (
           <section class="animate space-y-6">
-            <div class="flex flex-wrap gap-y-2 items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-y-2">
               <h2 class="font-display text-lg font-semibold text-text-primary">
                 Latest Posts
               </h2>
@@ -79,7 +79,7 @@ const recentProjects = PROJECTS.sort(
       {
         recentProjects.length > 0 && (
           <section class="animate space-y-6">
-            <div class="flex flex-wrap gap-y-2 items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-y-2">
               <h2 class="font-display text-lg font-semibold text-text-primary">
                 Recent Projects
               </h2>
@@ -120,7 +120,7 @@ const recentProjects = PROJECTS.sort(
                   {social.name}
                 </Link>
                 {index < SOCIALS.length - 1 && (
-                  <span class="text-text-muted dark:text-text-muted-dark mr-2">
+                  <span class="mr-2 text-text-muted dark:text-text-muted-dark">
                     {" "}
                   </span>
                 )}

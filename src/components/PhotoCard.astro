@@ -34,7 +34,7 @@ const formattedDate = formatDate(displayDate, "%B %d, %Y");
 ---
 
 <div
-  class="group relative flex flex-col rounded-lg border border-border dark:border-border-dark bg-card dark:bg-card-dark hover:border-text-secondary dark:hover:border-text-secondary-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden"
+  class="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-text-secondary hover:bg-gray-50 hover:shadow-md dark:border-border-dark dark:bg-card-dark dark:hover:border-text-secondary-dark dark:hover:bg-gray-800"
 >
   <div
     class="relative cursor-pointer"
@@ -61,7 +61,7 @@ const formattedDate = formatDate(displayDate, "%B %d, %Y");
         alt={data.title}
         width={thumbnailImage.webp.attributes.width}
         height={thumbnailImage.webp.attributes.height}
-        class="w-full h-auto object-contain transition-transform duration-300"
+        class="h-auto w-full object-contain transition-transform duration-300"
         loading="lazy"
         decoding="async"
         fetchpriority="low"
@@ -69,10 +69,10 @@ const formattedDate = formatDate(displayDate, "%B %d, %Y");
     </picture>
 
     <div
-      class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center"
+      class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/10"
     >
       <div
-        class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 dark:bg-black/90 rounded-full p-2"
+        class="rounded-full bg-white/90 p-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:bg-black/90"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -95,16 +95,16 @@ const formattedDate = formatDate(displayDate, "%B %d, %Y");
   </div>
 
   <div class="flex items-start gap-4 p-4">
-    <div class="flex-1 min-w-0">
-      <div class="flex items-start justify-between gap-4 mb-2">
+    <div class="min-w-0 flex-1">
+      <div class="mb-2 flex items-start justify-between gap-4">
         <div
-          class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark group-hover:text-link dark:group-hover:text-link-dark transition-colors"
+          class="font-display text-lg font-semibold text-text-primary transition-colors group-hover:text-link dark:text-text-primary-dark dark:group-hover:text-link-dark"
         >
           {data.title}
         </div>
         <time
           datetime={new Date(data.date).toISOString()}
-          class="text-sm text-text-secondary dark:text-text-secondary-dark whitespace-nowrap"
+          class="whitespace-nowrap text-sm text-text-secondary dark:text-text-secondary-dark"
         >
           {formattedDate}
         </time>
@@ -112,9 +112,9 @@ const formattedDate = formatDate(displayDate, "%B %d, %Y");
 
       {
         exifItems.length > 0 && (
-          <div class="flex flex-wrap gap-2 text-xs justify-center">
+          <div class="flex flex-wrap justify-center gap-2 text-xs">
             {exifItems.map((item) => (
-              <span class="px-2 py-1 rounded-md font-mono bg-gray-200 dark:bg-gray-700 text-text-secondary dark:text-text-secondary-dark">
+              <span class="rounded-md bg-gray-200 px-2 py-1 font-mono text-text-secondary dark:bg-gray-700 dark:text-text-secondary-dark">
                 {item}
               </span>
             ))}
