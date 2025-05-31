@@ -1,10 +1,9 @@
 ---
 import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
-import ProjectArrowCard from "@components/ProjectArrowCard.astro";
+import ProjectCard from "@components/ProjectCard.astro";
 import { PROJECTS_CONFIG, PROJECTS } from "@lib/constants";
 
-// Sort projects by date descending
 const sortedProjects = PROJECTS.sort(
   (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
 );
@@ -26,7 +25,7 @@ const sortedProjects = PROJECTS.sort(
       <div class="animate space-y-6">
         {
           sortedProjects.map((project) => (
-            <ProjectArrowCard project={project} />
+            <ProjectCard project={project} />
           ))
         }
       </div>
