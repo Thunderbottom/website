@@ -5,15 +5,16 @@ import Container from "@components/Container.astro";
 import PhotoCard from "@components/PhotoCard.astro";
 import PhotoLightbox from "@components/PhotoLightbox.astro";
 import { PHOTOGRAPHY } from "@lib/constants.ts";
-import { generateImageStructuredData } from "@lib/photo-utils";
+import {
+  sortPhotosByDate,
+  generateImageStructuredData,
+} from "@lib/photo-utils";
 
 const allPhotos = await getCollection("photography", ({ data }) => {
   return !data.draft;
 });
 
-const sortedPhotos = allPhotos.sort(
-  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
-);
+const sortedPhotos = sortPhotosByDate(allPhotos);
 
 // Group photos by year
 const photosByYear = sortedPhotos.reduce(

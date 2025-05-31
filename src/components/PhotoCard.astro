@@ -26,7 +26,11 @@ const exifData = await extractExifData(
 );
 const exifItems = formatExifItems(exifData);
 
-const formattedDate = formatDate(new Date(data.date), "%B %d, %Y");
+const displayDate = exifData.dateTaken
+  ? new Date(exifData.dateTaken)
+  : new Date(data.date);
+
+const formattedDate = formatDate(displayDate, "%B %d, %Y");
 ---
 
 <div

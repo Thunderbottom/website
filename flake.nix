@@ -73,6 +73,30 @@
           '';
         };
 
+        devShells.images = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            imagemagick
+            oxipng
+            jpegoptim
+            exiftool
+            parallel
+            file
+            coreutils
+          ];
+
+          shellHook = ''
+            echo "Image processing environment loaded!"
+            echo "Available tools:"
+            echo "  - imagemagick (magick command)"
+            echo "  - oxipng (PNG optimization)"
+            echo "  - jpegoptim (JPEG optimization)"
+            echo "  - webp tools (cwebp, dwebp)"
+            echo "  - exiftool (EXIF data handling)"
+            echo ""
+            echo "Run './optimize-images.sh' to process photography images"
+          '';
+        };
+
         # Legacy attribute for backward compatibility
         defaultPackage = self.packages.${system}.default;
         devShell = self.devShells.${system}.default;

@@ -20,6 +20,7 @@ export interface ExifData {
   aperture?: string;
   shutterSpeed?: string;
   iso?: string;
+  date?: string;
 }
 
 // Image quality and size constants
@@ -99,6 +100,9 @@ export async function extractExifData(imagePath: string): Promise<ExifData> {
           "FNumber",
           "ExposureTime",
           "ISO",
+          "DateTimeOriginal",
+          "CreateDate",
+          "DateTime",
         ],
       }),
       timeout,
@@ -129,6 +133,16 @@ export async function extractExifData(imagePath: string): Promise<ExifData> {
       exifData.iso = rawExif.ISO.toString();
     }
 
+    const dateTaken =
+      rawExif.DateTimeOriginal || rawExif.CreateDate || rawExif.DateTime;
+    if (dateTaken) {
+      // Convert to ISO string if it's a Date object
+      exifData.dateTaken =
+        dateTaken instanceof Date
+          ? dateTaken.toISOString()
+          : new Date(dateTaken).toISOString();
+    }
+
     return exifData;
   } catch (error) {
     console.warn(
@@ -150,7 +164,21 @@ export function formatExifItems(exifData: ExifData): string[] {
     exifData.shutterSpeed,
     exifData.iso ? `ISO ${exifData.iso}` : null,
     exifData.focalLength,
+    exifData.date,
   ].filter(Boolean) as string[];
+}
+
+/**
+ * Sort photos by date taken from EXIF, falling back to frontmatter date
+ */
+export function sortPhotosByDate<T extends { data: { date: string | Date } }>(
+  photos: T[],
+): T[] {
+  return photos.sort((a, b) => {
+    const dateA = new Date(a.data.date);
+    const dateB = new Date(b.data.date);
+    return dateB.getTime() - dateA.getTime(); // Most recent first
+  });
 }
 
 /**
