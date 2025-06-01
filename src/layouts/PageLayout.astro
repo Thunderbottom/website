@@ -42,20 +42,12 @@ const canonicalURL = new URL(currentPath, SITE.URL);
       media="(prefers-color-scheme: dark)"
     />
 
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="
-      default-src 'self';
-      img-src 'self' data: https:;
-      script-src 'self' 'unsafe-inline' 'unsafe-eval';
-      style-src 'self' 'unsafe-inline';
-      font-src 'self' data:;
-      connect-src 'self' https:;
-    "
-    />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="X-Frame-Options" content="DENY" />
     <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
+
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 
     <script is:inline>
       const storageKey = "theme-preference";
@@ -152,17 +144,14 @@ const canonicalURL = new URL(currentPath, SITE.URL);
       document.addEventListener("astro:after-swap", init);
     </script>
 
-    <!-- Primary Meta Tags -->
     <title>{pageTitle}</title>
     <meta name="title" content={pageTitle} />
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
     <meta name="author" content={SITE.NAME} />
 
-    <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />
 
-    <!-- RSS Feed -->
     <link
       rel="alternate"
       type="application/rss+xml"
@@ -170,7 +159,6 @@ const canonicalURL = new URL(currentPath, SITE.URL);
       href="/rss.xml"
     />
 
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={pageTitle} />
@@ -178,21 +166,12 @@ const canonicalURL = new URL(currentPath, SITE.URL);
     <meta property="og:image" content={ogImage} />
     <meta property="og:site_name" content={SITE.NAME} />
 
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content={canonicalURL} />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <!-- DNS prefetch for external resources -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
-
-    <!-- Preconnect to critical third-party origins -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-
-    <!-- Favicons -->
     <link
       rel="icon"
       type="image/png"
@@ -208,7 +187,6 @@ const canonicalURL = new URL(currentPath, SITE.URL);
     <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
     <link rel="manifest" href="/icons/favicon/site.webmanifest" />
 
-    <!-- Font Preloads -->
     <link
       rel="preload"
       href="/fonts/playfair-display/playfair-display-v22-latin-600.woff2"
@@ -226,27 +204,11 @@ const canonicalURL = new URL(currentPath, SITE.URL);
   </head>
 
   <body>
-    <a href="#main-content" class="skip-link"> Skip to main content </a>
-    <a href="#navigation" class="skip-link"> Skip to navigation </a>
     <Header />
     <main id="main-content" tabindex="-1">
       <slot />
     </main>
     <Footer />
     <BackToTop />
-    <script>
-      if ("serviceWorker" in navigator && location.hostname !== "localhost") {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("/sw.js")
-            .then((registration) => {
-              console.log("SW registered: ", registration);
-            })
-            .catch((registrationError) => {
-              console.log("SW registration failed: ", registrationError);
-            });
-        });
-      }
-    </script>
   </body>
 </html>
