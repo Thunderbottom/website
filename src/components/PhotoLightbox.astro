@@ -4,7 +4,7 @@
 
 <div
   id="photo-lightbox"
-  class="pointer-events-none fixed inset-0 z-[9999] bg-black/95 opacity-0 backdrop-blur-sm transition-all duration-300"
+  class="pointer-events-none fixed inset-0 z-[9999] bg-black/90 opacity-0 backdrop-blur-md transition-all duration-300"
   aria-hidden="true"
   role="dialog"
   aria-modal="true"
@@ -14,7 +14,7 @@
   <!-- Close button -->
   <button
     id="lightbox-close"
-    class="absolute right-4 top-4 z-10 rounded-full bg-black/50 p-3 text-white transition-colors hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+    class="absolute right-4 top-4 z-10 rounded-lg bg-black/20 p-3 text-white transition-colors hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
     aria-label="Close photo viewer"
     type="button"
   >
@@ -31,50 +31,50 @@
     </svg>
   </button>
 
-  <!-- Previous button -->
-  <button
-    id="lightbox-prev"
-    class="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-3 text-white opacity-75 transition-colors hover:bg-black/70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
-    aria-label="Previous photo"
-    type="button"
-    style="display: none;"
-  >
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      aria-hidden="true"
-    >
-      <polyline points="15 18 9 12 15 6"></polyline>
-    </svg>
-  </button>
-
-  <!-- Next button -->
-  <button
-    id="lightbox-next"
-    class="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-3 text-white opacity-75 transition-colors hover:bg-black/70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
-    aria-label="Next photo"
-    type="button"
-    style="display: none;"
-  >
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      aria-hidden="true"
-    >
-      <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-  </button>
-
   <div class="absolute inset-0 flex items-center justify-center p-4 pb-32">
     <div class="relative flex h-full w-full items-center justify-center">
+      <!-- Previous button -->
+      <button
+        id="lightbox-prev"
+        class="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-lg bg-black/20 p-3 text-white opacity-80 transition-colors hover:bg-black/70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+        aria-label="Previous photo"
+        type="button"
+        style="display: none;"
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <!-- Next button -->
+      <button
+        id="lightbox-next"
+        class="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-lg bg-black/20 p-3 text-white opacity-80 transition-colors hover:bg-black/70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+        aria-label="Next photo"
+        type="button"
+        style="display: none;"
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+
       <img
         id="lightbox-image"
         src=""
@@ -85,7 +85,7 @@
 
       <div
         id="lightbox-loading"
-        class="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20"
+        class="absolute inset-0 flex items-center justify-center rounded-lg"
         style="display: flex;"
         aria-live="polite"
         aria-label="Loading photo"
@@ -103,7 +103,7 @@
   <div
     class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/80 to-transparent p-6 text-white"
   >
-    <div class="mx-auto max-w-4xl">
+    <div class="mx-auto max-w-4xl text-center">
       <h2
         id="lightbox-title"
         class="mb-2 font-display text-xl font-semibold text-gray-200"
@@ -264,8 +264,14 @@
       const { currentPhotoIndex, allPhotos } = this.state;
 
       prevButton.style.display = currentPhotoIndex > 0 ? "block" : "none";
+
+      // Disable next button only if we're at the last photo AND no more photos can be loaded
+      const hasMoreLoadedPhotos = currentPhotoIndex < allPhotos.length - 1;
+      const hasMorePhotosToLoad =
+        window.staticPhotoLoader && window.staticPhotoLoader.hasMorePhotos();
+
       nextButton.style.display =
-        currentPhotoIndex < allPhotos.length - 1 ? "block" : "none";
+        hasMoreLoadedPhotos || hasMorePhotosToLoad ? "block" : "none";
 
       // Update ARIA labels with context
       if (currentPhotoIndex > 0) {
@@ -274,12 +280,13 @@
           `Previous photo (${currentPhotoIndex} of ${allPhotos.length})`,
         );
       }
-      if (currentPhotoIndex < allPhotos.length - 1) {
-        nextButton.setAttribute(
-          "aria-label",
-          `Next photo (${currentPhotoIndex + 2} of ${allPhotos.length})`,
-        );
-      }
+
+      nextButton.setAttribute(
+        "aria-label",
+        hasMoreLoadedPhotos || hasMorePhotosToLoad
+          ? `Next photo (${currentPhotoIndex + 2})`
+          : "No more photos available",
+      );
     }
 
     /**
@@ -415,30 +422,18 @@
       if (this.state.currentPhotoIndex < this.state.allPhotos.length - 1) {
         this.state.currentPhotoIndex++;
         this.loadPhoto(this.state.allPhotos[this.state.currentPhotoIndex]);
-
-        console.log(
-          `[StaticPhotoLightbox] Next photo: ${this.state.currentPhotoIndex + 1} of ${this.state.allPhotos.length}`,
-        );
-      } else {
-        // If we're at the end and there's a static loader, trigger loading more photos
-        if (
-          window.staticPhotoLoader &&
-          window.staticPhotoLoader.hasMorePhotos()
-        ) {
-          window.staticPhotoLoader.loadMorePhotos().then(() => {
-            // After loading, try to go to next photo again
-            this.state.allPhotos = this.getAllPhotos();
-            if (
-              this.state.currentPhotoIndex <
-              this.state.allPhotos.length - 1
-            ) {
-              this.state.currentPhotoIndex++;
-              this.loadPhoto(
-                this.state.allPhotos[this.state.currentPhotoIndex],
-              );
-            }
-          });
-        }
+      } else if (
+        window.staticPhotoLoader &&
+        window.staticPhotoLoader.hasMorePhotos()
+      ) {
+        // Load more photos and then advance
+        window.staticPhotoLoader.loadMorePhotos().then(() => {
+          this.state.allPhotos = this.getAllPhotos();
+          if (this.state.currentPhotoIndex < this.state.allPhotos.length - 1) {
+            this.state.currentPhotoIndex++;
+            this.loadPhoto(this.state.allPhotos[this.state.currentPhotoIndex]);
+          }
+        });
       }
     }
 

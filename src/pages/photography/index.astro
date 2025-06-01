@@ -417,11 +417,11 @@ const totalPhotos = validPhotosData.length;
                 ${
                   photo.exifItems && photo.exifItems.length > 0
                     ? `
-                  <div class="flex flex-wrap gap-2 text-xs justify-center">
+                  <div class="flex flex-wrap gap-1 text-xs justify-center">
                     ${photo.exifItems
                       .map(
                         (item) => `
-                      <span class="px-2 py-1 rounded-md font-mono bg-gray-200 dark:bg-gray-700 text-text-secondary dark:text-text-secondary-dark">
+                      <span class="px-2 py-1 rounded-md font-mono bg-gray-200 dark:bg-gray-700 text-text-secondary dark:text-text-secondary-dark text-center">
                         ${this.escapeHtml(item)}
                       </span>
                     `,

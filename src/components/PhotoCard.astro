@@ -78,9 +78,9 @@ const { data, images, exifItems, formattedDate } = photo;
 
       {
         exifItems.length > 0 && (
-          <div class="flex flex-wrap justify-center gap-2 text-xs">
+          <div class="flex flex-wrap justify-center gap-1 text-xs">
             {exifItems.map((item) => (
-              <span class="rounded-md bg-gray-200 px-2 py-1 font-mono text-text-secondary dark:bg-gray-700 dark:text-text-secondary-dark">
+              <span class="rounded-md bg-gray-200 px-2 py-1 text-center font-mono text-text-secondary dark:bg-gray-700 dark:text-text-secondary-dark">
                 {item}
               </span>
             ))}
