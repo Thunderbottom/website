@@ -305,9 +305,25 @@
       const { lightboxTitle, lightboxContent, lightboxLoading, lightboxImage } =
         this.elements;
 
-      // Set title and content
-      lightboxTitle.textContent = title;
-      lightboxContent.textContent = content ? content.trim() : "";
+      // Decode HTML entities and set title
+      if (title && title.trim()) {
+        const titleTempDiv = document.createElement("div");
+        titleTempDiv.innerHTML = title.trim();
+        lightboxTitle.textContent =
+          titleTempDiv.textContent || titleTempDiv.innerText || "";
+      } else {
+        lightboxTitle.textContent = "";
+      }
+
+      // Decode HTML entities and set as text content
+      if (content && content.trim()) {
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = content.trim();
+        lightboxContent.textContent =
+          tempDiv.textContent || tempDiv.innerText || "";
+      } else {
+        lightboxContent.textContent = "";
+      }
 
       // Show loading state
       lightboxLoading.style.display = "flex";

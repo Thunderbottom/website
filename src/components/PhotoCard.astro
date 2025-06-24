@@ -8,6 +8,17 @@ interface Props {
 
 const { photo, loading = "lazy" } = Astro.props;
 const { data, images, exifItems, formattedDate } = photo;
+
+// Helper function to escape HTML for attributes
+function escapeHtml(text: string): string {
+  if (typeof text !== "string") return "";
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 ---
 
 <div
@@ -17,8 +28,8 @@ const { data, images, exifItems, formattedDate } = photo;
     class="relative cursor-pointer"
     data-photo-trigger
     data-full-image={images.lightboxImage.src}
-    data-title={data.title}
-    data-content={photo.body}
+    data-title={escapeHtml(data.title)}
+    data-content={escapeHtml(photo.body || "")}
     tabindex="0"
     role="button"
     aria-label={`View photo: ${data.title}`}
