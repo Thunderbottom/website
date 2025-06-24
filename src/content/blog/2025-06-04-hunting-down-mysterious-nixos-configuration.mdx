@@ -1,0 +1,110 @@
+---
+title: "Hunting Down Mysterious Nix Configuration with Nix REPL"
+description: "A quick look at how Nix REPL helps trace the source of unexpected configuration in complex Nix setups"
+date: "2025-06-04T19:23:54+05:30"
+
+slug: "hunting-down-mysterious-nixos-configuration"
+tags: "nix,linux"
+---
+
+Recently, while going through my routine system cleanup and "optimization", I discovered my laptop was attempting to initialize a serial console on every boot. This was some feature I'd never configured and definitely didn't need on a machine that spends its time rendering games, not serving headless in a datacenter:
+
+```console {1,7} title="journalctl --boot"
+Jun 01 23:30:17 zippyrus kernel: Kernel command line: ... console=ttyS0,115200 console=tty0 ...
+Jun 01 23:30:17 zippyrus kernel: printk: legacy console [ttyS0] enabled
+Jun 01 23:30:21 zippyrus systemd-tty-ask-password-agent[315]: Starting password query on /dev/ttyS0.
+Jun 01 23:30:35 zippyrus systemd[1]: Expecting device /dev/ttyS0...
+Jun 01 23:30:35 zippyrus systemd[1]: Condition check resulted in /dev/ttyS0 being skipped.
+Jun 01 23:30:39 zippyrus systemd[1]: Started Serial Getty on ttyS0.
+Jun 01 23:30:43 zippyrus agetty[1646]: /dev/ttyS0: not a tty
+Jun 01 23:30:53 zippyrus systemd[1]: serial-getty@ttyS0.service: Main process exited, code=exited, status=1/FAILURE
+```
+
+My laptop—a device that had never seen a server rack, was desperately trying to start a serial console on a non-existent `/dev/ttyS0` device. The kernel command line showed: `console=ttyS0,115200 console=tty0`. Now for those unaware, `/dev/ttyS0` points to a serial console, allowing you to use a serial port to connect to the system when there's no output display or input available. And the `115200` defines the baud rate, which is the signaling rate with `115200` being the default for most modern systems.
+
+Obviously, my laptop does not need a serial console. The `journalctl` logs were constantly being spammed with the error and I suspected that this also somehow affected my system's battery life. This wasn't breaking anything critical, but it bothered me deeply.
+
+One of the core promises of NixOS is that your configuration should be explicit and traceable. If I didn't put serial console parameters in my laptop config, where the hell were they coming from?
+
+My first instinct was to grep through my entire configuration:
+
+```console
+grep -r "console=\|ttyS0" . --include="*.nix"
+```
+
+Nothing. Nada. Zilch. The serial console parameters weren't hiding in any of my custom modules, hardware configurations, or system definitions. Out of curiosity, I checked all my other systems and found the same parameters everywhere: desktops, laptops, servers—all had these mysterious `console=ttyS0,115200 console=tty0` entries. This confirmed my suspicion that something in my flake was adding them globally.
+
+On traditional Linux distributions, you might just edit some config files, mask the problematic service, or apply a band-aid fix and move on. But that approach leaves you flying blind, never really understanding what's happening under the hood. Nix offers something fundamentally different: you can actually ask your system "Who did this?"
+
+The NixOS module system maintains complete provenance information about every configuration option. You don't have to guess where settings come from—you can interrogate the system directly and get definitive answers about what each input contributes to your final system state.
+
+Enter `nix repl`<Sidenote id="1">[nix.dev](https://nix.dev/manual/nix/2.18/command-ref/new-cli/nix3-repl) - `nix repl`</Sidenote>, Nix's debugging superpower. This interactive environment creates a live evaluation space where you can explore your fully evaluated NixOS configuration—not just the raw source code, but the actual merged result of all your modules, imports, and dependencies. It's like having X-ray vision into your system's configuration decisions.
+
+```nix
+nix repl
+# Using builtins.getFlake with absolute path - alternatively use `:l .` from flake directory
+flake = builtins.getFlake "/etc/nixos"
+
+# Let's see what's actually in those kernel parameters
+flake.outputs.nixosConfigurations.zippyrus.config.boot.kernelParams
+[
+  "console=ttyS0,115200"
+  "console=tty0"
+  "nvidia-drm.modeset=1"
+  "nmi_watchdog=0"
+  "root=fstab"
+  "loglevel=0"
+  "lsm=landlock,yama,bpf"
+]
+```
+
+Sure enough, there were my mystery parameters, sitting right alongside the legitimate ones I'd explicitly configured. But even then, where did these `kernelParams` come from?
+
+Turns out, the NixOS module system doesn't just track the final merged configuration, it maintains detailed metadata about the modules that contributed the values and its path, accessible through the `definitionsWithLocations`<Sidenote id="2">[NixOS/nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/lib/modules.nix#L1088) - GitHub</Sidenote> attribute of any NixOS option. This is exactly what we need here!
+
+```nix
+# Time to trace the source
+defs = flake.outputs.nixosConfigurations.zippyrus.options.boot.kernelParams.definitionsWithLocations
+
+# Let's examine the first definition
+builtins.elemAt defs 0
+{
+  file = "/nix/store/kia92cyi6iqjq284xdk4wln1fv1jhb7m-source/nixos/common/serial.nix";
+  value = [ "console=ttyS0,115200" "console=tty0" ];
+}
+```
+
+And just like that, I had my answer. It was coming from `srvos`<Sidenote id="3">[nix-community/srvos](https://github.com/nix-community/srvos) - GitHub</Sidenote>, a fantastic flake profile intended for servers, though the module does not belong here.
+
+Now, the nix store path itself doesn't immediately scream "this is from srvos," but the path structure `nixos/common/serial.nix` suggests this isn't from nixpkgs core or hardware-specific modules. Looking back at my flake inputs, I had several external modules. Only one made sense for enabling common server-related configuration:
+
+`srvos.nixosModules.common`—the module I'd globally applied to all my systems since the [`srvos` documentation](https://nix-community.github.io/srvos/nixos/type/#common-nixosmodulescommon) indicated it was also suitable for desktops.
+
+Looking back at my flake configuration, there it was:
+
+```nix title="flake.nix"
+systems.modules.nixos = with inputs; [
+  srvos.nixosModules.common # <-- The well-intentioned culprit
+  # ... other modules
+];
+```
+
+The fix was straightforward once I understood the source. I restructured my flake to apply server modules only where they belonged:
+
+```nix title="flake.nix"
+# Removed the `common` module and
+# applied srvos only to actual servers
+systems.hosts.bicboye.modules = [
+  inputs.srvos.nixosModules.server
+];
+```
+
+This eliminated the `journalctl` errors on my system while keeping the serial console configuration where it actually made sense.
+
+This debugging experience highlights something powerful about Nix. In traditional Linux distributions, tracking down unexpected behavior often feels like archaeology—digging through layers of package post-install scripts, distribution-specific patches, and inherited configuration from previous system states. You're always working with incomplete information, making educated guesses about what might be causing issues, searching obscure reddit threads for answers, or eventually just accepting the mystery.
+
+With `nix repl`, you can transform debugging from guesswork into concrete evidence. Instead of wondering "where might this configuration be coming from?," you can definitively ask "where did this configuration come from?" and get a precise, traceable answer every single time. The `nix repl` can be very valuable in answering these questions.
+
+---
+
+_The next time you encounter mysterious configuration in NixOS, remember that you don't have to accept it as an unsolvable mystery. Fire up `nix repl`, load your configuration, and ask the system to explain itself. The transparency might just blow your mind._
