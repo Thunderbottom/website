@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { formatDate } from "@lib/utils";
+import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
 
 interface Props {
   entry: CollectionEntry<"blog">;
@@ -31,24 +32,5 @@ const { entry } = Astro.props;
     }
   </div>
 
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    class="mt-1 h-5 w-5 flex-shrink-0 text-text-muted transition-all duration-300 group-hover:text-link dark:text-text-muted-dark dark:group-hover:text-link-dark"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-  >
-    <line
-      x1="5"
-      y1="12"
-      x2="19"
-      y2="12"
-      class="translate-x-1 scale-x-0 transition-transform duration-300 group-hover:translate-x-0 group-hover:scale-x-100"
-    ></line>
-    <polyline
-      points="12 5 19 12 12 19"
-      class="-translate-x-0.5 transition-transform duration-300 group-hover:translate-x-0"
-    ></polyline>
-  </svg>
+  <IconChevronLeft class="mt-1 h-5 w-5 flex-shrink-0 rotate-180" />
 </a>

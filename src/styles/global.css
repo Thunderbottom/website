@@ -59,16 +59,6 @@
     transition: box-shadow var(--timing-fast) var(--ease-out-expo);
   }
 
-  .skip-link {
-    @apply absolute left-4 top-4 z-50 -translate-y-full;
-    @apply rounded bg-white px-4 py-2 text-sm font-medium;
-    @apply text-text-primary shadow-lg;
-    @apply transition-transform duration-200;
-    @apply focus:translate-y-0;
-    @apply dark:bg-gray-900 dark:text-text-primary-dark;
-    transition-timing-function: var(--ease-spring);
-  }
-
   h1,
   h2,
   h3,
@@ -140,33 +130,11 @@
     @apply prose-headings:font-display prose-headings:font-semibold;
     @apply prose-headings:text-text-primary dark:prose-headings:text-text-primary-dark;
     @apply prose-p:font-serif prose-p:text-text-primary dark:prose-p:text-text-primary-dark;
-    @apply prose-a:border-b prose-a:border-link prose-a:text-link prose-a:no-underline;
+    @apply prose-a:border-link prose-a:text-link;
     @apply dark:prose-a:border-link-dark dark:prose-a:text-link-dark;
     @apply prose-code:font-mono prose-code:text-red-600 dark:prose-code:text-red-400;
     @apply prose-pre:font-mono;
     @apply prose-strong:text-text-primary dark:prose-strong:text-text-primary-dark;
-  }
-
-  .prose-enhanced {
-    @apply prose prose-lg max-w-full dark:prose-invert;
-    @apply prose-headings:font-display prose-headings:font-semibold;
-    @apply prose-headings:text-text-primary dark:prose-headings:text-text-primary-dark;
-    @apply prose-p:font-serif prose-p:text-text-primary dark:prose-p:text-text-primary-dark;
-    @apply prose-a:border-b prose-a:border-link prose-a:text-link prose-a:no-underline;
-    @apply dark:prose-a:border-link-dark dark:prose-a:text-link-dark;
-    @apply prose-code:font-mono prose-code:text-red-600 dark:prose-code:text-red-400;
-    @apply prose-pre:font-mono;
-    @apply prose-strong:text-text-primary dark:prose-strong:text-text-primary-dark;
-  }
-
-  .prose-enhanced a {
-    transition: all var(--timing-base) var(--ease-out-expo);
-  }
-
-  .prose-enhanced a:hover {
-    @apply border-text-primary bg-link-hover text-text-primary;
-    @apply dark:border-text-primary-dark dark:bg-link-hover-dark dark:text-text-primary-dark;
-    backdrop-filter: blur(2px);
   }
 
   article a:hover,
@@ -639,8 +607,7 @@
   footer,
   .lightbox,
   button,
-  .theme-toggle,
-  .skip-link {
+  .theme-toggle {
     display: none !important;
   }
 
@@ -651,8 +618,7 @@
     background: white !important;
   }
 
-  .prose,
-  .prose-enhanced {
+  .prose {
     max-width: none !important;
   }
 
