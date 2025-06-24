@@ -401,8 +401,14 @@
       document.body.style.top = "";
       document.body.style.width = "";
 
-      // Restore scroll position
-      window.scrollTo(0, this.state.scrollPosition);
+      // Restore scroll position after DOM updates complete
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: this.state.scrollPosition,
+          left: 0,
+          behavior: "instant",
+        });
+      });
 
       // Clear image
       this.elements.lightboxImage.src = "";
