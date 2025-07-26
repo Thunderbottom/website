@@ -1,9 +1,14 @@
 ---
+export const prerender = true;
+
 import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
+import PageContainer from "@components/PageContainer.astro";
+import PageHeader from "@components/PageHeader.astro";
+import Section from "@components/Section.astro";
 import ArrowCard from "@components/ArrowCard.astro";
-import { BLOG } from "@lib/constants";
+import { BLOG } from "@lib/config";
+import { sortByDateDesc } from "@lib/utils";
 
 // Get all blog posts and filter out drafts
 const allPosts = await getCollection("blog", ({ data }) => {
@@ -11,9 +16,7 @@ const allPosts = await getCollection("blog", ({ data }) => {
 });
 
 // Sort by date descending
-const sortedPosts = allPosts.sort(
-  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
-);
+const sortedPosts = sortByDateDesc(allPosts);
 
 // Group posts by year
 const postsByYear = sortedPosts.reduce(
@@ -39,41 +42,34 @@ const years = Object.keys(postsByYear)
   description={BLOG.DESCRIPTION}
   currentPath="/blog/"
 >
-  <Container>
-    <div class="space-y-12">
-      <div class="animate">
-        <h1 class="font-display text-2xl font-semibold text-text-primary">
-          {BLOG.TITLE}
-        </h1>
-      </div>
+  <PageContainer spacing="md">
+    <PageHeader title={BLOG.TITLE} size="lg" />
 
-      <div class="space-y-12">
-        {
-          years.map((year) => (
-            <section class="animate space-y-6">
-              <div class="flex justify-end">
-                <h2 class="font-display text-xl font-semibold text-text-primary">
-                  {year}
-                </h2>
-              </div>
-
-              <div class="space-y-4">
-                {postsByYear[year].map((post) => (
-                  <ArrowCard entry={post} />
-                ))}
-              </div>
-            </section>
-          ))
-        }
-      </div>
-
-      {
-        sortedPosts.length === 0 && (
-          <div class="animate py-12 text-center">
-            <p class="text-text-secondary">No blog posts found.</p>
+    {
+      years.map((year) => (
+        <Section spacing="md">
+          <div class="flex justify-end">
+            <h2 class="font-display text-xl font-semibold text-text-primary dark:text-text-primary-dark">
+              {year}
+            </h2>
           </div>
-        )
-      }
-    </div>
-  </Container>
+          <div class="space-y-4">
+            {postsByYear[year].map((post) => (
+              <ArrowCard entry={post} />
+            ))}
+          </div>
+        </Section>
+      ))
+    }
+
+    {
+      sortedPosts.length === 0 && (
+        <div class="animate py-12 text-center">
+          <p class="text-text-secondary dark:text-text-secondary-dark">
+            No blog posts found.
+          </p>
+        </div>
+      )
+    }
+  </PageContainer>
 </PageLayout>

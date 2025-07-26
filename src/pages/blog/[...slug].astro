@@ -39,6 +39,7 @@ const components = {
   title={entry.data.title}
   description={entry.data.description || entry.data.summary}
   currentPath={`/blog/${entry.slug}/`}
+  ogType="article"
 >
   <Container>
     <div class="space-y-8">
@@ -83,9 +84,9 @@ const components = {
       </article>
 
       <div class="animate border-t border-border pt-8 text-center">
-        <p class="text-lg text-text-secondary">
-          Got any questions or comments, or just want to say hi?<br />Drop by on
-          my email!
+        <p class="text-lg italic text-text-secondary text-text-secondary-dark">
+          Got any questions or comments, or just want to say hello?<br />Drop by
+          on my email!
         </p>
       </div>
     </div>
@@ -93,47 +94,42 @@ const components = {
 </PageLayout>
 
 <script is:inline data-astro-rerun>
-  /** Create a progress indicator
-   *  at the top */
   function createProgressBar() {
-    // Create the main container div
     const progressContainer = document.createElement("div");
     progressContainer.className =
       "progress-container fixed top-0 z-50 h-1 w-full bg-background dark:bg-background-dark";
 
-    // Create the progress bar div
     const progressBar = document.createElement("div");
     progressBar.className =
-      "progress-bar h-1 w-0 bg-link dark:bg-link-dark transition-all duration-75 ease-out rounded-md";
+      "progress-bar h-1 w-0 bg-link dark:bg-link-dark transition-all duration-75 ease-out";
     progressBar.id = "myBar";
 
-    // Append the progress bar to the progress container
     progressContainer.appendChild(progressBar);
-
-    // Append the progress container to the document body or any other desired parent element
     document.body.appendChild(progressContainer);
   }
   createProgressBar();
 
-  /** Update the progress bar
-   *  when user scrolls */
-  function updateScrollProgress() {
-    document.addEventListener("scroll", () => {
-      const winScroll =
-        document.body.scrollTop || document.documentElement.scrollTop;
-      const height =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-      if (document) {
-        const myBar = document.getElementById("myBar");
-        if (myBar) {
-          myBar.style.width = scrolled + "%";
-        }
-      }
-    });
+  /** Calculate and update progress bar */
+  function calculateProgress() {
+    const winScroll =
+      document.body.scrollTop || document.documentElement.scrollTop;
+    const height =
+      document.documentElement.scrollHeight -
+      document.documentElement.clientHeight;
+    const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+    const myBar = document.getElementById("myBar");
+    if (myBar) {
+      myBar.style.width = scrolled + "%";
+    }
   }
-  updateScrollProgress();
+
+  function initializeScrollProgress() {
+    calculateProgress();
+    document.addEventListener("scroll", calculateProgress, { passive: true });
+  }
+
+  initializeScrollProgress();
+  document.addEventListener("DOMContentLoaded", calculateProgress);
 
   /* Go to page start after page swap */
   document.addEventListener("astro:after-swap", () =>

@@ -1,12 +1,15 @@
 ---
-import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
-import ProjectCard from "@components/ProjectCard.astro";
-import { PROJECTS_CONFIG, PROJECTS } from "@lib/constants";
+export const prerender = true;
 
-const sortedProjects = PROJECTS.sort(
-  (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
-);
+import PageLayout from "@layouts/PageLayout.astro";
+import PageContainer from "@components/PageContainer.astro";
+import PageHeader from "@components/PageHeader.astro";
+import Section from "@components/Section.astro";
+import ProjectCard from "@components/ProjectCard.astro";
+import { PROJECTS_CONFIG, PROJECTS } from "@lib/config";
+import { sortByDateDesc } from "@lib/utils";
+
+const sortedProjects = sortByDateDesc(PROJECTS);
 ---
 
 <PageLayout
@@ -14,25 +17,21 @@ const sortedProjects = PROJECTS.sort(
   description={PROJECTS_CONFIG.DESCRIPTION}
   currentPath="/projects/"
 >
-  <Container>
-    <div class="space-y-12">
-      <div class="animate">
-        <h1 class="font-display text-2xl font-semibold text-text-primary">
-          {PROJECTS_CONFIG.TITLE}
-        </h1>
-      </div>
+  <PageContainer spacing="md">
+    <PageHeader title={PROJECTS_CONFIG.TITLE} size="lg" />
 
-      <div class="animate space-y-6">
-        {sortedProjects.map((project) => <ProjectCard project={project} />)}
-      </div>
+    <Section spacing="md">
+      {sortedProjects.map((project) => <ProjectCard project={project} />)}
+    </Section>
 
-      {
-        sortedProjects.length === 0 && (
-          <div class="animate py-12 text-center">
-            <p class="text-text-secondary">No projects found.</p>
-          </div>
-        )
-      }
-    </div>
-  </Container>
+    {
+      sortedProjects.length === 0 && (
+        <div class="animate py-12 text-center">
+          <p class="text-text-secondary dark:text-text-secondary-dark">
+            No projects found.
+          </p>
+        </div>
+      )
+    }
+  </PageContainer>
 </PageLayout>

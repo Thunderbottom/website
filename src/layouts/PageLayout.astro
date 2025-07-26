@@ -2,7 +2,7 @@
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import BackToTop from "@components/BackToTop.astro";
-import { SITE, AUTHOR } from "@lib/constants";
+import { SITE } from "@lib/config";
 import "../styles/global.css";
 
 interface Props {
@@ -19,189 +19,227 @@ const {
   description = SITE.DESCRIPTION,
   keywords = "astro, blog, technology, life, linux",
   ogType = "website",
-  ogImage = "/logo.png",
+  ogImage,
   currentPath = "",
 } = Astro.props;
 
 const pageTitle = title === SITE.NAME ? title : `${title} | ${SITE.NAME}`;
 const canonicalURL = new URL(currentPath, SITE.URL);
+
+// Use provided ogImage, middleware URL, or fallback to static site OG image
+const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
 ---
 
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+<html lang="en" class="loading">
+  <script>
+    // Apply theme immediately - before any CSS loads
+    (function () {
+      const theme =
+        localStorage.getItem("theme-preference") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light");
+      document.documentElement.className = theme === "dark" ? "dark" : "";
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
 
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="theme-color" content="#f8fafc" />
-    <meta
-      name="theme-color"
-      content="#0f0f19"
-      media="(prefers-color-scheme: dark)"
-    />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
-    <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#f8fafc" />
+  <meta
+    name="theme-color"
+    content="#0f0f19"
+    media="(prefers-color-scheme: dark)"
+  />
 
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
 
-    <script is:inline>
-      const storageKey = "theme-preference";
+  <!-- Preload critical local fonts -->
+  <link
+    rel="preload"
+    href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-600.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="/fonts/commit-mono/CommitMono-400-Regular.otf"
+    as="font"
+    type="font/otf"
+    crossorigin
+  />
 
-      const getColorPreference = () => {
-        if (localStorage.getItem(storageKey))
-          return localStorage.getItem(storageKey);
-        else
-          return window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
-      };
+  <script is:inline>
+    const storageKey = "theme-preference";
 
-      const setPreference = () => {
-        localStorage.setItem(storageKey, theme.value);
-        reflectPreference();
-      };
+    const getColorPreference = () => {
+      if (localStorage.getItem(storageKey))
+        return localStorage.getItem(storageKey);
+      else
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+    };
 
-      const reflectPreference = () => {
-        document.documentElement.classList.toggle(
-          "dark",
-          theme.value === "dark",
-        );
-        document.firstElementChild.setAttribute("data-theme", theme.value);
-
-        const metaThemeColor = document.querySelector(
-          'meta[name="theme-color"]:not([media])',
-        );
-        if (metaThemeColor) {
-          metaThemeColor.content =
-            theme.value === "dark" ? "#0f0f19" : "#f8fafc";
-        }
-
-        document
-          .querySelector("#theme-toggle")
-          ?.setAttribute("aria-label", theme.value);
-      };
-
-      const theme = {
-        value: getColorPreference(),
-      };
-
+    const setPreference = () => {
+      localStorage.setItem(storageKey, theme.value);
       reflectPreference();
+    };
 
-      const onClick = () => {
-        theme.value = theme.value === "light" ? "dark" : "light";
+    const reflectPreference = () => {
+      document.documentElement.classList.toggle("dark", theme.value === "dark");
+      document.firstElementChild.setAttribute("data-theme", theme.value);
+
+      const metaThemeColor = document.querySelector(
+        'meta[name="theme-color"]:not([media])',
+      );
+      if (metaThemeColor) {
+        metaThemeColor.content = theme.value === "dark" ? "#0f0f19" : "#f8fafc";
+      }
+
+      document
+        .querySelector("#theme-toggle")
+        ?.setAttribute("aria-label", theme.value);
+    };
+
+    const theme = {
+      value: getColorPreference(),
+    };
+
+    reflectPreference();
+
+    const onClick = () => {
+      theme.value = theme.value === "light" ? "dark" : "light";
+      setPreference();
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      reflectPreference();
+      document
+        .querySelector("#theme-toggle")
+        ?.addEventListener("click", onClick);
+    });
+
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", ({ matches: isDark }) => {
+        theme.value = isDark ? "dark" : "light";
         setPreference();
-      };
-
-      window.addEventListener("DOMContentLoaded", () => {
-        reflectPreference();
-        document
-          .querySelector("#theme-toggle")
-          ?.addEventListener("click", onClick);
       });
 
-      window
-        .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", ({ matches: isDark }) => {
-          theme.value = isDark ? "dark" : "light";
-          setPreference();
-        });
+    document.addEventListener("astro:after-swap", () => {
+      reflectPreference();
+      document
+        .querySelector("#theme-toggle")
+        ?.addEventListener("click", onClick);
+    });
 
-      document.addEventListener("astro:after-swap", () => {
-        reflectPreference();
-        document
-          .querySelector("#theme-toggle")
-          ?.addEventListener("click", onClick);
+    function animate() {
+      const animateElements = document.querySelectorAll(".animate");
+      animateElements.forEach((element, index) => {
+        setTimeout(() => {
+          element.classList.add("show");
+        }, index * 50);
       });
+    }
 
-      function animate() {
-        const animateElements = document.querySelectorAll(".animate");
-        animateElements.forEach((element, index) => {
-          setTimeout(() => {
-            element.classList.add("show");
-          }, index * 50);
-        });
-      }
+    function onScroll() {
+      document.documentElement.classList.toggle("scrolled", window.scrollY > 0);
+    }
 
-      function onScroll() {
-        document.documentElement.classList.toggle(
-          "scrolled",
-          window.scrollY > 0,
-        );
-      }
+    function initSidenotes() {
+      // Handle sidenote toggle icon changes
+      const toggles = document.querySelectorAll(
+        ".sidenote-toggle, .margin-toggle",
+      );
+      toggles.forEach((toggle) => {
+        const updateIcon = () => {
+          const label = toggle.previousElementSibling;
+          if (label && label.classList.contains("sidenote-ref")) {
+            label.setAttribute(
+              "data-expanded",
+              toggle.checked ? "true" : "false",
+            );
+          }
+        };
 
-      function init() {
-        animate();
-        onScroll();
-        document.addEventListener("scroll", onScroll);
-      }
+        // Set initial state
+        updateIcon();
 
-      window.addEventListener("DOMContentLoaded", init);
-      document.addEventListener("astro:after-swap", init);
-    </script>
+        // Update on change
+        toggle.addEventListener("change", updateIcon);
+      });
+    }
 
-    <title>{pageTitle}</title>
-    <meta name="title" content={pageTitle} />
-    <meta name="description" content={description} />
-    <meta name="keywords" content={keywords} />
-    <meta name="author" content={SITE.NAME} />
+    function init() {
+      animate();
+      onScroll();
+      initSidenotes();
+      document.addEventListener("scroll", onScroll);
+    }
 
-    <link rel="canonical" href={canonicalURL} />
+    window.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("astro:after-swap", init);
+  </script>
 
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title="RSS"
-      href="/rss.xml"
-    />
+  <title>{pageTitle}</title>
+  <meta name="title" content={pageTitle} />
+  <meta name="description" content={description} />
+  <meta name="keywords" content={keywords} />
+  <meta name="author" content={SITE.NAME} />
 
-    <meta property="og:type" content={ogType} />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:site_name" content={SITE.NAME} />
+  <link rel="canonical" href={canonicalURL} />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content={canonicalURL} />
-    <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title="RSS"
+    href="/rss.xml"
+  />
 
-    <link
-      rel="icon"
-      type="image/png"
-      href="/icons/favicon/favicon-96x96.png"
-      sizes="96x96"
-    />
-    <link rel="shortcut icon" href="/icons/favicon/favicon.ico" />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/icons/favicon/apple-touch-icon.png"
-    />
-    <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
-    <link rel="manifest" href="/icons/favicon/site.webmanifest" />
+  <meta property="og:type" content={ogType} />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={finalOgImage} />
+  <meta property="og:site_name" content={SITE.NAME} />
 
-    <link
-      rel="preload"
-      href="/fonts/playfair-display/playfair-display-v22-latin-600.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/jetbrains-mono/jetbrains-mono-v20-latin-regular.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-  </head>
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content={canonicalURL} />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={finalOgImage} />
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="/icons/favicon/favicon-96x96.png"
+    sizes="96x96"
+  />
+  <link rel="shortcut icon" href="/icons/favicon/favicon.ico" />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="/icons/favicon/apple-touch-icon.png"
+  />
+  <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
+  <link rel="manifest" href="/icons/favicon/site.webmanifest" />
+
 
   <body>
     <Header />

@@ -1,24 +1,23 @@
 ---
+export const prerender = true;
+
 import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
+import PageContainer from "@components/PageContainer.astro";
+import PageHeader from "@components/PageHeader.astro";
+import Section from "@components/Section.astro";
 import Link from "@components/Link.astro";
 ---
 
 <PageLayout currentPath="/">
-  <Container>
-    <div class="space-y-16">
-      <section class="animate space-y-6 text-center">
-        <h5 class="font-display text-lg font-semibold text-text-primary">
-          Uh-oh!
-        </h5>
-        <article class="prose prose-lg max-w-none">
-          <p>
-            Sorry, we've misplaced that URL or it's pointing to something that
-            doesn't exist. <Link href="/">Head back home</Link> to try finding it
-            again.
-          </p>
-        </article>
-      </section>
-    </div>
-  </Container>
+  <PageContainer spacing="lg">
+    <Section spacing="md" class="text-center">
+      <PageHeader title="Uh-oh!" size="sm" />
+      <article class="prose max-w-none">
+        <p>
+          Sorry, we've misplaced that URL or it's pointing to something that
+          doesn't exist. <Link href="/">Head back home</Link> to try finding it again.
+        </p>
+      </article>
+    </Section>
+  </PageContainer>
 </PageLayout>

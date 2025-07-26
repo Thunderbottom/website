@@ -1,40 +1,42 @@
 ---
+export const prerender = true;
+
 import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
-import { NOW, NOW_DATA } from "@lib/constants";
+import PageContainer from "@components/PageContainer.astro";
+import PageHeader from "@components/PageHeader.astro";
+import Section from "@components/Section.astro";
+import { NOW, NOW_DATA } from "@lib/config";
 ---
 
 <PageLayout title={NOW.TITLE} description={NOW.DESCRIPTION} currentPath="/now/">
-  <Container>
-    <div class="space-y-8">
-      <div class="animate">
-        <h1 class="font-display text-2xl font-semibold text-text-primary">
-          {NOW.TITLE}
-        </h1>
-      </div>
-      <div class="animate space-y-6">
-        <article class="prose prose-lg max-w-none text-center">
-          <em
-            >"Here lieth a liste, certes in no certaine ordre or prioritie, of
-            that which I might be about in this presente houre"</em
-          >
-        </article>
-      </div>
+  <PageContainer spacing="sm">
+    <PageHeader title={NOW.TITLE} size="lg" />
 
-      <article class="animate prose prose-lg max-w-none">
+    <Section spacing="md">
+      <article class="prose prose-lg max-w-none text-center italic">
+        "Here lieth a liste, certes in no certaine ordre or prioritie, of that
+        which I might be about in this presente houre"
+      </article>
+    </Section>
+
+    <Section spacing="md">
+      <article class="prose prose-lg max-w-none">
         {
           NOW_DATA.map((section) => (
             <div>
               <h3>{section.title}</h3>
-              <ul>
-                {section.items.map((item) => (
-                  <li set:html={item} />
-                ))}
-              </ul>
+              {section.items.length > 0 && (
+                <ul>
+                  {section.items.map((item) => (
+                    <li set:html={item} />
+                  ))}
+                </ul>
+              )}
+              {section.items.length === 0 && <p>Nothing at the moment!</p>}
             </div>
           ))
         }
       </article>
-    </div>
-  </Container>
+    </Section>
+  </PageContainer>
 </PageLayout>

@@ -1,5 +1,8 @@
 ---
 import type { ProcessedPhoto } from "@lib/photo-utils";
+import Tag from "@components/Tag.astro";
+import BaseCard from "@components/BaseCard.astro";
+import { escapeHtml } from "@lib/utils";
 
 interface Props {
   photo: ProcessedPhoto;
@@ -8,32 +11,19 @@ interface Props {
 
 const { photo, loading = "lazy" } = Astro.props;
 const { data, images, exifItems, formattedDate } = photo;
-
-// Helper function to escape HTML for attributes
-function escapeHtml(text: string): string {
-  if (typeof text !== "string") return "";
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
 ---
 
-<div
-  class="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-text-secondary hover:bg-gray-50 hover:shadow-md dark:border-border-dark dark:bg-card-dark dark:hover:border-text-secondary-dark dark:hover:bg-gray-800"
+<BaseCard
+  class="flex flex-col overflow-hidden"
+  data-photo-trigger
+  data-full-image={images.lightboxImage.src}
+  data-title={escapeHtml(data.title)}
+  data-content={escapeHtml(photo.body || "")}
+  tabindex={0}
+  role="button"
+  aria-label={`View photo: ${data.title}`}
 >
-  <div
-    class="relative cursor-pointer"
-    data-photo-trigger
-    data-full-image={images.lightboxImage.src}
-    data-title={escapeHtml(data.title)}
-    data-content={escapeHtml(photo.body || "")}
-    tabindex="0"
-    role="button"
-    aria-label={`View photo: ${data.title}`}
-  >
+  <div class="relative cursor-pointer">
     <img
       src={images.thumbnailImage.src}
       alt={data.title}
@@ -49,7 +39,7 @@ function escapeHtml(text: string): string {
       class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/10"
     >
       <div
-        class="rounded-full bg-white/90 p-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:bg-black/90"
+        class="bg-background/90 p-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:bg-background-dark/90"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +65,7 @@ function escapeHtml(text: string): string {
     <div class="min-w-0 flex-1">
       <div class="mb-2 flex items-start justify-between gap-4">
         <div
-          class="font-display text-lg font-semibold text-text-primary transition-colors group-hover:text-link dark:text-text-primary-dark dark:group-hover:text-link-dark"
+          class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark"
         >
           {data.title}
         </div>
@@ -91,13 +81,11 @@ function escapeHtml(text: string): string {
         exifItems.length > 0 && (
           <div class="flex flex-wrap justify-center gap-1 text-xs">
             {exifItems.map((item) => (
-              <span class="rounded-md bg-gray-200 px-2 py-1 text-center font-mono text-text-secondary dark:bg-gray-700 dark:text-text-secondary-dark">
-                {item}
-              </span>
+              <Tag text={item} centered />
             ))}
           </div>
         )
       }
     </div>
   </div>
-</div>
+</BaseCard>

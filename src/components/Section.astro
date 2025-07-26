@@ -1,0 +1,26 @@
+---
+interface Props {
+  title?: string;
+  spacing?: "sm" | "md" | "lg";
+  class?: string;
+}
+
+const { title, spacing = "md", class: className = "" } = Astro.props;
+
+const spacingClasses = {
+  sm: "space-y-4",
+  md: "space-y-6",
+  lg: "space-y-8",
+};
+---
+
+<section class={`animate ${spacingClasses[spacing]} ${className}`}>
+  {
+    title && (
+      <h2 class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark">
+        {title}
+      </h2>
+    )
+  }
+  <slot />
+</section>

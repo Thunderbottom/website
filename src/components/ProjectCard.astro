@@ -1,7 +1,9 @@
 ---
-import { formatDate } from "@lib/utils";
+import { formatDate } from "@lib/config";
 import Link from "@components/Link.astro";
-import type { ProjectItem } from "@lib/constants";
+import Tag from "@components/Tag.astro";
+import BaseCard from "@components/BaseCard.astro";
+import type { ProjectItem } from "@lib/config";
 
 interface Props {
   project: ProjectItem;
@@ -10,12 +12,10 @@ interface Props {
 const { project } = Astro.props;
 ---
 
-<div
-  class="group relative flex flex-col gap-4 rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-text-secondary hover:bg-gray-50 hover:shadow-md dark:border-border-dark dark:bg-card-dark dark:hover:border-text-secondary-dark dark:hover:bg-gray-800"
->
+<BaseCard class="flex flex-col gap-4 p-4">
   <div class="min-w-0 flex-1">
     <div
-      class="mb-1 font-display text-lg font-semibold text-text-primary transition-colors group-hover:text-link dark:text-text-primary-dark dark:group-hover:text-link-dark"
+      class="mb-1 font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark"
     >
       {project.title}
     </div>
@@ -30,18 +30,16 @@ const { project } = Astro.props;
 
     {
       project.tags && project.tags.length > 0 && (
-        <div class="mb-3 flex flex-wrap gap-1">
+        <div class="mb-3 flex flex-wrap gap-2">
           {project.tags.map((tag) => (
-            <span class="rounded-md bg-gray-200 px-2 py-1 font-mono text-xs text-text-secondary dark:bg-gray-700 dark:text-text-secondary-dark">
-              {tag}
-            </span>
+            <Tag text={tag} />
           ))}
         </div>
       )
     }
 
     {
-      (project.demoURL || project.repoURL) && (
+      (project.demoURL || project.repoURL || project.websiteURL) && (
         <nav class="flex gap-1 text-sm">
           {project.demoURL && (
             <Link href={project.demoURL} external underline>
@@ -58,8 +56,18 @@ const { project } = Astro.props;
               source code
             </Link>
           )}
+          {project.repoURL && project.websiteURL && (
+            <span class="text-text-secondary dark:text-text-secondary-dark">
+              /
+            </span>
+          )}
+          {project.websiteURL && (
+            <Link href={project.websiteURL} external underline>
+              website
+            </Link>
+          )}
         </nav>
       )
     }
   </div>
-</div>
+</BaseCard>

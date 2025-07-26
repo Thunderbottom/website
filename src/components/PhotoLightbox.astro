@@ -14,7 +14,7 @@
   <!-- Close button -->
   <button
     id="lightbox-close"
-    class="absolute right-4 top-4 z-10 rounded-lg bg-black/20 p-3 text-white transition-colors hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+    class="absolute right-4 top-4 z-10 bg-black/20 p-3 text-white transition-colors hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
     aria-label="Close photo viewer"
     type="button"
   >
@@ -36,7 +36,7 @@
       <!-- Previous button -->
       <button
         id="lightbox-prev"
-        class="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-lg bg-black/20 p-3 text-white opacity-80 transition-colors hover:bg-black/70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+        class="absolute left-4 top-1/2 z-10 -translate-y-1/2 bg-black/20 p-3 text-white opacity-80 transition-colors hover:bg-black/70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
         aria-label="Previous photo"
         type="button"
         style="display: none;"
@@ -57,7 +57,7 @@
       <!-- Next button -->
       <button
         id="lightbox-next"
-        class="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-lg bg-black/20 p-3 text-white opacity-80 transition-colors hover:bg-black/70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+        class="absolute right-4 top-1/2 z-10 -translate-y-1/2 bg-black/20 p-3 text-white opacity-80 transition-colors hover:bg-black/70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
         aria-label="Next photo"
         type="button"
         style="display: none;"
@@ -79,13 +79,13 @@
         id="lightbox-image"
         src=""
         alt=""
-        class="max-h-full max-w-full rounded-lg object-contain opacity-0 shadow-2xl transition-opacity duration-300"
+        class="max-h-full max-w-full object-contain opacity-0 shadow-2xl transition-opacity duration-300"
         style="image-orientation: from-image; width: auto; height: auto;"
       />
 
       <div
         id="lightbox-loading"
-        class="absolute inset-0 flex items-center justify-center rounded-lg"
+        class="absolute inset-0 flex items-center justify-center"
         style="display: flex;"
         aria-live="polite"
         aria-label="Loading photo"
@@ -185,8 +185,6 @@
       // Expose methods globally for infinite scroll integration
       window.setupPhotoLightboxTriggers = this.setupPhotoTriggers.bind(this);
       window.staticPhotoLightboxInstance = this;
-
-      console.log("[StaticPhotoLightbox] Initialized successfully");
     }
 
     /**
@@ -395,10 +393,6 @@
       setTimeout(() => {
         this.elements.closeButton.focus();
       }, 100);
-
-      console.log(
-        `[StaticPhotoLightbox] Opened photo ${this.state.currentPhotoIndex + 1} of ${this.state.allPhotos.length}`,
-      );
     }
 
     /**
@@ -430,8 +424,6 @@
       this.elements.lightboxImage.src = "";
       this.elements.lightboxImage.style.opacity = "0";
       this.elements.lightboxLoading.style.display = "flex";
-
-      console.log("[StaticPhotoLightbox] Closed");
     }
 
     /**
@@ -469,10 +461,6 @@
       if (this.state.currentPhotoIndex > 0) {
         this.state.currentPhotoIndex--;
         this.loadPhoto(this.state.allPhotos[this.state.currentPhotoIndex]);
-
-        console.log(
-          `[StaticPhotoLightbox] Previous photo: ${this.state.currentPhotoIndex + 1} of ${this.state.allPhotos.length}`,
-        );
       }
     }
 
@@ -534,8 +522,6 @@
       // Remove global references
       delete window.setupPhotoLightboxTriggers;
       delete window.staticPhotoLightboxInstance;
-
-      console.log("[StaticPhotoLightbox] Destroyed");
     }
   }
 

@@ -1,146 +1,140 @@
 ---
+export const prerender = true;
+
 import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
+import PageContainer from "@components/PageContainer.astro";
+import Section from "@components/Section.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import ProjectCard from "@components/ProjectCard.astro";
 import Link from "@components/Link.astro";
-import { SITE, SOCIALS, PROJECTS } from "@lib/constants";
+import { SITE, SOCIALS, PROJECTS } from "@lib/config";
+import { sortByDateDesc } from "@lib/utils";
 
 // Get recent blog posts
-const blog = (await getCollection("blog"))
-  .filter((post) => !post.data.draft)
-  .sort(
-    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
-  )
-  .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+const blog = sortByDateDesc(
+  (await getCollection("blog")).filter((post) => !post.data.draft),
+).slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
 // Get recent projects
-const recentProjects = PROJECTS.sort(
-  (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
-).slice(0, SITE.NUM_PROJECTS_ON_HOMEPAGE);
+const recentProjects = sortByDateDesc(PROJECTS).slice(
+  0,
+  SITE.NUM_PROJECTS_ON_HOMEPAGE,
+);
 ---
 
 <PageLayout currentPath="/">
-  <Container>
-    <div class="space-y-16">
-      <section class="animate">
-        <h1 class="mb-6 font-display text-xl font-semibold text-text-primary">
-          {SITE.NAME}
-        </h1>
+  <PageContainer spacing="lg">
+    <Section spacing="md">
+      <h1
+        class="mb-6 font-display text-xl font-semibold text-text-primary dark:text-text-primary-dark"
+      >
+        {SITE.NAME}
+      </h1>
 
-        <div class="space-y-6">
-          <article class="prose prose-lg max-w-none">
-            <p>
-              I make servers go beep boop. Also a hobbyist <Link
-                href="/photography">photographer</Link
-              >, part-time gamer, and a full-time golden retriever dad. This is
-              my personal page, where I post my thoughts on engineering,
-              philosophy, and system design.
-            </p>
-
-            <p>
-              Outside of work I'm interested in everything *nix, open-source
-              projects, privacy in tech, and infrastructure that just works. In
-              my free time, I get lost in video games, read the occasional book,
-              and sometimes <Link
-                href="https://soundcloud.com/harmonicseventhnoiseprotocol"
-                external>make music</Link
-              >. Want to see what I'm currently working on? Check out what I'm
-              up to <Link href="/now">now</Link>.
-            </p>
-
-            <p><em>"El camarón que se duerme se lo lleva la corriente"</em></p>
-          </article>
-        </div>
-      </section>
-
-      {
-        blog.length > 0 && (
-          <section class="animate space-y-6">
-            <div class="flex flex-wrap items-center justify-between gap-y-2">
-              <h2 class="font-display text-lg font-semibold text-text-primary">
-                Latest Posts
-              </h2>
-              <Link href="/blog" class="text-sm">
-                See all posts
-              </Link>
-            </div>
-            <ul class="flex flex-col gap-4">
-              {blog.map((post) => (
-                <li>
-                  <ArrowCard entry={post} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        )
-      }
-
-      {
-        recentProjects.length > 0 && (
-          <section class="animate space-y-6">
-            <div class="flex flex-wrap items-center justify-between gap-y-2">
-              <h2 class="font-display text-lg font-semibold text-text-primary">
-                Recent Projects
-              </h2>
-              <Link href="/projects" class="text-sm">
-                See all projects
-              </Link>
-            </div>
-            <div class="flex flex-col gap-6">
-              {recentProjects.map((project) => (
-                <ProjectCard project={project} />
-              ))}
-            </div>
-          </section>
-        )
-      }
-
-      <section class="animate space-y-6">
-        <h2 class="font-display text-lg font-semibold text-text-primary">
-          Let's Connect
-        </h2>
+      <div class="space-y-6">
         <article class="prose prose-lg max-w-none">
           <p>
-            If you want to get in touch with me about something or just to say
-            hi, reach out on social media or send me an email.
+            I make servers go beep boop. Also a hobbyist <Link
+              href="/photography"
+              underline>photographer</Link
+            >, part-time gamer, and a full-time golden retriever dad. This is my
+            personal page, where I post my thoughts on engineering, philosophy,
+            and system design.
+          </p>
+
+          <p>
+            Outside of work I'm interested in everything *nix, open-source
+            projects, privacy in tech, and infrastructure that just works. In my
+            free time, I get lost in video games, read the occasional book, and
+            sometimes <Link
+              href="https://soundcloud.com/harmonicseventhnoiseprotocol"
+              external
+              underline>make music</Link
+            >. Want to see what I'm currently working on? Check out what I'm up
+            to <Link href="/now" underline>now</Link>.
+          </p>
+
+          <p class="italic">
+            "El camarón que se duerme se lo lleva la corriente"
           </p>
         </article>
-        <ul class="flex flex-wrap gap-2">
-          {
-            SOCIALS.map((social, index) => (
-              <li class="flex gap-x-2 text-nowrap">
-                <Link
-                  href={social.href}
-                  external
-                  aria-label={`${SITE.NAME} on ${social.name}`}
-                  class="text-sm"
-                  underline
-                >
-                  {social.name}
-                </Link>
-                {index < SOCIALS.length - 1 && (
-                  <span class="mr-2 text-text-muted dark:text-text-muted-dark">
-                    {" "}
-                  </span>
-                )}
-              </li>
-            ))
-          }
-          <li class="flex gap-x-2">
-            <span class="text-text-muted"> </span>
-            <Link
-              href={`mailto:${SITE.EMAIL}`}
-              aria-label={`Email ${SITE.NAME}`}
-              class="text-sm"
-              underline
-            >
-              Email
+      </div>
+    </Section>
+
+    {
+      blog.length > 0 && (
+        <Section spacing="md">
+          <div class="flex flex-wrap items-center justify-between gap-y-2">
+            <h2 class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark">
+              Latest Posts
+            </h2>
+            <Link href="/blog" class="text-sm">
+              See all posts
             </Link>
-          </li>
-        </ul>
-      </section>
-    </div>
-  </Container>
+          </div>
+          <ul class="flex flex-col gap-4">
+            {blog.map((post) => (
+              <li>
+                <ArrowCard entry={post} />
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )
+    }
+
+    {
+      recentProjects.length > 0 && (
+        <Section spacing="md">
+          <div class="flex flex-wrap items-center justify-between gap-y-2">
+            <h2 class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark">
+              Recent Projects
+            </h2>
+            <Link href="/projects" class="text-sm">
+              See all projects
+            </Link>
+          </div>
+          <div class="flex flex-col gap-6">
+            {recentProjects.map((project) => (
+              <ProjectCard project={project} />
+            ))}
+          </div>
+        </Section>
+      )
+    }
+
+    <Section spacing="md">
+      <h2
+        class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark"
+      >
+        Let's Connect
+      </h2>
+      <article class="prose prose-lg max-w-none">
+        <p>
+          If you want to get in touch with me about something or just to say
+          "hello" sometime, here's where you can find me.
+        </p>
+      </article>
+      <ul class="flex flex-wrap gap-1">
+        {
+          SOCIALS.map((social, index) => (
+            <li class="flex gap-x-1 text-nowrap">
+              <Link
+                href={social.href}
+                aria-label={`${SITE.NAME} on ${social.name}`}
+                external
+                underline
+              >
+                {social.name}
+              </Link>
+              <span class="mr-2 text-text-muted dark:text-text-muted-dark">
+                {" "}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </Section>
+  </PageContainer>
 </PageLayout>

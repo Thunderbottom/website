@@ -1,6 +1,6 @@
 ---
 import Container from "@components/Container.astro";
-import { SITE } from "@lib/constants";
+import { SITE } from "@lib/config";
 
 const currentYear = new Date().getFullYear();
 ---
@@ -10,9 +10,6 @@ const currentYear = new Date().getFullYear();
 >
   <Container>
     <div class="space-y-4">
-      <div class="relative">
-        <div class="absolute -top-12 right-0"></div>
-      </div>
       <div class="text-center text-sm">
         <div class="text-sm text-text-secondary dark:text-text-secondary-dark">
           &copy; {currentYear} | {SITE.NAME}

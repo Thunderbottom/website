@@ -1,10 +1,10 @@
 import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
-import { PHOTOGRAPHY, SITE } from "@lib/constants";
+import { PHOTOGRAPHY, SITE, IMAGE_SETTINGS } from "@lib/config";
 
 export interface ImageSet {
-  thumbnailImage: any;
-  lightboxImage: any;
+  thumbnailImage: ImageMetadata;
+  lightboxImage: ImageMetadata;
 }
 
 export interface ExifData {
@@ -32,24 +32,10 @@ export interface ProcessedPhoto {
   formattedDate: string;
 }
 
-// Image quality and size constants - WebP only for performance
-export const IMAGE_SETTINGS = {
-  THUMBNAIL: {
-    WIDTH: 800,
-    QUALITY: 75,
-    FORMAT: "webp" as const,
-  },
-  LIGHTBOX: {
-    WIDTH: 1280,
-    QUALITY: 85,
-    FORMAT: "webp" as const,
-  },
-} as const;
-
 /**
  * Generate optimized images for both thumbnail and lightbox (WebP only)
  */
-export async function generatePhotoImages(
+async function generatePhotoImages(
   photoImage: ImageMetadata,
 ): Promise<ImageSet> {
   const [thumbnailWebp, lightboxWebp] = await Promise.all([
@@ -76,7 +62,7 @@ export async function generatePhotoImages(
 /**
  * Extract essential EXIF data efficiently
  */
-export async function extractExifData(imagePath: string): Promise<ExifData> {
+async function extractExifData(imagePath: string): Promise<ExifData> {
   try {
     const exifr = (await import("exifr")).default;
 
@@ -149,7 +135,7 @@ export async function extractExifData(imagePath: string): Promise<ExifData> {
 /**
  * Format EXIF data into display items
  */
-export function formatExifItems(exifData: ExifData): string[] {
+function formatExifItems(exifData: ExifData): string[] {
   return [
     exifData.camera,
     formatAppleLensText(exifData.lens),

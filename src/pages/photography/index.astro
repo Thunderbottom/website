@@ -1,17 +1,21 @@
 ---
+export const prerender = true;
+
 import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
+import PageContainer from "@components/PageContainer.astro";
+import PageHeader from "@components/PageHeader.astro";
+import Section from "@components/Section.astro";
 import PhotoCard from "@components/PhotoCard.astro";
 import PhotoLightbox from "@components/PhotoLightbox.astro";
-import { PHOTOGRAPHY } from "@lib/constants.ts";
+import { PHOTOGRAPHY } from "@lib/config";
 import {
   generateImageStructuredData,
   processPhotoForStatic,
   sortPhotosByDate,
   type ProcessedPhoto,
 } from "@lib/photo-utils";
-import { formatDate } from "@lib/utils";
+import { formatDate } from "@lib/config";
 
 // Get all published photos
 const allPhotos = await getCollection("photography", ({ data }) => !data.draft);
@@ -75,309 +79,301 @@ const totalPhotos = validPhotosData.length;
     set:html={JSON.stringify(structuredData)}
   />
 
-  <Container>
-    <div class="space-y-12">
-      <div class="animate">
-        <h1 class="font-display text-2xl font-semibold text-text-primary">
-          {PHOTOGRAPHY.TITLE}
-        </h1>
-        <p class="mt-4 text-text-secondary dark:text-text-secondary-dark">
-          {PHOTOGRAPHY.DESCRIPTION}
-        </p>
-      </div>
+  <PageContainer spacing="md">
+    <PageHeader
+      title={PHOTOGRAPHY.TITLE}
+      description={PHOTOGRAPHY.DESCRIPTION}
+      size="lg"
+    />
 
-      <div id="photos-container" class="space-y-12">
-        {
-          years.map((year) => (
-            <section class="animate space-y-6" aria-labelledby={`year-${year}`}>
-              <div class="flex justify-end">
-                <h2
-                  id={`year-${year}`}
-                  class="font-display text-xl font-semibold text-text-primary"
-                >
-                  {year}
-                </h2>
-              </div>
-
-              <div
-                class="space-y-4"
-                role="list"
-                aria-label={`Photos from ${year}`}
-                data-year={year}
-              >
-                {photosByYear[year].map((photo, index) => (
-                  <div role="listitem">
-                    <PhotoCard
-                      photo={photo}
-                      loading={index < 2 ? "eager" : "lazy"}
-                    />
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))
-        }
-      </div>
-
-      <!-- Loading indicator -->
-      <div
-        id="loading-indicator"
-        class="animate hidden py-8 text-center"
-        aria-live="polite"
-        aria-label="Loading more photos"
-      >
-        <div
-          class="inline-flex items-center gap-2 text-text-secondary dark:text-text-secondary-dark"
-        >
-          <div
-            class="h-4 w-4 animate-spin rounded-full border-2 border-text-secondary border-t-transparent"
-            aria-hidden="true"
-          >
-          </div>
-          <span>Loading more photos...</span>
-        </div>
-      </div>
-
-      <!-- End indicator -->
-      <div
-        id="end-indicator"
-        class="animate hidden py-8 text-center"
-        aria-live="polite"
-      >
-        <p class="italic text-text-secondary dark:text-text-secondary-dark">
-          That's all folks!
-        </p>
-      </div>
-
+    <div id="photos-container" class="space-y-12">
       {
-        initialProcessedPhotos.length === 0 && (
-          <div class="animate py-12 text-center">
-            <p class="text-text-secondary">No photos found.</p>
-          </div>
-        )
+        years.map((year) => (
+          <Section
+            spacing="md"
+            class="animate"
+            aria-labelledby={`year-${year}`}
+          >
+            <div class="flex justify-end">
+              <h2
+                id={`year-${year}`}
+                class="font-display text-xl font-semibold text-text-primary dark:text-text-primary-dark"
+              >
+                {year}
+              </h2>
+            </div>
+
+            <div
+              class="space-y-4"
+              role="list"
+              aria-label={`Photos from ${year}`}
+              data-year={year}
+            >
+              {photosByYear[year].map((photo, index) => (
+                <div role="listitem">
+                  <PhotoCard
+                    photo={photo}
+                    loading={index < 2 ? "eager" : "lazy"}
+                  />
+                </div>
+              ))}
+            </div>
+          </Section>
+        ))
       }
     </div>
-  </Container>
-  <PhotoLightbox />
 
-  <script
-    define:vars={{
-      allPhotosData: validPhotosData,
-      photosPerPage: PHOTOS_PER_PAGE,
-      initialCount: INITIAL_PHOTOS_COUNT,
-      totalPhotos: totalPhotos,
-    }}
-  >
-    // Static infinite scroll implementation
-    class StaticPhotoLoader {
-      constructor() {
-        this.allPhotos = allPhotosData;
-        this.photosPerPage = photosPerPage;
-        this.currentIndex = initialCount;
-        this.totalPhotos = totalPhotos;
+    <!-- Loading indicator -->
+    <div
+      id="loading-indicator"
+      class="animate hidden py-8 text-center"
+      aria-live="polite"
+      aria-label="Loading more photos"
+    >
+      <div
+        class="inline-flex items-center gap-2 text-text-secondary dark:text-text-secondary-dark"
+      >
+        <div
+          class="h-4 w-4 animate-spin rounded-full border-2 border-text-secondary border-t-transparent"
+          aria-hidden="true"
+        >
+        </div>
+        <span>Loading more photos...</span>
+      </div>
+    </div>
+
+    <!-- End indicator -->
+    <div
+      id="end-indicator"
+      class="animate hidden py-8 text-center"
+      aria-live="polite"
+    >
+      <p class="italic text-text-secondary dark:text-text-secondary-dark">
+        That's all folks!
+      </p>
+    </div>
+
+    {
+      initialProcessedPhotos.length === 0 && (
+        <div class="animate py-12 text-center">
+          <p class="text-text-secondary">No photos found.</p>
+        </div>
+      )
+    }
+  </PageContainer>
+</PageLayout>
+<PhotoLightbox />
+
+<script
+  define:vars={{
+    allPhotosData: validPhotosData,
+    photosPerPage: PHOTOS_PER_PAGE,
+    initialCount: INITIAL_PHOTOS_COUNT,
+    totalPhotos: totalPhotos,
+  }}
+>
+  // Static infinite scroll implementation
+  class StaticPhotoLoader {
+    constructor() {
+      this.allPhotos = allPhotosData;
+      this.photosPerPage = photosPerPage;
+      this.currentIndex = initialCount;
+      this.totalPhotos = totalPhotos;
+      this.isLoading = false;
+
+      this.photosContainer = document.getElementById("photos-container");
+      this.loadingIndicator = document.getElementById("loading-indicator");
+      this.endIndicator = document.getElementById("end-indicator");
+
+      if (
+        !this.photosContainer ||
+        !this.loadingIndicator ||
+        !this.endIndicator
+      ) {
+        console.error("[StaticPhotoLoader] Required DOM elements not found");
+        return;
+      }
+
+      this.initializeIntersectionObserver();
+    }
+
+    initializeIntersectionObserver() {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const [entry] = entries;
+          if (entry.isIntersecting && this.hasMorePhotos() && !this.isLoading) {
+            this.loadMorePhotos();
+          }
+        },
+        {
+          root: null,
+          rootMargin: "200px",
+          threshold: 0.1,
+        },
+      );
+
+      // Create sentinel element
+      const sentinel = document.createElement("div");
+      sentinel.style.height = "1px";
+      sentinel.setAttribute("data-sentinel", "true");
+      sentinel.setAttribute("aria-hidden", "true");
+      this.photosContainer.parentNode.insertBefore(
+        sentinel,
+        this.loadingIndicator,
+      );
+
+      observer.observe(sentinel);
+
+      // Cleanup on page navigation
+      document.addEventListener("astro:before-swap", () => {
+        observer.disconnect();
+      });
+    }
+
+    hasMorePhotos() {
+      return this.currentIndex < this.allPhotos.length;
+    }
+
+    async loadMorePhotos() {
+      if (this.isLoading || !this.hasMorePhotos()) {
+        return;
+      }
+
+      this.isLoading = true;
+      this.showLoading();
+
+      try {
+        // Get next batch of photos
+        const nextPhotos = this.allPhotos.slice(
+          this.currentIndex,
+          this.currentIndex + this.photosPerPage,
+        );
+
+        if (nextPhotos.length === 0) {
+          this.showEndIndicator();
+          return;
+        }
+
+        // Add a small delay to simulate loading for better UX
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        // Render new photos by year
+        const photosByYear = this.groupPhotosByYear(nextPhotos);
+        const years = Object.keys(photosByYear)
+          .map(Number)
+          .sort((a, b) => b - a);
+
+        for (const year of years) {
+          const photos = photosByYear[year];
+          if (photos && photos.length > 0) {
+            this.renderPhotosForYear(year, photos);
+          }
+        }
+
+        this.currentIndex += nextPhotos.length;
+
+        // Setup lightbox for new photos
+        setTimeout(() => {
+          this.animateNewElements();
+          this.setupPhotoLightbox();
+        }, 100);
+
+        if (!this.hasMorePhotos()) {
+          this.showEndIndicator();
+        }
+      } catch (error) {
+        console.error("[StaticPhotoLoader] Failed to load more photos:", error);
+      } finally {
         this.isLoading = false;
+        this.hideLoading();
+      }
+    }
 
-        this.photosContainer = document.getElementById("photos-container");
-        this.loadingIndicator = document.getElementById("loading-indicator");
-        this.endIndicator = document.getElementById("end-indicator");
-
-        if (
-          !this.photosContainer ||
-          !this.loadingIndicator ||
-          !this.endIndicator
-        ) {
-          console.error("[StaticPhotoLoader] Required DOM elements not found");
-          return;
+    groupPhotosByYear(photos) {
+      return photos.reduce((acc, photo) => {
+        const year = new Date(photo.data.date).getFullYear();
+        if (!acc[year]) {
+          acc[year] = [];
         }
+        acc[year].push(photo);
+        return acc;
+      }, {});
+    }
 
-        this.initializeIntersectionObserver();
+    renderPhotosForYear(year, photos) {
+      let yearSection = this.photosContainer.querySelector(
+        `[data-year="${year}"]`,
+      )?.parentElement;
+
+      if (!yearSection) {
+        yearSection = this.createYearSection(year);
+        this.insertYearSectionInOrder(yearSection, year);
       }
 
-      initializeIntersectionObserver() {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            const [entry] = entries;
-            if (
-              entry.isIntersecting &&
-              this.hasMorePhotos() &&
-              !this.isLoading
-            ) {
-              this.loadMorePhotos();
-            }
-          },
-          {
-            root: null,
-            rootMargin: "200px",
-            threshold: 0.1,
-          },
-        );
+      const photosList = yearSection.querySelector(`[data-year="${year}"]`);
 
-        // Create sentinel element
-        const sentinel = document.createElement("div");
-        sentinel.style.height = "1px";
-        sentinel.setAttribute("data-sentinel", "true");
-        sentinel.setAttribute("aria-hidden", "true");
-        this.photosContainer.parentNode.insertBefore(
-          sentinel,
-          this.loadingIndicator,
-        );
-
-        observer.observe(sentinel);
-
-        // Cleanup on page navigation
-        document.addEventListener("astro:before-swap", () => {
-          observer.disconnect();
-        });
+      // Render each photo
+      for (const photo of photos) {
+        const photoElement = this.createPhotoElement(photo);
+        photosList.appendChild(photoElement);
       }
+    }
 
-      hasMorePhotos() {
-        return this.currentIndex < this.allPhotos.length;
-      }
+    createYearSection(year) {
+      const yearSection = document.createElement("section");
+      yearSection.className = "animate space-y-6";
+      yearSection.setAttribute("aria-labelledby", `year-${year}`);
 
-      async loadMorePhotos() {
-        if (this.isLoading || !this.hasMorePhotos()) {
-          return;
-        }
-
-        this.isLoading = true;
-        this.showLoading();
-
-        try {
-          // Get next batch of photos
-          const nextPhotos = this.allPhotos.slice(
-            this.currentIndex,
-            this.currentIndex + this.photosPerPage,
-          );
-
-          if (nextPhotos.length === 0) {
-            this.showEndIndicator();
-            return;
-          }
-
-          // Add a small delay to simulate loading for better UX
-          await new Promise((resolve) => setTimeout(resolve, 300));
-
-          // Render new photos by year
-          const photosByYear = this.groupPhotosByYear(nextPhotos);
-          const years = Object.keys(photosByYear)
-            .map(Number)
-            .sort((a, b) => b - a);
-
-          for (const year of years) {
-            const photos = photosByYear[year];
-            if (photos && photos.length > 0) {
-              this.renderPhotosForYear(year, photos);
-            }
-          }
-
-          this.currentIndex += nextPhotos.length;
-
-          // Setup lightbox for new photos
-          setTimeout(() => {
-            this.animateNewElements();
-            this.setupPhotoLightbox();
-          }, 100);
-
-          if (!this.hasMorePhotos()) {
-            this.showEndIndicator();
-          }
-        } catch (error) {
-          console.error(
-            "[StaticPhotoLoader] Failed to load more photos:",
-            error,
-          );
-        } finally {
-          this.isLoading = false;
-          this.hideLoading();
-        }
-      }
-
-      groupPhotosByYear(photos) {
-        return photos.reduce((acc, photo) => {
-          const year = new Date(photo.data.date).getFullYear();
-          if (!acc[year]) {
-            acc[year] = [];
-          }
-          acc[year].push(photo);
-          return acc;
-        }, {});
-      }
-
-      renderPhotosForYear(year, photos) {
-        let yearSection = this.photosContainer.querySelector(
-          `[data-year="${year}"]`,
-        )?.parentElement;
-
-        if (!yearSection) {
-          yearSection = this.createYearSection(year);
-          this.insertYearSectionInOrder(yearSection, year);
-        }
-
-        const photosList = yearSection.querySelector(`[data-year="${year}"]`);
-
-        // Render each photo
-        for (const photo of photos) {
-          const photoElement = this.createPhotoElement(photo);
-          photosList.appendChild(photoElement);
-        }
-      }
-
-      createYearSection(year) {
-        const yearSection = document.createElement("section");
-        yearSection.className = "animate space-y-6";
-        yearSection.setAttribute("aria-labelledby", `year-${year}`);
-
-        const yearHeader = document.createElement("div");
-        yearHeader.className = "flex justify-end";
-        yearHeader.innerHTML = `
+      const yearHeader = document.createElement("div");
+      yearHeader.className = "flex justify-end";
+      yearHeader.innerHTML = `
           <h2 id="year-${year}" class="font-display text-xl font-semibold text-text-primary">
             ${year}
           </h2>
         `;
 
-        const photosList = document.createElement("div");
-        photosList.className = "space-y-4";
-        photosList.setAttribute("role", "list");
-        photosList.setAttribute("aria-label", `Photos from ${year}`);
-        photosList.setAttribute("data-year", year);
+      const photosList = document.createElement("div");
+      photosList.className = "space-y-4";
+      photosList.setAttribute("role", "list");
+      photosList.setAttribute("aria-label", `Photos from ${year}`);
+      photosList.setAttribute("data-year", year);
 
-        yearSection.appendChild(yearHeader);
-        yearSection.appendChild(photosList);
+      yearSection.appendChild(yearHeader);
+      yearSection.appendChild(photosList);
 
-        return yearSection;
-      }
+      return yearSection;
+    }
 
-      insertYearSectionInOrder(yearSection, year) {
-        const existingSections =
-          this.photosContainer.querySelectorAll("section");
-        let inserted = false;
+    insertYearSectionInOrder(yearSection, year) {
+      const existingSections = this.photosContainer.querySelectorAll("section");
+      let inserted = false;
 
-        for (const section of existingSections) {
-          const existingYearElement = section.querySelector("[data-year]");
-          if (existingYearElement) {
-            const existingYear = parseInt(
-              existingYearElement.getAttribute("data-year"),
-            );
-            if (year > existingYear) {
-              this.photosContainer.insertBefore(yearSection, section);
-              inserted = true;
-              break;
-            }
+      for (const section of existingSections) {
+        const existingYearElement = section.querySelector("[data-year]");
+        if (existingYearElement) {
+          const existingYear = parseInt(
+            existingYearElement.getAttribute("data-year"),
+          );
+          if (year > existingYear) {
+            this.photosContainer.insertBefore(yearSection, section);
+            inserted = true;
+            break;
           }
         }
-
-        if (!inserted) {
-          this.photosContainer.appendChild(yearSection);
-        }
       }
 
-      createPhotoElement(photo) {
-        const photoDiv = document.createElement("div");
-        photoDiv.setAttribute("role", "listitem");
-        photoDiv.className = "animate";
+      if (!inserted) {
+        this.photosContainer.appendChild(yearSection);
+      }
+    }
 
-        photoDiv.innerHTML = `
-          <div class="group relative flex flex-col rounded-lg border border-border dark:border-border-dark bg-card dark:bg-card-dark hover:border-text-secondary dark:hover:border-text-secondary-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden">
+    createPhotoElement(photo) {
+      const photoDiv = document.createElement("div");
+      photoDiv.setAttribute("role", "listitem");
+      photoDiv.className = "animate";
+
+      photoDiv.innerHTML = `
+          <div class="group relative flex flex-col border border-border dark:border-border-dark bg-card dark:bg-card-dark hover:border-text-secondary dark:hover:border-text-secondary-dark transition-all duration-200 hover:shadow-sm overflow-hidden">
             <div class="relative cursor-pointer" 
                  data-photo-trigger
                  data-full-image="${photo.images.lightboxImage.src}"
@@ -396,7 +392,7 @@ const totalPhotos = validPhotosData.length;
                    onload="this.classList.remove('img-loading')"
               />
               <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
-                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 dark:bg-black/90 rounded-full p-2">
+                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-background/90 dark:bg-background-dark/90 p-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-text-primary dark:text-text-primary-dark" aria-hidden="true">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -407,7 +403,7 @@ const totalPhotos = validPhotosData.length;
             <div class="flex items-start gap-4 p-4">
               <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-4 mb-2">
-                  <div class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark group-hover:text-link dark:group-hover:text-link-dark transition-colors">
+                  <div class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark transition-colors">
                     ${this.escapeHtml(photo.data.title)}
                   </div>
                   <time datetime="${new Date(photo.data.date).toISOString()}" class="text-sm text-text-secondary dark:text-text-secondary-dark whitespace-nowrap">
@@ -421,7 +417,7 @@ const totalPhotos = validPhotosData.length;
                     ${photo.exifItems
                       .map(
                         (item) => `
-                      <span class="px-2 py-1 rounded-md font-mono bg-gray-200 dark:bg-gray-700 text-text-secondary dark:text-text-secondary-dark text-center">
+                      <span class="px-2 py-1 font-mono bg-border dark:bg-border-dark text-text-secondary dark:text-text-secondary-dark text-center">
                         ${this.escapeHtml(item)}
                       </span>
                     `,
@@ -436,70 +432,60 @@ const totalPhotos = validPhotosData.length;
           </div>
         `;
 
-        return photoDiv;
-      }
-
-      escapeHtml(text) {
-        if (typeof text !== "string") return "";
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-      }
-
-      animateNewElements() {
-        const newElements = this.photosContainer.querySelectorAll(
-          ".animate:not(.show)",
-        );
-        newElements.forEach((element, index) => {
-          setTimeout(() => {
-            element.classList.add("show");
-          }, index * 50);
-        });
-      }
-
-      setupPhotoLightbox() {
-        if (window.setupPhotoLightboxTriggers) {
-          window.setupPhotoLightboxTriggers();
-        }
-      }
-
-      showLoading() {
-        this.loadingIndicator.classList.remove("hidden");
-      }
-
-      hideLoading() {
-        this.loadingIndicator.classList.add("hidden");
-      }
-
-      showEndIndicator() {
-        this.endIndicator.classList.remove("hidden");
-        this.hideLoading();
-      }
+      return photoDiv;
     }
 
-    // Initialize the static photo loader
-    function initializeStaticPhotoLoader() {
-      console.log(
-        `[StaticPhotoLoader] Initializing with ${totalPhotos} total photos`,
+    escapeHtml(text) {
+      if (typeof text !== "string") return "";
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    animateNewElements() {
+      const newElements = this.photosContainer.querySelectorAll(
+        ".animate:not(.show)",
       );
-
-      const loader = new StaticPhotoLoader();
-      window.staticPhotoLoader = loader;
-
-      console.log("[StaticPhotoLoader] Initialization complete");
+      newElements.forEach((element, index) => {
+        setTimeout(() => {
+          element.classList.add("show");
+        }, index * 50);
+      });
     }
 
-    // Initialize when DOM is ready
-    if (document.readyState === "loading") {
-      document.addEventListener(
-        "DOMContentLoaded",
-        initializeStaticPhotoLoader,
-      );
-    } else {
-      initializeStaticPhotoLoader();
+    setupPhotoLightbox() {
+      if (window.setupPhotoLightboxTriggers) {
+        window.setupPhotoLightboxTriggers();
+      }
     }
 
-    // Re-initialize after page navigation
-    document.addEventListener("astro:after-swap", initializeStaticPhotoLoader);
-  </script>
-</PageLayout>
+    showLoading() {
+      this.loadingIndicator.classList.remove("hidden");
+    }
+
+    hideLoading() {
+      this.loadingIndicator.classList.add("hidden");
+    }
+
+    showEndIndicator() {
+      this.endIndicator.classList.remove("hidden");
+      this.hideLoading();
+    }
+  }
+
+  // Initialize the static photo loader
+  function initializeStaticPhotoLoader() {
+    const loader = new StaticPhotoLoader();
+    window.staticPhotoLoader = loader;
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeStaticPhotoLoader);
+  } else {
+    initializeStaticPhotoLoader();
+  }
+
+  // Re-initialize after page navigation
+  document.addEventListener("astro:after-swap", initializeStaticPhotoLoader);
+</script>

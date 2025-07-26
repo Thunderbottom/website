@@ -1,8 +1,9 @@
 import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
-import { SITE } from "@lib/constants";
+import { SITE } from "@lib/config";
+import type { APIRoute } from "astro";
 
-export async function GET(context) {
+export const GET: APIRoute = async (context) => {
   const blog = await getCollection("blog", ({ data }) => {
     return !data.draft;
   });
@@ -15,7 +16,7 @@ export async function GET(context) {
   return rss({
     title: SITE.NAME,
     description: SITE.DESCRIPTION,
-    site: context.site,
+    site: context.site!,
     items: sortedPosts.map((post) => ({
       title: post.data.title,
       pubDate: new Date(post.data.date),
@@ -24,4 +25,4 @@ export async function GET(context) {
     })),
     customData: `<language>en</language>`,
   });
-}
+};

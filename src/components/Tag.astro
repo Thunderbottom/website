@@ -1,0 +1,18 @@
+---
+interface Props {
+  text: string;
+  size?: "xs" | "sm";
+  centered?: boolean;
+}
+
+const { text, size = "xs", centered = false } = Astro.props;
+
+const sizeClasses = size === "xs" ? "text-xs" : "text-sm";
+const centerClasses = centered ? "text-center" : "";
+---
+
+<span
+  class={`bg-border px-2 py-1 font-mono text-secondary dark:bg-border-dark ${sizeClasses} ${centerClasses}`}
+>
+  {text}
+</span>

@@ -15,10 +15,10 @@ const {
 } = Astro.props;
 
 const baseClasses =
-  "text-link dark:text-link-dark hover:text-text-primary dark:hover:text-text-primary-dark transition-all duration-200 ease-in-out";
+  "text-link dark:text-link-dark hover:bg-text-primary hover:text-background dark:hover:bg-text-primary-dark dark:hover:text-background-dark hover:no-underline hover:py-[0.0625rem] hover:px-[0.1875rem] hover:-my-[0.0625rem] hover:-mx-[0.1875rem] transition-all duration-200 ease-in-out";
 
 const underlineClasses = underline
-  ? "border-b border-link dark:border-link-dark hover:bg-link-hover dark:hover:bg-link-hover-dark hover:border-text-primary dark:hover:border-text-primary-dark"
+  ? "underline underline-offset-[3px] [display:inline-block]"
   : "";
 
 const linkClasses = [baseClasses, underlineClasses, className]
