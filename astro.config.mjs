@@ -8,7 +8,7 @@ import astroExpressiveCode from "astro-expressive-code";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 
 export default defineConfig({
-  site: "http://localhost:4321",
+  site: "https://maych.in",
   output: "static",
 
   integrations: [
