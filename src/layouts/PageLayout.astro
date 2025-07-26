@@ -31,30 +31,10 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
 ---
 
 <!doctype html>
-<html lang="en" class="loading">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-    <script>
-      // Apply theme immediately - optimized to avoid forced layout
-      (function () {
-        try {
-          const theme =
-            localStorage.getItem("theme-preference") ||
-            (window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light");
-          if (theme === "dark") {
-            document.documentElement.classList.add("dark");
-          }
-          document.documentElement.setAttribute("data-theme", theme);
-        } catch (e) {
-          // Fallback for environments without localStorage
-          document.documentElement.setAttribute("data-theme", "light");
-        }
-      })();
-    </script>
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -85,6 +65,13 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     />
     <link
       rel="preload"
+      href="/fonts/commit-mono/CommitMono-400-Regular.otf"
+      as="font"
+      type="font/otf"
+      crossorigin
+    />
+    <link
+      rel="preload"
       href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-italic.woff2"
       as="font"
       type="font/woff2"
@@ -111,65 +98,6 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
       type="font/woff2"
       crossorigin
     />
-    <link
-      rel="preload"
-      href="/fonts/commit-mono/CommitMono-400-Regular.otf"
-      as="font"
-      type="font/otf"
-      crossorigin
-    />
-
-    <title>{pageTitle}</title>
-    <meta name="title" content={pageTitle} />
-    <meta name="description" content={description} />
-    <meta name="keywords" content={keywords} />
-    <meta name="author" content={SITE.NAME} />
-
-    <link rel="canonical" href={canonicalURL} />
-
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title="RSS"
-      href="/rss.xml"
-    />
-
-    <meta property="og:type" content={ogType} />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={finalOgImage} />
-    <meta property="og:site_name" content={SITE.NAME} />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content={canonicalURL} />
-    <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={finalOgImage} />
-
-    <link
-      rel="icon"
-      type="image/png"
-      href="/icons/favicon/favicon-96x96.png"
-      sizes="96x96"
-    />
-    <link rel="shortcut icon" href="/icons/favicon/favicon.ico" />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/icons/favicon/apple-touch-icon.png"
-    />
-    <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
-    <link rel="manifest" href="/icons/favicon/site.webmanifest" />
-  </head>
-
-  <body>
-    <Header />
-    <main id="main-content" tabindex="-1">
-      <slot />
-    </main>
-    <Footer />
-    <BackToTop />
 
     <script is:inline>
       const storageKey = "theme-preference";
@@ -290,5 +218,57 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
       window.addEventListener("DOMContentLoaded", init);
       document.addEventListener("astro:after-swap", init);
     </script>
+
+    <title>{pageTitle}</title>
+    <meta name="title" content={pageTitle} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content={SITE.NAME} />
+
+    <link rel="canonical" href={canonicalURL} />
+
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="RSS"
+      href="/rss.xml"
+    />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={finalOgImage} />
+    <meta property="og:site_name" content={SITE.NAME} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={finalOgImage} />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="/icons/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link rel="shortcut icon" href="/icons/favicon/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/icons/favicon/apple-touch-icon.png"
+    />
+    <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
+    <link rel="manifest" href="/icons/favicon/site.webmanifest" />
+  </head>
+
+  <body>
+    <Header />
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <BackToTop />
   </body>
 </html>

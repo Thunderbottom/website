@@ -6,7 +6,6 @@ import sitemap from "@astrojs/sitemap";
 import robotsTxt from "astro-robots-txt";
 import astroExpressiveCode from "astro-expressive-code";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
-import purgecss from "astro-purgecss";
 import compressor from "astro-compressor";
 
 export default defineConfig({
@@ -31,6 +30,7 @@ export default defineConfig({
         return `[data-theme="${theme.name}"]`;
       },
       themes: ["vitesse-light", "vitesse-dark"],
+      useDarkModeMediaQuery: true,
       styleOverrides: {
         borderColor: ({ theme }) =>
           theme.type === "dark" ? "#2a2a2a" : "#e5e5e5",
@@ -58,20 +58,6 @@ export default defineConfig({
       sitemap: true,
     }),
     sitemap(),
-    purgecss({
-      content: ["./src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte,md,mdx}"],
-      safelist: [
-        "dark",
-        "loading",
-        "scrolled",
-        "show",
-        "active",
-        /^data-/,
-        /^aria-/,
-        /^animate/,
-        /^transition/,
-      ],
-    }),
     compressor({
       gzip: true,
       brotli: true,
