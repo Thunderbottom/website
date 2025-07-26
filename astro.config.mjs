@@ -6,6 +6,8 @@ import sitemap from "@astrojs/sitemap";
 import robotsTxt from "astro-robots-txt";
 import astroExpressiveCode from "astro-expressive-code";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
+import purgecss from "astro-purgecss";
+import compressor from "astro-compressor";
 
 export default defineConfig({
   site: "https://maych.in",
@@ -56,6 +58,24 @@ export default defineConfig({
       sitemap: true,
     }),
     sitemap(),
+    purgecss({
+      content: ["./src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte,md,mdx}"],
+      safelist: [
+        "dark",
+        "loading",
+        "scrolled",
+        "show",
+        "active",
+        /^data-/,
+        /^aria-/,
+        /^animate/,
+        /^transition/,
+      ],
+    }),
+    compressor({
+      gzip: true,
+      brotli: true,
+    }),
   ],
 
   markdown: {
@@ -77,6 +97,10 @@ export default defineConfig({
     server: {
       host: true,
     },
+  },
+
+  build: {
+    inlineStylesheets: "never",
   },
 
   compressHTML: true,

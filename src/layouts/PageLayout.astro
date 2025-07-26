@@ -32,214 +32,136 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
 
 <!doctype html>
 <html lang="en" class="loading">
-  <script>
-    // Apply theme immediately - before any CSS loads
-    (function () {
-      const theme =
-        localStorage.getItem("theme-preference") ||
-        (window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light");
-      document.documentElement.className = theme === "dark" ? "dark" : "";
-      document.documentElement.setAttribute("data-theme", theme);
-    })();
-  </script>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="theme-color" content="#f8fafc" />
-  <meta
-    name="theme-color"
-    content="#0f0f19"
-    media="(prefers-color-scheme: dark)"
-  />
-
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta http-equiv="X-Frame-Options" content="DENY" />
-  <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
-
-  <!-- Preload critical local fonts -->
-  <link
-    rel="preload"
-    href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-regular.woff2"
-    as="font"
-    type="font/woff2"
-    crossorigin
-  />
-  <link
-    rel="preload"
-    href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-600.woff2"
-    as="font"
-    type="font/woff2"
-    crossorigin
-  />
-  <link
-    rel="preload"
-    href="/fonts/commit-mono/CommitMono-400-Regular.otf"
-    as="font"
-    type="font/otf"
-    crossorigin
-  />
-
-  <script is:inline>
-    const storageKey = "theme-preference";
-
-    const getColorPreference = () => {
-      if (localStorage.getItem(storageKey))
-        return localStorage.getItem(storageKey);
-      else
-        return window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light";
-    };
-
-    const setPreference = () => {
-      localStorage.setItem(storageKey, theme.value);
-      reflectPreference();
-    };
-
-    const reflectPreference = () => {
-      document.documentElement.classList.toggle("dark", theme.value === "dark");
-      document.firstElementChild.setAttribute("data-theme", theme.value);
-
-      const metaThemeColor = document.querySelector(
-        'meta[name="theme-color"]:not([media])',
-      );
-      if (metaThemeColor) {
-        metaThemeColor.content = theme.value === "dark" ? "#0f0f19" : "#f8fafc";
-      }
-
-      document
-        .querySelector("#theme-toggle")
-        ?.setAttribute("aria-label", theme.value);
-    };
-
-    const theme = {
-      value: getColorPreference(),
-    };
-
-    reflectPreference();
-
-    const onClick = () => {
-      theme.value = theme.value === "light" ? "dark" : "light";
-      setPreference();
-    };
-
-    window.addEventListener("DOMContentLoaded", () => {
-      reflectPreference();
-      document
-        .querySelector("#theme-toggle")
-        ?.addEventListener("click", onClick);
-    });
-
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", ({ matches: isDark }) => {
-        theme.value = isDark ? "dark" : "light";
-        setPreference();
-      });
-
-    document.addEventListener("astro:after-swap", () => {
-      reflectPreference();
-      document
-        .querySelector("#theme-toggle")
-        ?.addEventListener("click", onClick);
-    });
-
-    function animate() {
-      const animateElements = document.querySelectorAll(".animate");
-      animateElements.forEach((element, index) => {
-        setTimeout(() => {
-          element.classList.add("show");
-        }, index * 50);
-      });
-    }
-
-    function onScroll() {
-      document.documentElement.classList.toggle("scrolled", window.scrollY > 0);
-    }
-
-    function initSidenotes() {
-      // Handle sidenote toggle icon changes
-      const toggles = document.querySelectorAll(
-        ".sidenote-toggle, .margin-toggle",
-      );
-      toggles.forEach((toggle) => {
-        const updateIcon = () => {
-          const label = toggle.previousElementSibling;
-          if (label && label.classList.contains("sidenote-ref")) {
-            label.setAttribute(
-              "data-expanded",
-              toggle.checked ? "true" : "false",
-            );
+    <script>
+      // Apply theme immediately - optimized to avoid forced layout
+      (function () {
+        try {
+          const theme =
+            localStorage.getItem("theme-preference") ||
+            (window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light");
+          if (theme === "dark") {
+            document.documentElement.classList.add("dark");
           }
-        };
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          // Fallback for environments without localStorage
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
 
-        // Set initial state
-        updateIcon();
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#f8fafc" />
+    <meta
+      name="theme-color"
+      content="#0f0f19"
+      media="(prefers-color-scheme: dark)"
+    />
 
-        // Update on change
-        toggle.addEventListener("change", updateIcon);
-      });
-    }
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
 
-    function init() {
-      animate();
-      onScroll();
-      initSidenotes();
-      document.addEventListener("scroll", onScroll);
-    }
+    <!-- Preload critical local fonts -->
+    <link
+      rel="preload"
+      href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-italic.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-600italic.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-700.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-700italic.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/commit-mono/CommitMono-400-Regular.otf"
+      as="font"
+      type="font/otf"
+      crossorigin
+    />
 
-    window.addEventListener("DOMContentLoaded", init);
-    document.addEventListener("astro:after-swap", init);
-  </script>
+    <title>{pageTitle}</title>
+    <meta name="title" content={pageTitle} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content={SITE.NAME} />
 
-  <title>{pageTitle}</title>
-  <meta name="title" content={pageTitle} />
-  <meta name="description" content={description} />
-  <meta name="keywords" content={keywords} />
-  <meta name="author" content={SITE.NAME} />
+    <link rel="canonical" href={canonicalURL} />
 
-  <link rel="canonical" href={canonicalURL} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="RSS"
+      href="/rss.xml"
+    />
 
-  <link
-    rel="alternate"
-    type="application/rss+xml"
-    title="RSS"
-    href="/rss.xml"
-  />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={finalOgImage} />
+    <meta property="og:site_name" content={SITE.NAME} />
 
-  <meta property="og:type" content={ogType} />
-  <meta property="og:url" content={canonicalURL} />
-  <meta property="og:title" content={pageTitle} />
-  <meta property="og:description" content={description} />
-  <meta property="og:image" content={finalOgImage} />
-  <meta property="og:site_name" content={SITE.NAME} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={finalOgImage} />
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content={canonicalURL} />
-  <meta name="twitter:title" content={pageTitle} />
-  <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={finalOgImage} />
-
-  <link
-    rel="icon"
-    type="image/png"
-    href="/icons/favicon/favicon-96x96.png"
-    sizes="96x96"
-  />
-  <link rel="shortcut icon" href="/icons/favicon/favicon.ico" />
-  <link
-    rel="apple-touch-icon"
-    sizes="180x180"
-    href="/icons/favicon/apple-touch-icon.png"
-  />
-  <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
-  <link rel="manifest" href="/icons/favicon/site.webmanifest" />
-
+    <link
+      rel="icon"
+      type="image/png"
+      href="/icons/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link rel="shortcut icon" href="/icons/favicon/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/icons/favicon/apple-touch-icon.png"
+    />
+    <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
+    <link rel="manifest" href="/icons/favicon/site.webmanifest" />
+  </head>
 
   <body>
     <Header />
@@ -248,5 +170,125 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     </main>
     <Footer />
     <BackToTop />
+
+    <script is:inline>
+      const storageKey = "theme-preference";
+
+      const getColorPreference = () => {
+        if (localStorage.getItem(storageKey))
+          return localStorage.getItem(storageKey);
+        else
+          return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+      };
+
+      const setPreference = () => {
+        localStorage.setItem(storageKey, theme.value);
+        reflectPreference();
+      };
+
+      const reflectPreference = () => {
+        document.documentElement.classList.toggle(
+          "dark",
+          theme.value === "dark",
+        );
+        document.firstElementChild.setAttribute("data-theme", theme.value);
+
+        const metaThemeColor = document.querySelector(
+          'meta[name="theme-color"]:not([media])',
+        );
+        if (metaThemeColor) {
+          metaThemeColor.content =
+            theme.value === "dark" ? "#0f0f19" : "#f8fafc";
+        }
+
+        document
+          .querySelector("#theme-toggle")
+          ?.setAttribute("aria-label", theme.value);
+      };
+
+      const theme = {
+        value: getColorPreference(),
+      };
+
+      reflectPreference();
+
+      const onClick = () => {
+        theme.value = theme.value === "light" ? "dark" : "light";
+        setPreference();
+      };
+
+      window.addEventListener("DOMContentLoaded", () => {
+        reflectPreference();
+        document
+          .querySelector("#theme-toggle")
+          ?.addEventListener("click", onClick);
+      });
+
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", ({ matches: isDark }) => {
+          theme.value = isDark ? "dark" : "light";
+          setPreference();
+        });
+
+      document.addEventListener("astro:after-swap", () => {
+        reflectPreference();
+        document
+          .querySelector("#theme-toggle")
+          ?.addEventListener("click", onClick);
+      });
+
+      function animate() {
+        const animateElements = document.querySelectorAll(".animate");
+        animateElements.forEach((element, index) => {
+          setTimeout(() => {
+            element.classList.add("show");
+          }, index * 50);
+        });
+      }
+
+      function onScroll() {
+        document.documentElement.classList.toggle(
+          "scrolled",
+          window.scrollY > 0,
+        );
+      }
+
+      function initSidenotes() {
+        // Handle sidenote toggle icon changes
+        const toggles = document.querySelectorAll(
+          ".sidenote-toggle, .margin-toggle",
+        );
+        toggles.forEach((toggle) => {
+          const updateIcon = () => {
+            const label = toggle.previousElementSibling;
+            if (label && label.classList.contains("sidenote-ref")) {
+              label.setAttribute(
+                "data-expanded",
+                toggle.checked ? "true" : "false",
+              );
+            }
+          };
+
+          // Set initial state
+          updateIcon();
+
+          // Update on change
+          toggle.addEventListener("change", updateIcon);
+        });
+      }
+
+      function init() {
+        animate();
+        onScroll();
+        initSidenotes();
+        document.addEventListener("scroll", onScroll);
+      }
+
+      window.addEventListener("DOMContentLoaded", init);
+      document.addEventListener("astro:after-swap", init);
+    </script>
   </body>
 </html>

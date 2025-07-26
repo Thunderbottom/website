@@ -58,7 +58,7 @@ export async function getStaticPaths() {
 
   // Common page routes that would have OG images
   paths.push(
-    { params: { route: "index" } }, // Site root 
+    { params: { route: "index" } }, // Site root
     { params: { route: "blog" } }, // Blog index
     { params: { route: "photography" } }, // Photography index
     { params: { route: "projects" } }, // Projects index
