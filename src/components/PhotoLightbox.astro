@@ -459,8 +459,32 @@
     return lightbox;
   }
 
-  document.addEventListener("DOMContentLoaded", initStaticLightbox);
-  document.addEventListener("astro:after-swap", initStaticLightbox);
+  function waitForPhotoTriggers() {
+    return new Promise((resolve) => {
+      const checkTriggers = () => {
+        const triggers = document.querySelectorAll("[data-photo-trigger]");
+        if (triggers.length > 0) {
+          resolve(triggers);
+        } else {
+          requestAnimationFrame(checkTriggers);
+        }
+      };
+      checkTriggers();
+    });
+  }
+
+  async function initWhenReady() {
+    await waitForPhotoTriggers();
+    initStaticLightbox();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initWhenReady);
+  } else {
+    initWhenReady();
+  }
+
+  document.addEventListener("astro:after-swap", initWhenReady);
 </script>
 
 <style>
