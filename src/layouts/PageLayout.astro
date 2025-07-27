@@ -3,6 +3,7 @@ import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import BackToTop from "@components/BackToTop.astro";
 import { SITE } from "@lib/config";
+import { ViewTransitions } from "astro:transitions";
 import "../styles/global.css";
 
 interface Props {
@@ -33,6 +34,23 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
 <!doctype html>
 <html lang="en">
   <head>
+    <script is:inline data-astro-rerun>
+      function applyTheme() {
+        const storageKey = "theme-preference";
+        let theme = localStorage.getItem(storageKey);
+        if (!theme) {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+        document.documentElement.classList.toggle("dark", theme === "dark");
+        document.documentElement.setAttribute("data-theme", theme);
+      }
+
+      applyTheme();
+      document.addEventListener("astro:after-swap", applyTheme);
+    </script>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
 
@@ -48,7 +66,6 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
 
-    <!-- Preload critical local fonts -->
     <link
       rel="preload"
       href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-regular.woff2"
@@ -65,155 +82,84 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     />
     <link
       rel="preload"
-      href="/fonts/commit-mono/CommitMono-400-Regular.otf"
-      as="font"
-      type="font/otf"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-italic.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-600italic.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-700.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-700italic.woff2"
+      href="/fonts/commit-mono/CommitMono-400-Regular.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
 
-    <script is:inline>
+    <script is:inline data-astro-rerun>
       const storageKey = "theme-preference";
 
-      const getColorPreference = () => {
+      function getColorPreference() {
         if (localStorage.getItem(storageKey))
           return localStorage.getItem(storageKey);
-        else
-          return window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
-      };
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+      }
 
-      const setPreference = () => {
-        localStorage.setItem(storageKey, theme.value);
-        reflectPreference();
-      };
-
-      const reflectPreference = () => {
-        document.documentElement.classList.toggle(
-          "dark",
-          theme.value === "dark",
-        );
-        document.firstElementChild.setAttribute("data-theme", theme.value);
+      function setTheme(newTheme) {
+        localStorage.setItem(storageKey, newTheme);
+        document.documentElement.classList.toggle("dark", newTheme === "dark");
+        document.documentElement.setAttribute("data-theme", newTheme);
 
         const metaThemeColor = document.querySelector(
           'meta[name="theme-color"]:not([media])',
         );
         if (metaThemeColor) {
-          metaThemeColor.content =
-            theme.value === "dark" ? "#0f0f19" : "#f8fafc";
+          metaThemeColor.content = newTheme === "dark" ? "#0f0f19" : "#f8fafc";
         }
 
         document
           .querySelector("#theme-toggle")
-          ?.setAttribute("aria-label", theme.value);
-      };
+          ?.setAttribute("aria-label", newTheme);
+      }
 
-      const theme = {
-        value: getColorPreference(),
-      };
-
-      reflectPreference();
-
-      const onClick = () => {
-        theme.value = theme.value === "light" ? "dark" : "light";
-        setPreference();
-      };
-
-      window.addEventListener("DOMContentLoaded", () => {
-        reflectPreference();
-        document
-          .querySelector("#theme-toggle")
-          ?.addEventListener("click", onClick);
-      });
+      function setupThemeToggle() {
+        const themeToggle = document.querySelector("#theme-toggle");
+        if (themeToggle) {
+          themeToggle.addEventListener("click", () => {
+            const currentTheme = getColorPreference();
+            const newTheme = currentTheme === "light" ? "dark" : "light";
+            setTheme(newTheme);
+          });
+        }
+      }
 
       window
         .matchMedia("(prefers-color-scheme: dark)")
         .addEventListener("change", ({ matches: isDark }) => {
-          theme.value = isDark ? "dark" : "light";
-          setPreference();
+          if (!localStorage.getItem(storageKey)) {
+            setTheme(isDark ? "dark" : "light");
+          }
         });
 
-      document.addEventListener("astro:after-swap", () => {
-        reflectPreference();
-        document
-          .querySelector("#theme-toggle")
-          ?.addEventListener("click", onClick);
-      });
+      document.addEventListener("astro:page-load", setupThemeToggle);
+      window.addEventListener("DOMContentLoaded", setupThemeToggle);
 
-      function animate() {
-        const animateElements = document.querySelectorAll(".animate");
-        animateElements.forEach((element, index) => {
-          setTimeout(() => {
-            element.classList.add("show");
-          }, index * 50);
-        });
-      }
-
-      function onScroll() {
-        document.documentElement.classList.toggle(
-          "scrolled",
-          window.scrollY > 0,
-        );
-      }
-
-      function initSidenotes() {
-        // Handle sidenote toggle icon changes
-        const toggles = document.querySelectorAll(
-          ".sidenote-toggle, .margin-toggle",
-        );
-        toggles.forEach((toggle) => {
-          const updateIcon = () => {
-            const label = toggle.previousElementSibling;
-            if (label && label.classList.contains("sidenote-ref")) {
-              label.setAttribute(
-                "data-expanded",
-                toggle.checked ? "true" : "false",
-              );
-            }
-          };
-
-          // Set initial state
-          updateIcon();
-
-          // Update on change
-          toggle.addEventListener("change", updateIcon);
-        });
-      }
-
-      function init() {
-        animate();
+      const init = () => {
+        const onScroll = () =>
+          document.documentElement.classList.toggle(
+            "scrolled",
+            window.scrollY > 0,
+          );
         onScroll();
-        initSidenotes();
         document.addEventListener("scroll", onScroll);
-      }
+
+        document
+          .querySelectorAll(".sidenote-toggle, .margin-toggle")
+          .forEach((toggle) => {
+            const updateIcon = () => {
+              const label = toggle.previousElementSibling;
+              if (label?.classList.contains("sidenote-ref")) {
+                label.setAttribute("data-expanded", toggle.checked);
+              }
+            };
+            updateIcon();
+            toggle.addEventListener("change", updateIcon);
+          });
+      };
 
       window.addEventListener("DOMContentLoaded", init);
       document.addEventListener("astro:after-swap", init);
@@ -261,6 +207,7 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     />
     <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
     <link rel="manifest" href="/icons/favicon/site.webmanifest" />
+    <ViewTransitions />
   </head>
 
   <body>

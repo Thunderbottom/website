@@ -13,9 +13,9 @@ export async function loadSiteFonts(): Promise<FontData[]> {
     const path = await import("path");
 
     const possibleDirs = [
-      path.join(process.cwd(), "public/fonts"),
-      path.join(process.cwd(), "public", "fonts"),
-      path.resolve(process.cwd(), "public", "fonts"),
+      path.join(process.cwd(), "src/assets/fonts"),
+      path.join(process.cwd(), "src", "assets", "fonts"),
+      path.resolve(process.cwd(), "src", "assets", "fonts"),
     ];
 
     let fontsDir = null;

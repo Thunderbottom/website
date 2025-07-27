@@ -57,18 +57,8 @@
 }
 
 @font-face {
-  font-family: "Atkinson Hyperlegible Next";
-  src: url("/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-700italic.woff2")
-    format("woff2");
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-  size-adjust: 100.06%;
-}
-
-@font-face {
   font-family: "Commit Mono";
-  src: url("/fonts/commit-mono/CommitMono-400-Regular.otf") format("opentype");
+  src: url("/fonts/commit-mono/CommitMono-400-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -455,12 +445,7 @@
 
 @layer utilities {
   .animate {
-    @apply translate-y-3 opacity-0;
-    transition: all var(--timing-very-slow) var(--ease-out-expo);
-  }
-
-  .animate.show {
-    @apply translate-y-0 opacity-100;
+    animation: fadeInUp var(--timing-very-slow) var(--ease-out-expo) both;
   }
 
   @keyframes slideDown {
@@ -611,6 +596,7 @@
     animation: none !important;
     transition: none !important;
     transform: none !important;
+    opacity: 1 !important;
   }
 
   .animate-spin {

@@ -46,6 +46,7 @@ export default defineConfig({
     mdx(),
     tailwind({
       applyBaseStyles: false,
+      configFile: "./tailwind.config.mjs",
     }),
     robotsTxt({
       policy: [
@@ -82,6 +83,9 @@ export default defineConfig({
   vite: {
     server: {
       host: true,
+    },
+    css: {
+      postcss: "./postcss.config.mjs",
     },
   },
 
