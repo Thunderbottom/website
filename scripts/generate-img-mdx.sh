@@ -162,8 +162,6 @@ main() {
   done
 
   echo "Processing complete!"
-
-  echo "Processing complete!"
   echo "Generated MDX files are in: $mdx_dir"
 }
 

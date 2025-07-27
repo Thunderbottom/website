@@ -11,7 +11,6 @@ export function sortByDateDesc<
   T extends { data?: { date: string | Date }; date?: string | Date },
 >(items: T[]): T[] {
   return items.sort((a, b) => {
-    // Handle both { data: { date } } and { date } structures
     const dateA = "data" in a && a.data?.date ? a.data.date : (a as any).date;
     const dateB = "data" in b && b.data?.date ? b.data.date : (b as any).date;
 

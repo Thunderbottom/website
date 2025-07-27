@@ -32,9 +32,6 @@ export interface ProcessedPhoto {
   formattedDate: string;
 }
 
-/**
- * Generate optimized images for both thumbnail and lightbox (WebP only)
- */
 async function generatePhotoImages(
   photoImage: ImageMetadata,
 ): Promise<ImageSet> {
@@ -59,9 +56,6 @@ async function generatePhotoImages(
   };
 }
 
-/**
- * Extract essential EXIF data efficiently
- */
 async function extractExifData(imagePath: string): Promise<ExifData> {
   try {
     const exifr = (await import("exifr")).default;
@@ -132,9 +126,6 @@ async function extractExifData(imagePath: string): Promise<ExifData> {
   }
 }
 
-/**
- * Format EXIF data into display items
- */
 function formatExifItems(exifData: ExifData): string[] {
   return [
     exifData.camera,
@@ -146,15 +137,11 @@ function formatExifItems(exifData: ExifData): string[] {
   ].filter(Boolean) as string[];
 }
 
-/**
- * Process a single photo with all metadata and optimizations
- */
 export async function processPhotoForStatic(
   photo: any,
   formatDate: (date: Date | string, format?: string) => string,
 ): Promise<ProcessedPhoto | null> {
   try {
-    // Import the photo image
     const photoImage = await import(
       `../content/photography/images/${photo.data.image}.jpg`
     );
@@ -164,18 +151,14 @@ export async function processPhotoForStatic(
       return null;
     }
 
-    // Generate optimized images
     const images = await generatePhotoImages(photoImage.default);
 
-    // Extract EXIF data
     let exifItems: string[] = [];
     try {
       const imagePath = `./src/content/photography/images/${photo.data.image}.jpg`;
       const exifData = await extractExifData(imagePath);
       exifItems = formatExifItems(exifData);
-    } catch (error) {
-      console.debug(`EXIF extraction failed for ${photo.data.image}:`, error);
-    }
+    } catch (error) {}
 
     const formattedDate = formatDate(new Date(photo.data.date), "%B %d, %Y");
 
@@ -193,22 +176,16 @@ export async function processPhotoForStatic(
   }
 }
 
-/**
- * Sort photos by date taken from EXIF, falling back to frontmatter date
- */
 export function sortPhotosByDate<T extends { data: { date: string | Date } }>(
   photos: T[],
 ): T[] {
   return photos.sort((a, b) => {
     const dateA = new Date(a.data.date);
     const dateB = new Date(b.data.date);
-    return dateB.getTime() - dateA.getTime(); // Most recent first
+    return dateB.getTime() - dateA.getTime();
   });
 }
 
-/**
- * Generate structured data for images (SEO)
- */
 export function generateImageStructuredData(
   photos: Array<{ data: { title: string; date: string; image: string } }>,
 ) {

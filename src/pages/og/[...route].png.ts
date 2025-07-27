@@ -8,10 +8,8 @@ export const GET: APIRoute = async ({ params, url }) => {
   try {
     const route = params.route as string;
 
-    // Load fonts
     const fonts = await loadSiteFonts();
 
-    // Get route configuration using shared utility
     const config = await getRouteConfigForOg(route || "");
 
     const templateProps = {
@@ -20,10 +18,8 @@ export const GET: APIRoute = async ({ params, url }) => {
       badge: config.badge,
     };
 
-    // Generate SVG
     const svg = await generateOgTemplate(templateProps, fonts);
 
-    // Convert SVG to PNG
     const resvg = new Resvg(svg, {
       fitTo: {
         mode: "width",
@@ -51,22 +47,19 @@ export const GET: APIRoute = async ({ params, url }) => {
   }
 };
 
-// For static generation, we can still pre-generate common routes
 export async function getStaticPaths() {
   const { getCollection } = await import("astro:content");
   const paths = [];
 
-  // Common page routes that would have OG images
   paths.push(
-    { params: { route: "index" } }, // Site root
-    { params: { route: "blog" } }, // Blog index
-    { params: { route: "photography" } }, // Photography index
-    { params: { route: "projects" } }, // Projects index
-    { params: { route: "now" } }, // Now page
+    { params: { route: "index" } },
+    { params: { route: "blog" } },
+    { params: { route: "photography" } },
+    { params: { route: "projects" } },
+    { params: { route: "now" } },
   );
 
   try {
-    // Add individual blog posts
     const blogPosts = await getCollection("blog");
     for (const post of blogPosts) {
       if (!post.data.draft) {

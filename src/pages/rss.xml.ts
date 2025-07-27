@@ -8,7 +8,6 @@ export const GET: APIRoute = async (context) => {
     return !data.draft;
   });
 
-  // Sort posts by date
   const sortedPosts = blog.sort(
     (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
   );

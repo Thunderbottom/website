@@ -18,30 +18,10 @@
 
 @font-face {
   font-family: "Atkinson Hyperlegible Next";
-  src: url("/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-italic.woff2")
-    format("woff2");
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-  size-adjust: 100.06%;
-}
-
-@font-face {
-  font-family: "Atkinson Hyperlegible Next";
   src: url("/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-600.woff2")
     format("woff2");
   font-weight: 600;
   font-style: normal;
-  font-display: swap;
-  size-adjust: 100.06%;
-}
-
-@font-face {
-  font-family: "Atkinson Hyperlegible Next";
-  src: url("/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-600italic.woff2")
-    format("woff2");
-  font-weight: 600;
-  font-style: italic;
   font-display: swap;
   size-adjust: 100.06%;
 }
@@ -99,7 +79,7 @@
   body {
     @apply flex flex-col font-sans antialiased;
     @apply bg-background dark:bg-background-dark;
-    @apply text-text-primary dark:text-text-primary-dark;
+    @apply text-primary;
     @apply transition-colors duration-200;
     font-size: 0.95rem;
     line-height: 1.7;
@@ -117,7 +97,7 @@
   h4,
   h5,
   h6 {
-    @apply text-text-primary dark:text-text-primary-dark;
+    @apply text-primary;
     @apply font-sans font-semibold;
   }
 }
@@ -144,7 +124,6 @@
     @apply py-5 text-sm;
   }
 
-  /* Common component patterns */
   .text-primary {
     @apply text-text-primary dark:text-text-primary-dark;
   }
@@ -161,12 +140,40 @@
     @apply transition-all duration-200;
   }
 
-  .card-base {
-    @apply border-default transition-default bg-card dark:bg-card-dark;
+  .heading-primary {
+    @apply text-primary font-display font-semibold;
   }
 
-  .card-hover {
-    @apply hover:border-text-secondary hover:shadow-sm dark:hover:border-text-secondary-dark;
+  .heading-lg {
+    @apply heading-primary text-lg;
+  }
+
+  .heading-xl {
+    @apply heading-primary text-xl;
+  }
+
+  .heading-2xl {
+    @apply heading-primary text-2xl;
+  }
+
+  .card-content {
+    @apply flex items-start gap-4 p-4;
+  }
+
+  .card {
+    @apply relative border border-border bg-card transition-all duration-200 hover:border-text-secondary hover:shadow-sm dark:border-border-dark dark:bg-card-dark dark:hover:border-text-secondary-dark;
+  }
+
+  .text-secondary-color {
+    @apply text-text-secondary dark:text-text-secondary-dark;
+  }
+
+  .content-flex {
+    @apply min-w-0 flex-1;
+  }
+
+  .date-meta {
+    @apply text-secondary-color mb-2 text-sm;
   }
 }
 
@@ -178,11 +185,11 @@
   article {
     @apply prose prose-lg max-w-full dark:prose-invert;
     @apply prose-headings:font-sans prose-headings:font-semibold;
-    @apply prose-headings:text-text-primary dark:prose-headings:text-text-primary-dark;
-    @apply prose-p:font-sans prose-p:text-text-primary dark:prose-p:text-text-primary-dark;
+    @apply prose-headings:text-primary;
+    @apply prose-p:text-primary prose-p:font-sans;
     @apply prose-a:text-link;
     @apply dark:prose-a:text-link-dark;
-    @apply prose-strong:text-text-primary dark:prose-strong:text-text-primary-dark;
+    @apply prose-strong:text-primary;
     font-feature-settings:
       "liga" 1,
       "calt" 1,
@@ -192,7 +199,7 @@
   article code,
   article pre {
     font-family: "Commit Mono", "SF Mono", "Monaco", "Menlo", monospace;
-    @apply text-text-primary dark:text-text-primary-dark;
+    @apply text-primary;
   }
 
   /* Remove backticks from inline code */
@@ -292,18 +299,54 @@
     display: none;
   }
 
+  /* Shared mobile sidenote styles */
+  .sidenote-mobile,
+  .marginnote-mobile {
+    float: none;
+    display: none;
+    width: 95%;
+    margin: 1rem 0;
+    padding: 0.75rem;
+    @apply border border-gray-200/60 dark:border-gray-700/60;
+    @apply bg-gray-50/80 dark:bg-gray-900/30;
+    border-radius: 0;
+    font-size: 0.85rem;
+  }
+
+  .sidenote-ref-mobile {
+    display: inline;
+    cursor: pointer;
+    font-size: 0.85rem;
+    position: relative;
+    font-weight: 600;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.2em;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .sidenote-checked-mobile {
+    display: block;
+    float: left;
+    left: 0;
+    clear: both;
+    width: 95%;
+    margin: 1rem 2.5%;
+    position: relative;
+    padding: 0.75rem;
+    @apply border border-gray-200/60 dark:border-gray-700/60;
+    @apply bg-gray-50/80 dark:bg-gray-900/30;
+    border-radius: 0;
+    font-size: 0.85rem;
+  }
+
   @container (max-width: 767px) {
     .sidenote,
     .marginnote {
-      float: none;
-      display: none;
-      width: 95%;
-      margin: 1rem 0;
-      padding: 0.75rem;
-      @apply border border-gray-200/60 dark:border-gray-700/60;
-      @apply bg-gray-50/80 dark:bg-gray-900/30;
-      border-radius: 0;
-      font-size: 0.85rem;
+      @apply sidenote-mobile;
       transition: all var(--timing-base) var(--ease-out-expo);
     }
 
@@ -322,33 +365,14 @@
 
     .sidenote-ref,
     label.margin-toggle.sidenote-ref {
-      display: inline;
-      cursor: pointer;
-      font-size: 0.85rem;
-      position: relative;
-      font-weight: 600;
-      min-height: 44px;
+      @apply sidenote-ref-mobile;
       min-width: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .margin-toggle:checked + .sidenote,
     .margin-toggle:checked + .marginnote,
     .sidenote-toggle:checked + .sidenote {
-      display: block;
-      float: left;
-      left: 0;
-      clear: both;
-      width: 95%;
-      margin: 1rem 2.5%;
-      position: relative;
-      padding: 0.75rem;
-      @apply border border-gray-200/60 dark:border-gray-700/60;
-      @apply bg-gray-50/80 dark:bg-gray-900/30;
-      border-radius: 0;
-      font-size: 0.85rem;
+      @apply sidenote-checked-mobile;
     }
 
     .sidenote-ref:after {
@@ -373,15 +397,7 @@
   @media (max-width: 42rem) {
     .sidenote,
     .marginnote {
-      float: none;
-      display: none;
-      width: 95%;
-      margin: 1rem 0;
-      padding: 0.75rem;
-      @apply border border-gray-200/60 dark:border-gray-700/60;
-      @apply bg-gray-50/80 dark:bg-gray-900/30;
-      border-radius: 0;
-      font-size: 0.85rem;
+      @apply sidenote-mobile;
     }
 
     .sidenote.active,
@@ -391,32 +407,13 @@
 
     .sidenote-ref,
     label.margin-toggle.sidenote-ref {
-      display: inline;
-      cursor: pointer;
-      font-size: 0.85rem;
-      position: relative;
-      font-weight: 600;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      @apply sidenote-ref-mobile;
     }
 
     .margin-toggle:checked + .sidenote,
     .margin-toggle:checked + .marginnote,
     .sidenote-toggle:checked + .sidenote {
-      display: block;
-      float: left;
-      left: 0;
-      clear: both;
-      width: 95%;
-      margin: 1rem 2.5%;
-      position: relative;
-      padding: 0.75rem;
-      @apply border border-gray-200/60 dark:border-gray-700/60;
-      @apply bg-gray-50/80 dark:bg-gray-900/30;
-      border-radius: 0;
-      font-size: 0.85rem;
+      @apply sidenote-checked-mobile;
     }
 
     .sidenote-ref:after {
@@ -429,13 +426,6 @@
     .sidenote-ref[data-expanded="true"]:after {
       content: "⊖";
     }
-
-    label.margin-toggle.sidenote-ref,
-    .sidenote-ref {
-      margin: 0 0.2em;
-      padding: 0;
-      line-height: 1;
-    }
   }
 }
 
@@ -444,14 +434,14 @@
    ========================================================================== */
 
 @layer utilities {
-  .animate {
+  main > * {
     animation: fadeInUp var(--timing-very-slow) var(--ease-out-expo) both;
   }
 
-  @keyframes slideDown {
+  @keyframes fadeInUp {
     from {
       opacity: 0;
-      transform: translateY(-0.5rem);
+      transform: translateY(1rem);
     }
     to {
       opacity: 1;
@@ -459,10 +449,10 @@
     }
   }
 
-  @keyframes fadeInUp {
+  @keyframes slideDown {
     from {
       opacity: 0;
-      transform: translateY(1rem);
+      transform: translateY(-0.5rem);
     }
     to {
       opacity: 1;
@@ -529,7 +519,7 @@
 
   .message-title {
     @apply mb-2 mt-0 font-display font-bold;
-    @apply text-text-primary dark:text-text-primary-dark;
+    @apply text-primary;
   }
 
   .message-content {
@@ -574,13 +564,6 @@
     transform: translateZ(0);
     will-change: transform;
   }
-}
-
-/* ==========================================================================
-   CONTAINER QUERIES
-   ========================================================================== */
-
-@layer utilities {
 }
 
 /* ==========================================================================

@@ -116,9 +116,6 @@
 </div>
 
 <script>
-  /**
-   * Static photo lightbox - simplified for client-side only navigation
-   */
   class StaticPhotoLightbox {
     constructor() {
       this.elements = this.getElements();
@@ -139,9 +136,6 @@
       }
     }
 
-    /**
-     * Get and validate DOM elements
-     */
     getElements() {
       const lightbox = document.getElementById("photo-lightbox");
       const lightboxImage = document.getElementById("lightbox-image");
@@ -175,23 +169,15 @@
       };
     }
 
-    /**
-     * Initialize the lightbox
-     */
     initialize() {
       this.setupEventListeners();
       this.setupPhotoTriggers();
 
-      // Expose methods globally for infinite scroll integration
       window.setupPhotoLightboxTriggers = this.setupPhotoTriggers.bind(this);
       window.staticPhotoLightboxInstance = this;
     }
 
-    /**
-     * Setup event listeners
-     */
     setupEventListeners() {
-      // Button event listeners
       this.elements.closeButton.addEventListener(
         "click",
         this.closeLightbox.bind(this),
@@ -205,36 +191,26 @@
         this.goToNextPhoto.bind(this),
       );
 
-      // Backdrop click to close
       this.elements.lightbox.addEventListener(
         "click",
         this.boundEventHandlers.click,
       );
 
-      // Keyboard navigation
       document.addEventListener("keydown", this.boundEventHandlers.keydown);
     }
 
-    /**
-     * Setup photo trigger elements
-     */
     setupPhotoTriggers() {
-      // Remove existing event listeners to prevent duplicates
       document.querySelectorAll("[data-photo-trigger]").forEach((trigger) => {
-        // Clone node to remove all event listeners
         const newTrigger = trigger.cloneNode(true);
         trigger.parentNode?.replaceChild(newTrigger, trigger);
       });
 
-      // Add fresh event listeners to all triggers
       document.querySelectorAll("[data-photo-trigger]").forEach((trigger) => {
-        // Mouse click
         trigger.addEventListener("click", (event) => {
           event.preventDefault();
           this.openLightbox(trigger);
         });
 
-        // Keyboard support (Enter/Space)
         trigger.addEventListener("keydown", (event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
@@ -244,18 +220,11 @@
       });
     }
 
-    /**
-     * Get all photo triggers from the page
-     */
     getAllPhotos() {
       return Array.from(document.querySelectorAll("[data-photo-trigger]"));
     }
 
-    /**
-     * Update navigation button visibility
-     */
     updateNavigationButtons() {
-      // Always refresh the photos list to include any newly loaded photos
       this.state.allPhotos = this.getAllPhotos();
 
       const { prevButton, nextButton } = this.elements;
@@ -263,7 +232,6 @@
 
       prevButton.style.display = currentPhotoIndex > 0 ? "block" : "none";
 
-      // Disable next button only if we're at the last photo AND no more photos can be loaded
       const hasMoreLoadedPhotos = currentPhotoIndex < allPhotos.length - 1;
       const hasMorePhotosToLoad =
         window.staticPhotoLoader && window.staticPhotoLoader.hasMorePhotos();
@@ -271,7 +239,6 @@
       nextButton.style.display =
         hasMoreLoadedPhotos || hasMorePhotosToLoad ? "block" : "none";
 
-      // Update ARIA labels with context
       if (currentPhotoIndex > 0) {
         prevButton.setAttribute(
           "aria-label",
@@ -287,9 +254,6 @@
       );
     }
 
-    /**
-     * Load and display a photo
-     */
     loadPhoto(photoElement) {
       const fullImage = photoElement.getAttribute("data-full-image");
       const title = photoElement.getAttribute("data-title");
@@ -303,7 +267,6 @@
       const { lightboxTitle, lightboxContent, lightboxLoading, lightboxImage } =
         this.elements;
 
-      // Decode HTML entities and set title
       if (title && title.trim()) {
         const titleTempDiv = document.createElement("div");
         titleTempDiv.innerHTML = title.trim();
@@ -313,7 +276,6 @@
         lightboxTitle.textContent = "";
       }
 
-      // Decode HTML entities and set as text content
       if (content && content.trim()) {
         const tempDiv = document.createElement("div");
         tempDiv.innerHTML = content.trim();
@@ -323,11 +285,9 @@
         lightboxContent.textContent = "";
       }
 
-      // Show loading state
       lightboxLoading.style.display = "flex";
       lightboxImage.style.opacity = "0";
 
-      // Preload image
       const img = new Image();
 
       img.onload = () => {
@@ -336,7 +296,6 @@
         lightboxLoading.style.display = "none";
         lightboxImage.style.opacity = "1";
 
-        // Focus the image for screen readers
         lightboxImage.focus();
       };
 
@@ -345,19 +304,15 @@
         lightboxLoading.style.display = "none";
         lightboxImage.style.opacity = "1";
 
-        // Show error state
         lightboxImage.alt = `Failed to load: ${title}`;
         lightboxImage.src =
-          "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDlWMTNNMTIgMTdIMTIuMDFNMjEgMTJDMjEgMTYuOTcwNiAxNi45NzA2IDIxIDEyIDIxQzcuMDI5NCAyMSAzIDE2Ljk3MDYgMyAxMkMzIDcuMDI5NCA3LjAyOTQgMyAxMiAzQzE2Ljk3MDYgMyAyMSA3LjAyOTQgMjEgMTJaIiBzdHJva2U9InJlZCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+"; // Error icon as data URL
+          "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDlWMTNNMTIgMTdIMTIuMDFNMjEgMTJDMjEgMTYuOTcwNiAxNi45NzA2IDIxIDEyIDIxQzcuMDI5NCAyMSAzIDE2Ljk3MDYgMyAxMkMzIDcuMDI5NCA3LjAyOTQgMyAxMiAzQzE2Ljk3MDYgMyAyMSA3LjAyOTQgMjEgMTJaIiBzdHJva2U9InJlZCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+";
       };
 
       img.src = fullImage;
       this.updateNavigationButtons();
     }
 
-    /**
-     * Open the lightbox
-     */
     openLightbox(trigger) {
       this.state.allPhotos = this.getAllPhotos();
       this.state.currentPhotoIndex = this.state.allPhotos.indexOf(trigger);
@@ -369,49 +324,38 @@
         return;
       }
 
-      // Store scroll position
       this.state.scrollPosition = window.pageYOffset;
       this.state.isOpen = true;
 
-      // Show lightbox
       this.elements.lightbox.classList.remove(
         "opacity-0",
         "pointer-events-none",
       );
       this.elements.lightbox.setAttribute("aria-hidden", "false");
 
-      // Prevent body scroll
       document.body.style.overflow = "hidden";
       document.body.style.position = "fixed";
       document.body.style.top = `-${this.state.scrollPosition}px`;
       document.body.style.width = "100%";
 
-      // Load the photo
       this.loadPhoto(trigger);
 
-      // Focus the close button for accessibility
       setTimeout(() => {
         this.elements.closeButton.focus();
       }, 100);
     }
 
-    /**
-     * Close the lightbox
-     */
     closeLightbox() {
       this.state.isOpen = false;
 
-      // Hide lightbox
       this.elements.lightbox.classList.add("opacity-0", "pointer-events-none");
       this.elements.lightbox.setAttribute("aria-hidden", "true");
 
-      // Restore body scroll
       document.body.style.overflow = "";
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.width = "";
 
-      // Restore scroll position after DOM updates complete
       requestAnimationFrame(() => {
         window.scrollTo({
           top: this.state.scrollPosition,
@@ -420,17 +364,12 @@
         });
       });
 
-      // Clear image
       this.elements.lightboxImage.src = "";
       this.elements.lightboxImage.style.opacity = "0";
       this.elements.lightboxLoading.style.display = "flex";
     }
 
-    /**
-     * Navigate to next photo
-     */
     goToNextPhoto() {
-      // Always refresh photos list to include any newly loaded photos
       this.state.allPhotos = this.getAllPhotos();
 
       if (this.state.currentPhotoIndex < this.state.allPhotos.length - 1) {
@@ -440,7 +379,6 @@
         window.staticPhotoLoader &&
         window.staticPhotoLoader.hasMorePhotos()
       ) {
-        // Load more photos and then advance
         window.staticPhotoLoader.loadMorePhotos().then(() => {
           this.state.allPhotos = this.getAllPhotos();
           if (this.state.currentPhotoIndex < this.state.allPhotos.length - 1) {
@@ -451,11 +389,7 @@
       }
     }
 
-    /**
-     * Navigate to previous photo
-     */
     goToPrevPhoto() {
-      // Refresh photos list
       this.state.allPhotos = this.getAllPhotos();
 
       if (this.state.currentPhotoIndex > 0) {
@@ -464,9 +398,6 @@
       }
     }
 
-    /**
-     * Handle keyboard navigation
-     */
     handleKeydown(event) {
       if (!this.state.isOpen) return;
 
@@ -500,18 +431,12 @@
       }
     }
 
-    /**
-     * Handle backdrop clicks
-     */
     handleBackdropClick(event) {
       if (event.target === this.elements.lightbox) {
         this.closeLightbox();
       }
     }
 
-    /**
-     * Cleanup event listeners
-     */
     destroy() {
       document.removeEventListener("keydown", this.boundEventHandlers.keydown);
       this.elements.lightbox.removeEventListener(
@@ -519,42 +444,34 @@
         this.boundEventHandlers.click,
       );
 
-      // Remove global references
       delete window.setupPhotoLightboxTriggers;
       delete window.staticPhotoLightboxInstance;
     }
   }
 
-  // Initialize lightbox
   function initStaticLightbox() {
-    // Destroy existing instance if it exists
     if (window.staticPhotoLightboxInstance) {
       window.staticPhotoLightboxInstance.destroy();
     }
 
-    // Create new instance
     const lightbox = new StaticPhotoLightbox();
 
     return lightbox;
   }
 
-  // Initialize on DOM ready and after page navigation
   document.addEventListener("DOMContentLoaded", initStaticLightbox);
   document.addEventListener("astro:after-swap", initStaticLightbox);
 </script>
 
 <style>
-  /* Ensure lightbox is hidden by default for accessibility */
   #photo-lightbox[aria-hidden="true"] {
     display: none;
   }
 
-  /* Smooth transitions for better user experience */
   #photo-lightbox img {
     transition: opacity 0.3s ease-in-out;
   }
 
-  /* Focus styles for better accessibility */
   #photo-lightbox button:focus-visible {
     outline: 2px solid white;
     outline-offset: 2px;

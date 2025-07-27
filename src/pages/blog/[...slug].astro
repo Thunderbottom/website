@@ -9,7 +9,6 @@ import Sidenote from "@components/Sidenote.astro";
 
 export const prerender = true;
 
-// Get all blog entries
 export async function getStaticPaths() {
   const blogEntries = await getCollection("blog", ({ data }) => {
     return !data.draft;
@@ -21,14 +20,11 @@ export async function getStaticPaths() {
   }));
 }
 
-// Get the blog post data
 const { entry } = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await entry.render();
 
-// Use reading time from remark plugin (falls back to default if not available)
 const readingTime = remarkPluginFrontmatter?.minutesRead || "1 min read";
 
-// Define custom components for rendering
 const components = {
   Message,
   Sidenote,
@@ -43,13 +39,13 @@ const components = {
 >
   <Container>
     <div class="space-y-8">
-      <div class="animate">
+      <div>
         <BackToPrev href="/blog"> Back to blog </BackToPrev>
       </div>
 
       <div class="space-y-4">
         <div
-          class="animate flex items-center gap-2 text-sm text-text-secondary dark:text-text-secondary-dark"
+          class="flex items-center gap-2 text-sm text-text-secondary dark:text-text-secondary-dark"
         >
           <FormattedDate date={entry.data.date} format="%B %d, %Y" />
           <span>•</span>
@@ -70,7 +66,7 @@ const components = {
           }
         </div>
 
-        <div class="animate">
+        <div>
           <h1
             class="font-display text-3xl font-semibold leading-tight text-text-primary"
           >
@@ -79,11 +75,11 @@ const components = {
         </div>
       </div>
 
-      <article class="animate prose prose-lg max-w-none">
+      <article class="prose prose-lg max-w-none">
         <Content components={components} />
       </article>
 
-      <div class="animate border-t border-border pt-8 text-center">
+      <div class="border-t border-border pt-8 text-center">
         <p class="text-lg italic text-text-secondary text-text-secondary-dark">
           Got any questions or comments, or just want to say hello?<br />Drop by
           on my email!
@@ -95,44 +91,45 @@ const components = {
 
 <script is:inline data-astro-rerun>
   function createProgressBar() {
-    const progressContainer = document.createElement("div");
-    progressContainer.className =
-      "progress-container fixed top-0 z-50 h-1 w-full bg-background dark:bg-background-dark";
+    if (document.getElementById("progress-bar")) return;
 
     const progressBar = document.createElement("div");
+    progressBar.id = "progress-bar";
     progressBar.className =
-      "progress-bar h-1 w-0 bg-link dark:bg-link-dark transition-all duration-75 ease-out";
-    progressBar.id = "myBar";
+      "fixed top-0 left-0 h-1 bg-link dark:bg-link-dark transition-all duration-75 ease-out";
+    progressBar.style.cssText = "width: 0%; z-index: 1000;";
+    document.body.appendChild(progressBar);
 
-    progressContainer.appendChild(progressBar);
-    document.body.appendChild(progressContainer);
+    return progressBar;
   }
+
+  function updateProgress() {
+    const progressBar = document.getElementById("progress-bar");
+    if (!progressBar) return;
+
+    const scrolled =
+      (window.scrollY /
+        (document.documentElement.scrollHeight - window.innerHeight)) *
+      100;
+    progressBar.style.width = Math.min(Math.max(scrolled, 0), 100) + "%";
+  }
+
   createProgressBar();
+  updateProgress();
 
-  /** Calculate and update progress bar */
-  function calculateProgress() {
-    const winScroll =
-      document.body.scrollTop || document.documentElement.scrollTop;
-    const height =
-      document.documentElement.scrollHeight -
-      document.documentElement.clientHeight;
-    const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
-    const myBar = document.getElementById("myBar");
-    if (myBar) {
-      myBar.style.width = scrolled + "%";
-    }
+  if (!window.progressScrollSetup) {
+    let rafId = null;
+    document.addEventListener(
+      "scroll",
+      () => {
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => {
+          updateProgress();
+          rafId = null;
+        });
+      },
+      { passive: true },
+    );
+    window.progressScrollSetup = true;
   }
-
-  function initializeScrollProgress() {
-    calculateProgress();
-    document.addEventListener("scroll", calculateProgress, { passive: true });
-  }
-
-  initializeScrollProgress();
-  document.addEventListener("DOMContentLoaded", calculateProgress);
-
-  /* Go to page start after page swap */
-  document.addEventListener("astro:after-swap", () =>
-    window.scrollTo({ left: 0, top: 0, behavior: "instant" }),
-  );
 </script>

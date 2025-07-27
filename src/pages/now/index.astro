@@ -9,14 +9,12 @@ import { NOW, NOW_DATA } from "@lib/config";
 <PageLayout title={NOW.TITLE} description={NOW.DESCRIPTION} currentPath="/now/">
   <Container>
     <div class="space-y-8">
-      <div class="animate">
-        <h1
-          class="font-display text-2xl font-semibold text-text-primary dark:text-text-primary-dark"
-        >
+      <div>
+        <h1 class="text-primary font-display text-2xl font-semibold">
           {NOW.TITLE}
         </h1>
       </div>
-      <div class="animate space-y-6">
+      <div class="space-y-6">
         <article class="prose prose-lg max-w-none text-center">
           <em
             >"Here lieth a liste, certes in no certaine ordre or prioritie, of
@@ -25,7 +23,7 @@ import { NOW, NOW_DATA } from "@lib/config";
         </article>
       </div>
 
-      <article class="animate prose prose-lg max-w-none">
+      <article class="prose prose-lg max-w-none">
         {
           NOW_DATA.map((section) => (
             <div>

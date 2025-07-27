@@ -55,7 +55,6 @@ export async function loadSiteFonts(): Promise<FontData[]> {
       }
     };
 
-    // Load Commit Mono fonts (OTF should work with Satori)
     await loadFont(
       "atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-regular.ttf",
       "Atkinson Hyperlegible Next",

@@ -1,0 +1,39 @@
+---
+export interface Props {
+  pageId: string;
+}
+
+const { pageId } = Astro.props;
+---
+
+<div data-page-id={pageId}>
+  <slot />
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const pageContainer = document.querySelector("[data-page-id]");
+    if (pageContainer) {
+      const pageId = pageContainer.getAttribute("data-page-id");
+      const sidenotes = pageContainer.querySelectorAll(".sidenote-container");
+
+      sidenotes.forEach((container) => {
+        const toggle = container.querySelector(".sidenote-toggle");
+        const labels = container.querySelectorAll("label[for]");
+
+        if (toggle && pageId) {
+          const originalId = toggle.id;
+          const newId = `${pageId}-${originalId}`;
+
+          toggle.id = newId;
+
+          labels.forEach((label) => {
+            if (label.getAttribute("for") === originalId) {
+              label.setAttribute("for", newId);
+            }
+          });
+        }
+      });
+    }
+  });
+</script>

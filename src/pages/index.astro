@@ -11,12 +11,10 @@ import Link from "@components/Link.astro";
 import { SITE, SOCIALS, PROJECTS } from "@lib/config";
 import { sortByDateDesc } from "@lib/utils";
 
-// Get recent blog posts
 const blog = sortByDateDesc(
   (await getCollection("blog")).filter((post) => !post.data.draft),
 ).slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
-// Get recent projects
 const recentProjects = sortByDateDesc(PROJECTS).slice(
   0,
   SITE.NUM_PROJECTS_ON_HOMEPAGE,
@@ -26,9 +24,7 @@ const recentProjects = sortByDateDesc(PROJECTS).slice(
 <PageLayout currentPath="/">
   <PageContainer spacing="lg">
     <Section spacing="md">
-      <h1
-        class="mb-6 font-display text-xl font-semibold text-text-primary dark:text-text-primary-dark"
-      >
+      <h1 class="heading-xl mb-6">
         {SITE.NAME}
       </h1>
 
@@ -66,9 +62,7 @@ const recentProjects = sortByDateDesc(PROJECTS).slice(
       blog.length > 0 && (
         <Section spacing="md">
           <div class="flex flex-wrap items-center justify-between gap-y-2">
-            <h2 class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark">
-              Latest Posts
-            </h2>
+            <h2 class="heading-lg">Latest Posts</h2>
             <Link href="/blog" class="text-sm">
               See all posts
             </Link>
@@ -88,9 +82,7 @@ const recentProjects = sortByDateDesc(PROJECTS).slice(
       recentProjects.length > 0 && (
         <Section spacing="md">
           <div class="flex flex-wrap items-center justify-between gap-y-2">
-            <h2 class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark">
-              Recent Projects
-            </h2>
+            <h2 class="heading-lg">Recent Projects</h2>
             <Link href="/projects" class="text-sm">
               See all projects
             </Link>
@@ -105,11 +97,7 @@ const recentProjects = sortByDateDesc(PROJECTS).slice(
     }
 
     <Section spacing="md">
-      <h2
-        class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark"
-      >
-        Let's Connect
-      </h2>
+      <h2 class="heading-lg">Let's Connect</h2>
       <article class="prose prose-lg max-w-none">
         <p>
           If you want to get in touch with me about something or just to say

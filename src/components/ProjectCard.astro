@@ -2,7 +2,6 @@
 import { formatDate } from "@lib/config";
 import Link from "@components/Link.astro";
 import Tag from "@components/Tag.astro";
-import BaseCard from "@components/BaseCard.astro";
 import type { ProjectItem } from "@lib/config";
 
 interface Props {
@@ -12,19 +11,15 @@ interface Props {
 const { project } = Astro.props;
 ---
 
-<BaseCard class="flex flex-col gap-4 p-4">
-  <div class="min-w-0 flex-1">
-    <div
-      class="mb-1 font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark"
-    >
+<div class="card flex flex-col gap-4 p-4">
+  <div class="content-flex">
+    <div class="heading-lg mb-1">
       {project.title}
     </div>
-    <div class="mb-2 text-sm text-text-secondary dark:text-text-secondary-dark">
+    <div class="date-meta">
       {formatDate(new Date(project.date), "%B %d, %Y")}
     </div>
-    <div
-      class="mb-3 text-sm leading-relaxed text-text-secondary dark:text-text-secondary-dark"
-    >
+    <div class="text-secondary-color mb-3 text-sm leading-relaxed">
       {project.description}
     </div>
 
@@ -47,9 +42,7 @@ const { project } = Astro.props;
             </Link>
           )}
           {project.demoURL && project.repoURL && (
-            <span class="text-text-secondary dark:text-text-secondary-dark">
-              /
-            </span>
+            <span class="text-secondary-color">/</span>
           )}
           {project.repoURL && (
             <Link href={project.repoURL} external underline>
@@ -57,9 +50,7 @@ const { project } = Astro.props;
             </Link>
           )}
           {project.repoURL && project.websiteURL && (
-            <span class="text-text-secondary dark:text-text-secondary-dark">
-              /
-            </span>
+            <span class="text-secondary-color">/</span>
           )}
           {project.websiteURL && (
             <Link href={project.websiteURL} external underline>
@@ -70,4 +61,4 @@ const { project } = Astro.props;
       )
     }
   </div>
-</BaseCard>
+</div>

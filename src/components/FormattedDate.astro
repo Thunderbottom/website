@@ -12,9 +12,6 @@ const formattedDate = formatDate(date, format);
 const isoDate = typeof date === "string" ? date : date.toISOString();
 ---
 
-<time
-  datetime={isoDate}
-  class="text-text-secondary dark:text-text-secondary-dark"
->
+<time datetime={isoDate} class="text-secondary-color">
   {formattedDate}
 </time>

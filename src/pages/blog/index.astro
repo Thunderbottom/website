@@ -10,15 +10,12 @@ import ArrowCard from "@components/ArrowCard.astro";
 import { BLOG } from "@lib/config";
 import { sortByDateDesc } from "@lib/utils";
 
-// Get all blog posts and filter out drafts
 const allPosts = await getCollection("blog", ({ data }) => {
   return !data.draft;
 });
 
-// Sort by date descending
 const sortedPosts = sortByDateDesc(allPosts);
 
-// Group posts by year
 const postsByYear = sortedPosts.reduce(
   (acc, post) => {
     const year = new Date(post.data.date).getFullYear();
@@ -31,7 +28,6 @@ const postsByYear = sortedPosts.reduce(
   {} as Record<number, typeof sortedPosts>,
 );
 
-// Sort years in descending order
 const years = Object.keys(postsByYear)
   .map(Number)
   .sort((a, b) => b - a);
@@ -49,7 +45,7 @@ const years = Object.keys(postsByYear)
       years.map((year) => (
         <Section spacing="md">
           <div class="flex justify-end">
-            <h2 class="font-display text-xl font-semibold text-text-primary dark:text-text-primary-dark">
+            <h2 class="text-primary font-display text-xl font-semibold">
               {year}
             </h2>
           </div>
@@ -64,7 +60,7 @@ const years = Object.keys(postsByYear)
 
     {
       sortedPosts.length === 0 && (
-        <div class="animate py-12 text-center">
+        <div class="py-12 text-center">
           <p class="text-text-secondary dark:text-text-secondary-dark">
             No blog posts found.
           </p>

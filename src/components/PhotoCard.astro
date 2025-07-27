@@ -1,7 +1,6 @@
 ---
 import type { ProcessedPhoto } from "@lib/photo-utils";
 import Tag from "@components/Tag.astro";
-import BaseCard from "@components/BaseCard.astro";
 import { escapeHtml } from "@lib/utils";
 
 interface Props {
@@ -13,8 +12,8 @@ const { photo, loading = "lazy" } = Astro.props;
 const { data, images, exifItems, formattedDate } = photo;
 ---
 
-<BaseCard
-  class="flex flex-col overflow-hidden"
+<div
+  class="card group flex flex-col overflow-hidden"
   data-photo-trigger
   data-full-image={images.lightboxImage.src}
   data-title={escapeHtml(data.title)}
@@ -51,7 +50,7 @@ const { data, images, exifItems, formattedDate } = photo;
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="text-text-primary dark:text-text-primary-dark"
+          class="text-primary"
           aria-hidden="true"
         >
           <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -61,17 +60,15 @@ const { data, images, exifItems, formattedDate } = photo;
     </div>
   </div>
 
-  <div class="flex items-start gap-4 p-4">
-    <div class="min-w-0 flex-1">
+  <div class="card-content">
+    <div class="content-flex">
       <div class="mb-2 flex items-start justify-between gap-4">
-        <div
-          class="font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark"
-        >
+        <div class="heading-lg">
           {data.title}
         </div>
         <time
           datetime={new Date(data.date).toISOString()}
-          class="whitespace-nowrap text-sm text-text-secondary dark:text-text-secondary-dark"
+          class="text-secondary-color whitespace-nowrap text-sm"
         >
           {formattedDate}
         </time>
@@ -88,4 +85,4 @@ const { data, images, exifItems, formattedDate } = photo;
       }
     </div>
   </div>
-</BaseCard>
+</div>

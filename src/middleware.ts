@@ -5,11 +5,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const pathname = context.url.pathname;
 
   try {
-    // Get metadata for this path
     const metadata = await getOgMetadataForPath(pathname);
 
-    // Determine the route for OG image URL
-    let route = "index"; // Default to index for homepage
+    let route = "index";
     if (pathname.startsWith("/blog/") && pathname !== "/blog/") {
       const slug = pathname.replace("/blog/", "").replace(/\/$/, "");
       route = `blog/${slug}`;
@@ -23,11 +21,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
       route = "projects";
     }
 
-    // Generate OG image URL
     const ogImageUrl = generateOgImageUrl(context.site!, route, metadata);
     context.locals.ogImageUrl = ogImageUrl;
   } catch (error) {
-    // Fallback to main site OG image if anything fails
     console.warn("OG middleware error:", error);
     context.locals.ogImageUrl = new URL("/og.png", context.site!).href;
   }

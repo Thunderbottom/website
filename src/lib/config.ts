@@ -33,7 +33,6 @@ export interface ProjectItem {
   tags?: string[];
 }
 
-// Main site configuration
 export const SITE: SiteConfig = {
   NAME: "Chinmay D. Pai",
   EMAIL: "chinmaydpai@gmail.com",
@@ -44,7 +43,6 @@ export const SITE: SiteConfig = {
   NUM_PROJECTS_ON_HOMEPAGE: 3,
 };
 
-// Page configurations
 export const BLOG: PageConfig = {
   TITLE: "Blog",
   DESCRIPTION: "A collection of articles on topics I am passionate about.",
@@ -65,7 +63,6 @@ export const PHOTOGRAPHY: PageConfig = {
   DESCRIPTION: "A collection of moments straight off the camera.",
 };
 
-// Navigation
 export const NAVIGATION: NavigationItem[] = [
   { name: "Blog", url: "/blog" },
   { name: "Photos", url: "/photography" },
@@ -73,7 +70,6 @@ export const NAVIGATION: NavigationItem[] = [
   { name: "Now", url: "/now" },
 ];
 
-// Social links
 export const SOCIALS: SocialLink[] = [
   { name: "Bsky", href: "https://bsky.app/profile/maych.in" },
   { name: "GitHub", href: "https://github.com/Thunderbottom" },
@@ -82,7 +78,6 @@ export const SOCIALS: SocialLink[] = [
   { name: "Email", href: `mailto:${SITE.EMAIL}` },
 ];
 
-// Projects data
 export const PROJECTS: ProjectItem[] = [
   {
     title: "kiln",
@@ -119,7 +114,6 @@ export const PROJECTS: ProjectItem[] = [
   },
 ];
 
-// NOW data
 export interface NowSection {
   title: string;
   items: string[];
@@ -151,7 +145,6 @@ export const NOW_DATA: NowSection[] = [
   },
 ];
 
-// Image optimization settings
 export const IMAGE_SETTINGS = {
   THUMBNAIL: {
     WIDTH: 800,

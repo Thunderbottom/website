@@ -2,7 +2,6 @@
 import type { CollectionEntry } from "astro:content";
 import { formatDate } from "@lib/config";
 import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
-import BaseCard from "@components/BaseCard.astro";
 
 interface Props {
   entry: CollectionEntry<"blog">;
@@ -11,19 +10,17 @@ interface Props {
 const { entry } = Astro.props;
 ---
 
-<BaseCard href={`/blog/${entry.slug}/`} class="flex items-start gap-4 p-4">
-  <div class="min-w-0 flex-1">
-    <div
-      class="mb-1 font-display text-lg font-semibold text-text-primary dark:text-text-primary-dark"
-    >
+<a href={`/blog/${entry.slug}/`} class="card card-content group">
+  <div class="content-flex">
+    <div class="heading-lg mb-1">
       {entry.data.title}
     </div>
-    <div class="mb-2 text-sm text-text-secondary dark:text-text-secondary-dark">
+    <div class="date-meta">
       {formatDate(new Date(entry.data.date), "%B %d, %Y")}
     </div>
     {
       entry.data.description && (
-        <div class="text-sm leading-relaxed text-text-secondary dark:text-text-secondary-dark">
+        <div class="text-secondary-color text-sm leading-relaxed">
           {entry.data.description}
         </div>
       )
@@ -31,4 +28,4 @@ const { entry } = Astro.props;
   </div>
 
   <IconChevronLeft class="mt-1 h-5 w-5 flex-shrink-0 rotate-180" />
-</BaseCard>
+</a>

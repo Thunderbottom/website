@@ -8,7 +8,6 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Atkinson Hyperlegible Next", "system-ui", "sans-serif"],
-        serif: ["Atkinson Hyperlegible Next", "system-ui", "sans-serif"],
         display: ["Atkinson Hyperlegible Next", "system-ui", "sans-serif"],
         mono: ["Commit Mono", "SF Mono", "Monaco", "Menlo", "monospace"],
       },

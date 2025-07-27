@@ -10,7 +10,7 @@ import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
     class="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90"
   />
   <span
-    class="whitespace-nowrap text-sm text-text-secondary transition-colors group-hover:text-text-primary dark:text-text-secondary-dark dark:group-hover:text-text-primary-dark"
+    class="group-hover:text-primary dark:group-hover:text-primary whitespace-nowrap text-sm text-text-secondary transition-colors dark:text-text-secondary-dark"
   >
     Back to top
   </span>
@@ -21,14 +21,29 @@ import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
     const backToTopBtn = document.getElementById("back-to-top");
     if (!backToTopBtn) return;
 
-    const handleScroll = () => {
-      const show = window.scrollY > 200;
+    let isVisible = false;
+    let rafId = null;
+
+    const updateVisibility = (show) => {
+      if (isVisible === show) return;
+      isVisible = show;
+
       backToTopBtn.classList.toggle("opacity-0", !show);
       backToTopBtn.classList.toggle("pointer-events-none", !show);
       backToTopBtn.classList.toggle("translate-y-2", !show);
       backToTopBtn.classList.toggle("opacity-100", show);
       backToTopBtn.classList.toggle("pointer-events-auto", show);
       backToTopBtn.classList.toggle("translate-y-0", show);
+    };
+
+    const handleScroll = () => {
+      if (rafId) return;
+
+      rafId = requestAnimationFrame(() => {
+        const show = window.scrollY > 200;
+        updateVisibility(show);
+        rafId = null;
+      });
     };
 
     const scrollToTop = (e) => {
@@ -38,9 +53,8 @@ import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     backToTopBtn.addEventListener("click", scrollToTop);
-    handleScroll(); // Initial check
+    updateVisibility(window.scrollY > 200);
   }
 
   document.addEventListener("DOMContentLoaded", setupBackToTop);
-  document.addEventListener("astro:after-swap", setupBackToTop);
 </script>
