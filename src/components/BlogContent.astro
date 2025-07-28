@@ -11,7 +11,7 @@ const { pageId } = Astro.props;
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("astro:page-load", () => {
     const pageContainer = document.querySelector("[data-page-id]");
     if (pageContainer) {
       const pageId = pageContainer.getAttribute("data-page-id");

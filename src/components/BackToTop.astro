@@ -4,7 +4,8 @@ import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
 
 <button
   id="back-to-top"
-  class="group pointer-events-none fixed bottom-12 left-1/2 z-40 inline-flex -translate-x-1/2 translate-y-2 transform items-center gap-2 border border-border bg-card py-2 pl-8 pr-3 opacity-0 transition-all duration-200 hover:border-text-secondary hover:shadow-sm dark:border-border-dark dark:bg-card-dark dark:hover:border-text-secondary-dark"
+  data-visible="false"
+  class="group fixed bottom-12 left-1/2 z-40 inline-flex -translate-x-1/2 transform items-center gap-2 border border-border bg-card py-2 pl-8 pr-3 transition-all duration-200 hover:border-text-secondary hover:shadow-sm data-[visible=false]:pointer-events-none data-[visible=true]:pointer-events-auto data-[visible=false]:translate-y-2 data-[visible=true]:translate-y-0 data-[visible=false]:opacity-0 data-[visible=true]:opacity-100 dark:border-border-dark dark:bg-card-dark dark:hover:border-text-secondary-dark"
 >
   <IconChevronLeft
     class="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90"
@@ -28,12 +29,7 @@ import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
       if (isVisible === show) return;
       isVisible = show;
 
-      backToTopBtn.classList.toggle("opacity-0", !show);
-      backToTopBtn.classList.toggle("pointer-events-none", !show);
-      backToTopBtn.classList.toggle("translate-y-2", !show);
-      backToTopBtn.classList.toggle("opacity-100", show);
-      backToTopBtn.classList.toggle("pointer-events-auto", show);
-      backToTopBtn.classList.toggle("translate-y-0", show);
+      backToTopBtn.setAttribute("data-visible", show.toString());
     };
 
     const handleScroll = () => {
@@ -56,5 +52,5 @@ import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
     updateVisibility(window.scrollY > 200);
   }
 
-  document.addEventListener("DOMContentLoaded", setupBackToTop);
+  document.addEventListener("astro:page-load", setupBackToTop);
 </script>

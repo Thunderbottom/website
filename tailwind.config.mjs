@@ -4,7 +4,6 @@ import defaultTheme from "tailwindcss/defaultTheme";
 export default {
   darkMode: ["class"],
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
-  safelist: ["message-note", "message-warning", "message-tip", "message-info"],
   corePlugins: {
     backdropBrightness: false,
     backdropContrast: false,
@@ -34,7 +33,7 @@ export default {
           },
           secondary: {
             DEFAULT: "#333333",
-            dark: "#aaaaaa",
+            dark: "#6f6f6f",
           },
           muted: {
             DEFAULT: "#666666",

@@ -4,9 +4,15 @@ interface Props {
 }
 
 const { type = "note" } = Astro.props;
+const msgType = {
+  note: "message-note",
+  warning: "message-warning",
+  tip: "message-tip",
+  info: "message-info",
+};
 ---
 
-<div class={`message message-${type}`}>
+<div class={`message ${msgType[type]}`}>
   <p class="message-title">
     {type.toUpperCase()}
   </p>

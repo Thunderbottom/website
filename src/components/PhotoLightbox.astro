@@ -483,12 +483,10 @@
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initWhenReady);
+    document.addEventListener("astro:page-load", initWhenReady);
   } else {
     initWhenReady();
   }
-
-  document.addEventListener("astro:after-swap", initWhenReady);
 </script>
 
 <style>
