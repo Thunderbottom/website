@@ -8,30 +8,9 @@
 
 @font-face {
   font-family: "Atkinson Hyperlegible Next";
-  src: url("/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-regular.woff2")
+  src: url("/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-variable.woff2")
     format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  size-adjust: 100.06%;
-}
-
-@font-face {
-  font-family: "Atkinson Hyperlegible Next";
-  src: url("/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-600.woff2")
-    format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  size-adjust: 100.06%;
-}
-
-@font-face {
-  font-family: "Atkinson Hyperlegible Next";
-  src: url("/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-700.woff2")
-    format("woff2");
-  font-weight: 700;
-  font-style: normal;
+  font-weight: 1 999;
   font-display: swap;
   size-adjust: 100.06%;
 }
