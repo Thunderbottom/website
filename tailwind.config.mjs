@@ -4,6 +4,17 @@ import defaultTheme from "tailwindcss/defaultTheme";
 export default {
   darkMode: ["class"],
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
+  safelist: ["message-note", "message-warning", "message-tip", "message-info"],
+  corePlugins: {
+    backdropBrightness: false,
+    backdropContrast: false,
+    backdropGrayscale: false,
+    backdropHueRotate: false,
+    backdropInvert: false,
+    backdropOpacity: false,
+    backdropSaturate: false,
+    backdropSepia: false,
+  },
   theme: {
     extend: {
       fontFamily: {
@@ -232,5 +243,9 @@ export default {
       },
     },
   },
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [
+    require("@tailwindcss/typography")({
+      modifiers: ["lg", "sm"],
+    }),
+  ],
 };

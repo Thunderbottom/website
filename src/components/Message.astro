@@ -4,21 +4,13 @@ interface Props {
 }
 
 const { type = "note" } = Astro.props;
-
-const typeClasses = {
-  note: "bg-blue-50 border-blue-400 text-blue-900 dark:bg-blue-950 dark:border-blue-500 dark:text-blue-100",
-  warning:
-    "bg-yellow-50 border-yellow-400 text-yellow-900 dark:bg-yellow-950 dark:border-yellow-500 dark:text-yellow-100",
-  tip: "bg-green-50 border-green-400 text-green-900 dark:bg-green-950 dark:border-green-500 dark:text-green-100",
-  info: "bg-cyan-50 border-cyan-400 text-cyan-900 dark:bg-cyan-950 dark:border-cyan-500 dark:text-cyan-100",
-};
 ---
 
-<div class={`message p-4 border-l-4 mt-8 ${typeClasses[type]}`}>
-  <p class="message-title mb-2 mt-0 font-display font-bold">
+<div class={`message message-${type}`}>
+  <p class="message-title">
     {type.toUpperCase()}
   </p>
-  <div class="message-content prose prose-sm max-w-none [&>p:last-child]:mb-0">
+  <div class="message-content">
     <slot />
   </div>
 </div>

@@ -65,9 +65,12 @@
     overflow-y: scroll;
     color-scheme: light;
     scroll-behavior: smooth;
+    scrollbar-width: auto;
+    scrollbar-color: rgb(156 163 175) transparent;
   }
 
   html.dark {
+    scrollbar-color: rgb(75 85 99) transparent;
     color-scheme: dark;
   }
 
@@ -162,6 +165,8 @@
 
   .card {
     @apply relative border border-border bg-card transition-all duration-200 hover:border-text-secondary hover:shadow-sm dark:border-border-dark dark:bg-card-dark dark:hover:border-text-secondary-dark;
+    transform: translateZ(0);
+    will-change: transform;
   }
 
   .text-secondary-color {
@@ -202,7 +207,6 @@
     @apply text-primary;
   }
 
-  /* Remove backticks from inline code */
   article code::before,
   article code::after,
   .prose code::before,
@@ -211,7 +215,6 @@
     display: none !important;
   }
 
-  /* Expressive code copy button mobile styling */
   .expressive-code .copy {
     @apply transition-all duration-200;
   }
@@ -299,7 +302,6 @@
     display: none;
   }
 
-  /* Shared mobile sidenote styles */
   .sidenote-mobile,
   .marginnote-mobile {
     float: none;
@@ -348,6 +350,8 @@
     .marginnote {
       @apply sidenote-mobile;
       transition: all var(--timing-base) var(--ease-out-expo);
+      transform: translateZ(0);
+      will-change: transform;
     }
 
     .sidenote.active,
@@ -356,10 +360,23 @@
       animation: slideDown var(--timing-base) var(--ease-out-expo);
     }
 
+    @media (max-width: 768px) {
+      .sidenote.active,
+      .marginnote.active {
+        animation: slideDownMobile 250ms ease-out;
+      }
+    }
+
     @supports selector(:has(*)) {
       .sidenote-container:has(.sidenote-toggle:checked) .sidenote {
         display: block;
         animation: slideDown var(--timing-base) var(--ease-out-expo);
+      }
+
+      @media (max-width: 768px) {
+        .sidenote-container:has(.sidenote-toggle:checked) .sidenote {
+          animation: slideDownMobile 250ms ease-out;
+        }
       }
     }
 
@@ -380,6 +397,12 @@
       @apply text-link dark:text-link-dark;
       font-weight: 700;
       transition: all var(--timing-fast) var(--ease-out-expo);
+    }
+
+    @media (max-width: 768px) {
+      .sidenote-ref:after {
+        transition: all 150ms ease-out;
+      }
     }
 
     .sidenote-ref[data-expanded="true"]:after {
@@ -423,6 +446,12 @@
       transition: all var(--timing-fast) var(--ease-out-expo);
     }
 
+    @media (max-width: 768px) {
+      .sidenote-ref:after {
+        transition: all 150ms ease-out;
+      }
+    }
+
     .sidenote-ref[data-expanded="true"]:after {
       content: "⊖";
     }
@@ -436,6 +465,8 @@
 @layer utilities {
   main > * {
     animation: fadeInUp var(--timing-very-slow) var(--ease-out-expo) both;
+    transform: translateZ(0);
+    will-change: transform;
   }
 
   @keyframes fadeInUp {
@@ -449,10 +480,38 @@
     }
   }
 
+  @media (max-width: 768px) {
+    main > * {
+      animation: fadeInUpMobile 400ms ease-out both;
+    }
+  }
+
+  @keyframes fadeInUpMobile {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   @keyframes slideDown {
     from {
       opacity: 0;
       transform: translateY(-0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDownMobile {
+    from {
+      opacity: 0;
+      transform: translateY(-0.25rem);
     }
     to {
       opacity: 1;
@@ -497,22 +556,22 @@
     container-type: inline-size;
   }
 
-  .message--note {
+  .message-note {
     @apply border-blue-400 bg-blue-50 text-blue-900;
     @apply dark:border-blue-500 dark:bg-blue-950 dark:text-blue-100;
   }
 
-  .message--warning {
+  .message-warning {
     @apply border-yellow-400 bg-yellow-50 text-yellow-900;
     @apply dark:border-yellow-500 dark:bg-yellow-950 dark:text-yellow-100;
   }
 
-  .message--tip {
+  .message-tip {
     @apply border-green-400 bg-green-50 text-green-900;
     @apply dark:border-green-500 dark:bg-green-950 dark:text-green-100;
   }
 
-  .message--info {
+  .message-info {
     @apply border-cyan-400 bg-cyan-50 text-cyan-900;
     @apply dark:border-cyan-500 dark:bg-cyan-950 dark:text-cyan-100;
   }
@@ -550,14 +609,6 @@
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-  }
-
-  .contain-layout {
-    contain: layout style paint;
-  }
-
-  .contain-strict {
-    contain: strict;
   }
 
   .transform-gpu {
@@ -633,15 +684,6 @@
 /* ==========================================================================
    SCROLLBAR STYLING
    ========================================================================== */
-
-html {
-  scrollbar-width: auto;
-  scrollbar-color: rgb(156 163 175) transparent;
-}
-
-html.dark {
-  scrollbar-color: rgb(75 85 99) transparent;
-}
 
 /* ==========================================================================
    HIGH CONTRAST
