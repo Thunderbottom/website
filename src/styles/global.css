@@ -634,32 +634,13 @@
    SCROLLBAR STYLING
    ========================================================================== */
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-background dark:bg-background-dark;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-border dark:bg-border-dark;
-  transition: background-color var(--timing-base) ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-text-muted dark:bg-text-muted-dark;
-}
-
 html {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border, #e5e5e5) var(--color-background, #ffffff);
+  scrollbar-width: auto;
+  scrollbar-color: rgb(156 163 175) transparent;
 }
 
 html.dark {
-  scrollbar-color: var(--color-border-dark, #333333)
-    var(--color-background-dark, #000000);
+  scrollbar-color: rgb(75 85 99) transparent;
 }
 
 /* ==========================================================================
