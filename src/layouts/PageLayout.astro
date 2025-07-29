@@ -68,15 +68,37 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     }
 
     <script is:inline>
-      (() => {
-        const theme =
+      function getTheme() {
+        return (
           localStorage.getItem("theme") ||
           (window.matchMedia("(prefers-color-scheme: dark)").matches
             ? "dark"
-            : "light");
+            : "light")
+        );
+      }
+
+      function applyTheme(theme) {
         document.documentElement.classList.toggle("dark", theme === "dark");
         document.documentElement.setAttribute("data-theme", theme);
-      })();
+      }
+
+      function updateThemeToggleButton(theme) {
+        const button = document.getElementById("theme-toggle");
+        if (button) {
+          button.setAttribute(
+            "aria-label",
+            theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
+          );
+        }
+      }
+
+      function setupTheme() {
+        const theme = getTheme();
+        applyTheme(theme);
+        updateThemeToggleButton(theme);
+      }
+
+      setupTheme();
 
       document.addEventListener("click", (e) => {
         const button = e.target.closest("#theme-toggle");
@@ -86,18 +108,19 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
         const newTheme = isDark ? "light" : "dark";
 
         localStorage.setItem("theme", newTheme);
-        document.documentElement.classList.toggle("dark", newTheme === "dark");
-        document.documentElement.setAttribute("data-theme", newTheme);
+        applyTheme(newTheme);
+        updateThemeToggleButton(newTheme);
       });
 
       document.addEventListener("astro:after-swap", () => {
-        const theme =
-          localStorage.getItem("theme") ||
-          (window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light");
-        document.documentElement.classList.toggle("dark", theme === "dark");
-        document.documentElement.setAttribute("data-theme", theme);
+        const theme = getTheme();
+        applyTheme(theme);
+      });
+
+      document.addEventListener("astro:page-load", () => {
+        const theme = getTheme();
+        applyTheme(theme);
+        updateThemeToggleButton(theme);
       });
 
       window.setupUI =
@@ -117,6 +140,10 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
                   if (label?.classList.contains("sidenote-ref")) {
                     label.setAttribute(
                       "data-expanded",
+                      toggle.checked.toString(),
+                    );
+                    toggle.setAttribute(
+                      "aria-expanded",
                       toggle.checked.toString(),
                     );
                   }

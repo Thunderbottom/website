@@ -482,11 +482,7 @@
     initStaticLightbox();
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("astro:page-load", initWhenReady);
-  } else {
-    initWhenReady();
-  }
+  document.addEventListener("astro:page-load", initWhenReady);
 </script>
 
 <style>
