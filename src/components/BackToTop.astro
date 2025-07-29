@@ -49,7 +49,10 @@ import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     backToTopBtn.addEventListener("click", scrollToTop);
-    updateVisibility(window.scrollY > 200);
+
+    requestAnimationFrame(() => {
+      updateVisibility(window.scrollY > 200);
+    });
   }
 
   document.addEventListener("astro:page-load", setupBackToTop);

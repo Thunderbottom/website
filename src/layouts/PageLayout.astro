@@ -104,6 +104,8 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
         const button = e.target.closest("#theme-toggle");
         if (!button) return;
 
+        e.preventDefault();
+
         const isDark = document.documentElement.classList.contains("dark");
         const newTheme = isDark ? "light" : "dark";
 
@@ -126,10 +128,12 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
       window.setupUI =
         window.setupUI ||
         (() => {
-          document.documentElement.classList.toggle(
-            "scrolled",
-            window.scrollY > 0,
-          );
+          requestAnimationFrame(() => {
+            document.documentElement.classList.toggle(
+              "scrolled",
+              window.scrollY > 0,
+            );
+          });
 
           document
             .querySelectorAll(".sidenote-toggle, .margin-toggle")
