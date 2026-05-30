@@ -21,10 +21,10 @@
           version = "25.05";
           src = ./.;
 
-          npmDepsHash = "sha256-7Kiqto320O/uA15rRzRSc3fFv5FiH9Stwi2dUWwbKss=";
+          npmDepsHash = "sha256-gddwSigXpLgwaIQ2Gg/7S4Ce1E0WNZz1J+v4T+Xkxno=";
 
           nativeBuildInputs = with pkgs; [
-            nodejs_20
+            nodejs_22
           ];
 
           buildPhase = ''
@@ -55,7 +55,7 @@
 
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            nodejs_20
+            nodejs_22
             nodePackages.npm
             nodePackages.typescript
             nodePackages.prettier
