@@ -1,7 +1,3 @@
-/**
- * OG image template based on astro-paper design
- */
-
 import satori from "satori";
 import { SITE } from "@lib/config";
 import type { FontData } from "@lib/fonts";
@@ -12,15 +8,31 @@ export interface OgTemplateProps {
   badge?: string;
 }
 
+const INK = "#000000";
+const PAPER = "#ffffff";
+const MUTED = "#666666";
+const ACCENT = "#C42B1C";
+const RULE = "#e0e0e0";
+
+function titleFontSize(title: string): string {
+  if (title.length > 55) return "42px";
+  if (title.length > 28) return "54px";
+  return "64px";
+}
+
 export async function generateOgTemplate(
   props: OgTemplateProps,
   fonts: FontData[],
 ): Promise<string> {
   const { title, subtitle, badge } = props;
 
-  const font = fonts.find((f) => f.name === "Atkinson Hyperlegible Next")
+  const fontName = fonts.find((f) => f.name === "Atkinson Hyperlegible Next")
     ? "Atkinson Hyperlegible Next"
     : "sans-serif";
+
+  const monoName = fonts.find((f) => f.name === "Commit Mono")
+    ? "Commit Mono"
+    : fontName;
 
   return await satori(
     {
@@ -31,162 +43,142 @@ export async function generateOgTemplate(
           width: "100%",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#fefbfb",
-          position: "relative",
+          backgroundColor: PAPER,
         },
         children: [
-          // Main container with layered design
+          // Editorial red rule — full-width top stroke
+          {
+            type: "div",
+            props: {
+              style: {
+                width: "100%",
+                height: "3px",
+                backgroundColor: ACCENT,
+                flexShrink: "0",
+              },
+            },
+          },
+          // Main content — title centered in upper zone
+          {
+            type: "div",
+            props: {
+              style: {
+                flex: "1",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: "52px 64px 36px",
+              },
+              children: [
+                // Title
+                {
+                  type: "div",
+                  props: {
+                    style: {
+                      fontSize: titleFontSize(title),
+                      fontWeight: "700",
+                      fontFamily: fontName,
+                      color: INK,
+                      lineHeight: "1.2",
+                      marginBottom: subtitle ? "20px" : "0px",
+                      overflow: "hidden",
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: "3",
+                    },
+                    children: title,
+                  },
+                },
+                // Subtitle
+                ...(subtitle
+                  ? [
+                      {
+                        type: "div",
+                        props: {
+                          style: {
+                            fontSize: "22px",
+                            fontWeight: "400",
+                            fontFamily: fontName,
+                            color: MUTED,
+                            lineHeight: "1.55",
+                            overflow: "hidden",
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: "2",
+                          },
+                          children: subtitle,
+                        },
+                      },
+                    ]
+                  : []),
+              ],
+            },
+          },
+          // Colophon — domain + badge at bottom
           {
             type: "div",
             props: {
               style: {
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-                width: "100%",
-                position: "relative",
+                flexShrink: "0",
+                padding: "0px 64px 44px",
               },
               children: [
-                // Background layer
+                // Rule
                 {
                   type: "div",
                   props: {
                     style: {
-                      position: "absolute",
-                      width: "95%",
-                      height: "90%",
-                      backgroundColor: "#ecebeb",
-                      border: "4px solid #000",
-                      top: "5%",
-                      left: "2.5%",
+                      width: "100%",
+                      height: "1px",
+                      backgroundColor: RULE,
+                      marginBottom: "20px",
                     },
                   },
                 },
-                // Foreground content layer
+                // Domain + badge row
                 {
                   type: "div",
                   props: {
                     style: {
-                      position: "absolute",
-                      width: "90%",
-                      height: "85%",
-                      backgroundColor: "#fefbfb",
-                      border: "4px solid #000",
-                      top: "7.5%",
-                      left: "5%",
                       display: "flex",
-                      flexDirection: "column",
-                      padding: "60px 60px 40px 60px",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     },
                     children: [
-                      // Header with badge
-                      badge && {
-                        type: "div",
-                        props: {
-                          style: {
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            marginBottom: "40px",
-                          },
-                          children: [
-                            {
-                              type: "div",
-                              props: {
-                                style: {
-                                  fontSize: "16px",
-                                  fontWeight: "700",
-                                  color: "#000000",
-                                  fontFamily: font,
-                                  padding: "6px 12px",
-                                  border: "2px solid #000000",
-                                  backgroundColor: "#fefbfb",
-                                  textTransform: "uppercase",
-                                },
-                                children: badge,
-                              },
-                            },
-                          ],
-                        },
-                      },
-                      // Main content
+                      // Domain
                       {
                         type: "div",
                         props: {
                           style: {
-                            flex: "1",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
+                            fontSize: "18px",
+                            fontWeight: "700",
+                            fontFamily: fontName,
+                            color: INK,
                           },
-                          children: [
-                            // Title
-                            {
-                              type: "div",
-                              props: {
-                                style: {
-                                  fontSize:
-                                    title.length > 60
-                                      ? "42px"
-                                      : title.length > 30
-                                        ? "48px"
-                                        : "56px",
-                                  fontWeight: "700",
-                                  color: "#000000",
-                                  fontFamily: font,
-                                  marginBottom: subtitle ? "32px" : "0px",
-                                  overflow: "hidden",
-                                },
-                                children: title,
-                              },
-                            },
-                            // Subtitle
-                            subtitle && {
-                              type: "div",
-                              props: {
-                                style: {
-                                  fontSize: "28px",
-                                  color: "#555555",
-                                  fontFamily: font,
-                                  fontWeight: "400",
-                                  overflow: "hidden",
-                                },
-                                children: subtitle,
-                              },
-                            },
-                          ].filter(Boolean),
+                          children: SITE.DOMAIN,
                         },
                       },
-                      // Footer with author/site
-                      {
-                        type: "div",
-                        props: {
-                          style: {
-                            display: "flex",
-                            justifyContent: "flex-start",
-                            alignItems: "center",
-                            marginTop: "32px",
-                          },
-                          children: [
-                            {
-                              type: "div",
-                              props: {
-                                style: {
-                                  fontSize: "28px",
-                                  fontWeight: "700",
-                                  color: "#000000",
-                                  fontFamily: font,
-                                },
-                                children: SITE.DOMAIN,
+                      // Badge — only when present
+                      badge
+                        ? {
+                            type: "div",
+                            props: {
+                              style: {
+                                fontSize: "11px",
+                                fontWeight: "400",
+                                fontFamily: monoName,
+                                color: ACCENT,
+                                border: `1px solid ${ACCENT}`,
+                                padding: "5px 14px",
+                                letterSpacing: "0.08em",
                               },
+                              children: badge,
                             },
-                          ],
-                        },
-                      },
-                    ].filter(Boolean),
+                          }
+                        : { type: "div", props: { style: {}, children: "" } },
+                    ],
                   },
                 },
               ],
@@ -200,11 +192,11 @@ export async function generateOgTemplate(
       height: 630,
       fonts:
         fonts && fonts.length > 0
-          ? fonts.map((font) => ({
-              name: font.name,
-              data: font.data,
-              weight: font.weight,
-              style: font.style,
+          ? fonts.map((f) => ({
+              name: f.name,
+              data: f.data,
+              weight: f.weight,
+              style: f.style,
             }))
           : [],
     },

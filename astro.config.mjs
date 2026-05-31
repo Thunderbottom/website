@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 import { remarkReadingTime } from "./src/utils/remark-reading-time.ts";
+import { unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
-import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import robotsTxt from "astro-robots-txt";
 import astroExpressiveCode from "astro-expressive-code";
@@ -11,6 +11,11 @@ import compressor from "astro-compressor";
 export default defineConfig({
   site: "https://maych.in",
   output: "static",
+
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "viewport",
+  },
 
   integrations: [
     astroExpressiveCode({
@@ -30,7 +35,6 @@ export default defineConfig({
         return `[data-theme="${theme.name}"]`;
       },
       themes: ["vitesse-light", "vitesse-dark"],
-      useDarkModeMediaQuery: true,
       styleOverrides: {
         borderColor: ({ theme }) =>
           theme.type === "dark" ? "#2a2a2a" : "#e5e5e5",
@@ -44,10 +48,6 @@ export default defineConfig({
       useThemedScrollbars: false,
     }),
     mdx(),
-    tailwind({
-      applyBaseStyles: false,
-      configFile: "./tailwind.config.mjs",
-    }),
     robotsTxt({
       policy: [
         {
@@ -66,8 +66,9 @@ export default defineConfig({
   ],
 
   markdown: {
-    remarkPlugins: [remarkReadingTime],
-    smartypants: true,
+    processor: unified({
+      remarkPlugins: [remarkReadingTime],
+    }),
   },
 
   image: {

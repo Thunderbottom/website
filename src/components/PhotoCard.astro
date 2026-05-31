@@ -20,41 +20,29 @@ const { data, images, exifItems, formattedDate } = photo;
   data-content={escapeHtml(photo.body || "")}
   tabindex={0}
   role="button"
+  aria-haspopup="dialog"
   aria-label={`View photo: ${data.title}`}
+  onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}"
 >
   <div class="relative cursor-pointer">
     <img
       src={images.thumbnailImage.src}
-      alt={data.title}
+      alt={data.alt || data.title}
       width={images.thumbnailImage.attributes.width}
       height={images.thumbnailImage.attributes.height}
       class="img-loading h-auto w-full object-contain transition-transform duration-300"
       loading={loading}
       decoding="async"
       onload="this.classList.remove('img-loading')"
+      onerror="this.classList.remove('img-loading')"
     />
 
     <div
-      class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/10"
+      class="absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/15 flex items-center justify-center"
     >
-      <div
-        class="bg-background/90 p-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:bg-background-dark/90"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="text-primary"
-          aria-hidden="true"
-        >
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
+      <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white drop-shadow" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
         </svg>
       </div>
     </div>
@@ -68,7 +56,7 @@ const { data, images, exifItems, formattedDate } = photo;
         </div>
         <time
           datetime={new Date(data.date).toISOString()}
-          class="text-secondary-color whitespace-nowrap text-sm"
+          class="text-secondary-color whitespace-nowrap font-mono text-xs"
         >
           {formattedDate}
         </time>

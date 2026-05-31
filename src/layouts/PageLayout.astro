@@ -3,7 +3,7 @@ import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import BackToTop from "@components/BackToTop.astro";
 import { SITE } from "@lib/config";
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 
 interface Props {
@@ -13,6 +13,7 @@ interface Props {
   ogType?: string;
   ogImage?: string;
   currentPath?: string;
+  jsonLd?: Record<string, unknown>;
 }
 
 const {
@@ -22,6 +23,7 @@ const {
   ogType = "website",
   ogImage,
   currentPath = "",
+  jsonLd,
 } = Astro.props;
 
 const pageTitle = title === SITE.NAME ? title : `${title} | ${SITE.NAME}`;
@@ -38,10 +40,10 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="theme-color" content="#f8fafc" />
+    <meta name="theme-color" content="#ffffff" />
     <meta
       name="theme-color"
-      content="#0f0f19"
+      content="#111111"
       media="(prefers-color-scheme: dark)"
     />
 
@@ -55,19 +57,19 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
       type="font/woff2"
       crossorigin
     />
-    {
-      currentPath.includes("/blog/") && (
-        <link
-          rel="preload"
-          href="/fonts/commit-mono/CommitMono-400-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-      )
-    }
+    <link
+      rel="preload"
+      href="/fonts/commit-mono/CommitMono-400-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
 
     <script is:inline>
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+
       function getTheme() {
         return (
           localStorage.getItem("theme") ||
@@ -114,12 +116,25 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
         updateThemeToggleButton(newTheme);
       });
 
+      document.addEventListener("astro:before-swap", (e) => {
+        const theme = getTheme();
+        e.newDocument.documentElement.setAttribute("data-theme", theme);
+        e.newDocument.documentElement.classList.toggle("dark", theme === "dark");
+      });
+
       document.addEventListener("astro:after-swap", () => {
+        if (!window.location.hash) {
+          window.scrollTo({ top: 0, behavior: "instant" });
+        }
         const theme = getTheme();
         applyTheme(theme);
       });
 
       document.addEventListener("astro:page-load", () => {
+        // Scroll to top on every page load — overrides browser scroll restoration
+        if (!window.location.hash) {
+          window.scrollTo({ top: 0, behavior: "instant" });
+        }
         const theme = getTheme();
         applyTheme(theme);
         updateThemeToggleButton(theme);
@@ -224,10 +239,20 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
     <link rel="manifest" href="/icons/favicon/site.webmanifest" />
 
-    <ViewTransitions />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    <script type="speculationrules">
+      {
+        "prerender": [{ "where": { "selector_matches": "nav a" }, "eagerness": "moderate" }],
+        "prefetch": [{ "where": { "href_matches": "/*" }, "eagerness": "conservative" }]
+      }
+    </script>
+
+    <ClientRouter />
   </head>
 
   <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <Header />
     <main id="main-content" tabindex="-1">
       <slot />

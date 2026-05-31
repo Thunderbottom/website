@@ -1,11 +1,15 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import BackToPrev from "@components/BackToPrev.astro";
 import Message from "@components/Message.astro";
 import Sidenote from "@components/Sidenote.astro";
+import TableOfContents from "@components/TableOfContents.astro";
+import Tag from "@components/Tag.astro";
+import { parseTags, tagToSlug } from "@lib/utils";
+import Link from "@components/Link.astro";
+import { SITE } from "@lib/config";
 
 export const prerender = true;
 
@@ -15,15 +19,42 @@ export async function getStaticPaths() {
   });
 
   return blogEntries.map((entry) => ({
-    params: { slug: entry.slug },
+    params: { slug: entry.id },
     props: { entry },
   }));
 }
 
 const { entry } = Astro.props;
-const { Content, headings, remarkPluginFrontmatter } = await entry.render();
+const { Content, headings, remarkPluginFrontmatter } = await render(entry);
 
 const readingTime = remarkPluginFrontmatter?.minutesRead || "1 min read";
+const tags = parseTags(entry.data.tags);
+const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+const hasToc = entry.data.toc !== false && tocHeadings.length >= 2;
+
+const jsonLd: Record<string, unknown> = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: entry.data.title,
+  description: entry.data.description || entry.data.summary,
+  datePublished: new Date(entry.data.date).toISOString(),
+  ...(entry.data.last_modified_at && {
+    dateModified: new Date(entry.data.last_modified_at).toISOString(),
+  }),
+  url: `${SITE.URL}/blog/${entry.id}/`,
+  author: {
+    "@type": "Person",
+    "@id": `${SITE.URL}/#person`,
+    name: SITE.NAME,
+    url: SITE.URL,
+  },
+  publisher: {
+    "@type": "Person",
+    "@id": `${SITE.URL}/#person`,
+    name: SITE.NAME,
+    url: SITE.URL,
+  },
+};
 
 const components = {
   Message,
@@ -34,18 +65,31 @@ const components = {
 <PageLayout
   title={entry.data.title}
   description={entry.data.description || entry.data.summary}
-  currentPath={`/blog/${entry.slug}/`}
+  currentPath={`/blog/${entry.id}/`}
   ogType="article"
+  jsonLd={jsonLd}
 >
-  <Container>
-    <div class="space-y-8">
+  <div class="mx-auto max-w-[42rem] px-4 sm:px-6 xl:grid xl:max-w-none xl:grid-cols-[minmax(0,1fr)_42rem_minmax(0,1fr)] xl:px-0">
+    {
+      hasToc ? (
+        <aside class="blog-toc-aside hidden xl:block">
+          <div class="blog-toc-sticky">
+            <TableOfContents headings={tocHeadings} defaultOpen={true} />
+          </div>
+        </aside>
+      ) : (
+        <div class="hidden xl:block" aria-hidden="true" />
+      )
+    }
+
+    <div class="xl:px-6 space-y-8">
       <div>
-        <BackToPrev href="/blog"> Back to blog </BackToPrev>
+        <BackToPrev href="/blog">back to blog</BackToPrev>
       </div>
 
       <div class="space-y-4">
         <div
-          class="flex items-center gap-2 text-sm text-text-secondary dark:text-text-secondary-dark"
+          class="flex items-center gap-2 font-mono text-xs text-text-secondary dark:text-text-secondary-dark"
         >
           <FormattedDate date={entry.data.date} format="%B %d, %Y" />
           <span>•</span>
@@ -66,25 +110,44 @@ const components = {
           }
         </div>
 
-        <div>
-          <h1
-            class="font-display text-3xl font-semibold leading-tight text-text-primary"
-          >
-            {entry.data.title}
-          </h1>
-        </div>
+        <h1 class="post-title font-display font-semibold text-text-primary dark:text-text-primary-dark">
+          {entry.data.title}
+        </h1>
+
+        {
+          tags.length > 0 && (
+            <div class="flex flex-wrap gap-1.5">
+              {tags.map((tag) => (
+                <a href={`/tags/${tagToSlug(tag)}/`} class="inline-flex items-center min-h-[44px]">
+                  <Tag text={tag} />
+                </a>
+              ))}
+            </div>
+          )
+        }
       </div>
 
-      <article class="prose prose-lg max-w-none">
+      {
+        hasToc && (
+          <div class="xl:hidden border border-border dark:border-border-dark p-4">
+            <TableOfContents headings={tocHeadings} defaultOpen={false} />
+          </div>
+        )
+      }
+
+      <article class="max-w-none">
         <Content components={components} />
       </article>
 
-      <div class="border-t border-border pt-8 text-center">
-        <p class="text-lg italic text-text-secondary text-text-secondary-dark">
-          Got any questions or comments, or just want to say hello?<br />Drop by
-          on my email!
+      <div class="border-t border-border dark:border-border-dark pt-8 text-center">
+        <p
+          class="text-base italic text-text-secondary dark:text-text-secondary-dark"
+        >
+          Got any questions or comments? <Link href={`mailto:${SITE.EMAIL}`} underline>Drop me an email.</Link>
         </p>
       </div>
     </div>
-  </Container>
+
+    <div class="hidden xl:block" aria-hidden="true" />
+  </div>
 </PageLayout>

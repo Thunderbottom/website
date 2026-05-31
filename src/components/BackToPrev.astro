@@ -1,5 +1,4 @@
 ---
-import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
 interface Props {
   href: string;
 }
@@ -9,12 +8,7 @@ const { href } = Astro.props;
 
 <a
   href={href}
-  class="group relative inline-flex items-center gap-2 border border-border bg-card py-2 pl-8 pr-3 transition-all duration-200 hover:border-text-secondary hover:shadow-sm dark:border-border-dark dark:bg-card-dark dark:hover:border-text-secondary-dark"
+  class="inline-flex items-center gap-1.5 font-mono text-xs text-text-secondary dark:text-text-secondary-dark hover:text-text-primary dark:hover:text-text-primary-dark transition-colors duration-150"
 >
-  <IconChevronLeft class="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2" />
-  <span
-    class="group-hover:text-primary dark:group-hover:text-primary text-sm text-text-secondary transition-colors dark:text-text-secondary-dark"
-  >
-    <slot />
-  </span>
+  ← <slot />
 </a>

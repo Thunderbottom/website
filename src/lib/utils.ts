@@ -10,12 +10,30 @@ export function sortByDateDesc<T extends { date: string | Date }>(
 export function sortByDateDesc<
   T extends { data?: { date: string | Date }; date?: string | Date },
 >(items: T[]): T[] {
-  return items.sort((a, b) => {
+  return [...items].sort((a, b) => {
     const dateA = "data" in a && a.data?.date ? a.data.date : (a as any).date;
     const dateB = "data" in b && b.data?.date ? b.data.date : (b as any).date;
 
     return new Date(dateB).valueOf() - new Date(dateA).valueOf();
   });
+}
+
+/**
+ * Parse a comma-separated tag string into an array of trimmed tag names.
+ */
+export function parseTags(tags?: string): string[] {
+  if (!tags) return [];
+  return tags
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Convert a tag name to a URL-safe slug.
+ */
+export function tagToSlug(tag: string): string {
+  return tag.toLowerCase().replace(/\s+/g, "-");
 }
 
 /**

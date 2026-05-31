@@ -5,10 +5,9 @@ import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import PageContainer from "@components/PageContainer.astro";
 import Section from "@components/Section.astro";
-import ArrowCard from "@components/ArrowCard.astro";
 import ProjectCard from "@components/ProjectCard.astro";
 import Link from "@components/Link.astro";
-import { SITE, SOCIALS, PROJECTS } from "@lib/config";
+import { SITE, SOCIALS, PROJECTS, formatDate } from "@lib/config";
 import { sortByDateDesc } from "@lib/utils";
 
 const blog = sortByDateDesc(
@@ -19,9 +18,34 @@ const recentProjects = sortByDateDesc(PROJECTS).slice(
   0,
   SITE.NUM_PROJECTS_ON_HOMEPAGE,
 );
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE.URL}/#website`,
+      url: SITE.URL,
+      name: SITE.NAME,
+      description: SITE.DESCRIPTION,
+    },
+    {
+      "@type": "Person",
+      "@id": `${SITE.URL}/#person`,
+      name: SITE.NAME,
+      url: SITE.URL,
+      email: SITE.EMAIL,
+      sameAs: [
+        "https://bsky.app/profile/maych.in",
+        "https://github.com/Thunderbottom",
+        "https://git.deku.moe",
+      ],
+    },
+  ],
+};
 ---
 
-<PageLayout currentPath="/">
+<PageLayout currentPath="/" jsonLd={jsonLd}>
   <PageContainer spacing="lg">
     <Section spacing="md">
       <h1 class="heading-xl mb-6">
@@ -29,7 +53,7 @@ const recentProjects = sortByDateDesc(PROJECTS).slice(
       </h1>
 
       <div class="space-y-6">
-        <article class="prose prose-lg max-w-none">
+        <div class="prose max-w-none dark:prose-invert">
           <p>
             I make servers go beep boop. Also a hobbyist <Link
               href="/photography"
@@ -51,29 +75,33 @@ const recentProjects = sortByDateDesc(PROJECTS).slice(
             to <Link href="/now" underline>now</Link>.
           </p>
 
-          <p class="italic">
+          <p class="italic text-center text-text-muted dark:text-text-muted-dark text-sm" lang="es">
             "El camarón que se duerme se lo lleva la corriente"
           </p>
-        </article>
+        </div>
       </div>
     </Section>
 
     {
       blog.length > 0 && (
-        <Section spacing="md">
+        <Section spacing="sm">
           <div class="flex flex-wrap items-center justify-between gap-y-2">
-            <h2 class="heading-lg">Latest Posts</h2>
-            <Link href="/blog" class="text-sm">
-              See all posts
-            </Link>
+            <h2 class="font-mono text-xs text-text-muted dark:text-text-muted-dark font-normal">posts</h2>
+            <Link href="/blog" class="font-mono text-xs">all posts →</Link>
           </div>
-          <ul class="flex flex-col gap-4">
+          <div class="border-t border-border dark:border-border-dark">
             {blog.map((post) => (
-              <li>
-                <ArrowCard entry={post} />
-              </li>
+              <a href={`/blog/${post.id}/`} class="post-item group">
+                <span class="post-item-title">{post.data.title}</span>
+                <time
+                  class="post-item-date"
+                  datetime={new Date(post.data.date).toISOString()}
+                >
+                  {formatDate(new Date(post.data.date), "%b %Y")}
+                </time>
+              </a>
             ))}
-          </ul>
+          </div>
         </Section>
       )
     }
@@ -82,12 +110,10 @@ const recentProjects = sortByDateDesc(PROJECTS).slice(
       recentProjects.length > 0 && (
         <Section spacing="md">
           <div class="flex flex-wrap items-center justify-between gap-y-2">
-            <h2 class="heading-lg">Recent Projects</h2>
-            <Link href="/projects" class="text-sm">
-              See all projects
-            </Link>
+            <h2 class="font-mono text-xs text-text-muted dark:text-text-muted-dark font-normal">projects</h2>
+            <Link href="/projects" class="font-mono text-xs">all projects →</Link>
           </div>
-          <div class="flex flex-col gap-6">
+          <div class="border-t border-border dark:border-border-dark">
             {recentProjects.map((project) => (
               <ProjectCard project={project} />
             ))}
@@ -97,17 +123,17 @@ const recentProjects = sortByDateDesc(PROJECTS).slice(
     }
 
     <Section spacing="md">
-      <h2 class="heading-lg">Let's Connect</h2>
-      <article class="prose prose-lg max-w-none">
+      <h2 class="font-mono text-xs text-text-muted dark:text-text-muted-dark font-normal">contact</h2>
+      <div class="prose max-w-none dark:prose-invert">
         <p>
           If you want to get in touch with me about something or just to say
           "hello" sometime, here's where you can find me.
         </p>
-      </article>
-      <ul class="flex flex-wrap gap-1">
+      </div>
+      <ul class="flex flex-wrap gap-3">
         {
-          SOCIALS.map((social, index) => (
-            <li class="flex gap-x-1 text-nowrap">
+          SOCIALS.map((social) => (
+            <li class="text-nowrap">
               <Link
                 href={social.href}
                 aria-label={`${SITE.NAME} on ${social.name}`}
@@ -116,9 +142,6 @@ const recentProjects = sortByDateDesc(PROJECTS).slice(
               >
                 {social.name}
               </Link>
-              <span class="mr-2 text-text-muted dark:text-text-muted-dark">
-                {" "}
-              </span>
             </li>
           ))
         }

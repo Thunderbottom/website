@@ -12,25 +12,11 @@ export async function loadSiteFonts(): Promise<FontData[]> {
     const { readFile, access } = await import("fs/promises");
     const path = await import("path");
 
-    const possibleDirs = [
-      path.join(process.cwd(), "src/assets/fonts"),
-      path.join(process.cwd(), "src", "assets", "fonts"),
-      path.resolve(process.cwd(), "src", "assets", "fonts"),
-    ];
+    const fontsDir = path.join(process.cwd(), "src/assets/fonts");
 
-    let fontsDir = null;
-
-    for (const dir of possibleDirs) {
-      try {
-        await access(dir);
-        fontsDir = dir;
-        break;
-      } catch (e) {
-        // Directory doesn't exist, try next
-      }
-    }
-
-    if (!fontsDir) {
+    try {
+      await access(fontsDir);
+    } catch {
       throw new Error("Could not find fonts directory");
     }
 
@@ -71,6 +57,12 @@ export async function loadSiteFonts(): Promise<FontData[]> {
       "atkinson-hyperlegible-next/atkinson-hyperlegible-next-v6-latin-700.ttf",
       "Atkinson Hyperlegible Next",
       700,
+    );
+
+    await loadFont(
+      "commit-mono/CommitMono-400-Regular.ttf",
+      "Commit Mono",
+      400,
     );
 
     if (fonts.length > 0) {

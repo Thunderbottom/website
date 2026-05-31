@@ -21,7 +21,9 @@ const sortedProjects = sortByDateDesc(PROJECTS);
     <PageHeader title={PROJECTS_CONFIG.TITLE} size="lg" />
 
     <Section spacing="md">
-      {sortedProjects.map((project) => <ProjectCard project={project} />)}
+      <div class="border-t border-border dark:border-border-dark">
+        {sortedProjects.map((project) => <ProjectCard project={project} />)}
+      </div>
     </Section>
 
     {

@@ -88,7 +88,7 @@ const totalPhotos = validPhotosData.length;
             <div class="flex justify-end">
               <h2
                 id={`year-${year}`}
-                class="text-primary font-display text-xl font-semibold"
+                class="font-mono text-xs text-text-muted dark:text-text-muted-dark"
               >
                 {year}
               </h2>
@@ -121,16 +121,12 @@ const totalPhotos = validPhotosData.length;
       aria-live="polite"
       aria-label="Loading more photos"
     >
-      <div
-        class="inline-flex items-center gap-2 text-text-secondary dark:text-text-secondary-dark"
-      >
-        <div
-          class="h-4 w-4 animate-spin rounded-full border-2 border-text-secondary border-t-transparent"
-          aria-hidden="true"
-        >
-        </div>
-        <span>Loading more photos...</span>
+      <div class="inline-flex items-center gap-1.5" aria-hidden="true">
+        <span class="block h-1 w-1 animate-pulse bg-text-secondary dark:bg-text-secondary-dark" style="animation-delay: 0ms"></span>
+        <span class="block h-1 w-1 animate-pulse bg-text-secondary dark:bg-text-secondary-dark" style="animation-delay: 150ms"></span>
+        <span class="block h-1 w-1 animate-pulse bg-text-secondary dark:bg-text-secondary-dark" style="animation-delay: 300ms"></span>
       </div>
+      <span class="sr-only">Loading more photos...</span>
     </div>
 
     <!-- End indicator -->
@@ -143,7 +139,7 @@ const totalPhotos = validPhotosData.length;
     {
       initialProcessedPhotos.length === 0 && (
         <div class="py-12 text-center">
-          <p class="text-text-secondary">No photos found.</p>
+          <p class="text-text-secondary dark:text-text-secondary-dark">No photos found.</p>
         </div>
       )
     }
@@ -178,37 +174,47 @@ const totalPhotos = validPhotosData.length;
   };
 
   function createPhotoHTML(photo) {
-    const escapeHtml = (str) => str.replace(/"/g, "&quot;");
+    const escapeHtml = (str) => {
+      if (typeof str !== "string") return "";
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    };
     const exifTags = photo.exifItems?.length
-      ? `<div class="flex flex-wrap justify-center gap-1 text-xs">
-        ${photo.exifItems.map((item) => `<span class="px-2 py-1 font-mono bg-border dark:bg-border-dark text-text-secondary dark:text-text-secondary-dark text-center">${item}</span>`).join("")}
+      ? `<div class="flex flex-wrap justify-center gap-1">
+        ${photo.exifItems.map((item) => `<span class="border border-border dark:border-border-dark bg-transparent px-2 py-0.5 font-mono text-xs text-text-secondary dark:text-text-secondary-dark">${item}</span>`).join("")}
       </div>`
       : "";
 
     return `
       <div role="listitem">
-        <div class="group relative flex flex-col border border-border dark:border-border-dark bg-card dark:bg-card-dark hover:border-text-secondary dark:hover:border-text-secondary-dark transition-all duration-200 hover:shadow-sm overflow-hidden"
+        <div class="group relative flex flex-col border border-border dark:border-border-dark bg-card dark:bg-card-dark hover:border-text-secondary dark:hover:border-text-secondary-dark transition-[border-color,box-shadow] duration-150 hover:shadow-sm overflow-hidden"
              data-photo-trigger
              data-full-image="${photo.images.lightboxImage.src}"
              data-title="${escapeHtml(photo.data.title)}"
              data-content="${escapeHtml(photo.body || "")}"
              tabindex="0"
              role="button"
-             aria-label="View photo: ${escapeHtml(photo.data.title)}">
+             aria-haspopup="dialog"
+             aria-label="View photo: ${escapeHtml(photo.data.title)}"
+             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
           <div class="relative cursor-pointer">
             <img src="${photo.images.thumbnailImage.src}"
-                 alt="${escapeHtml(photo.data.title)}"
+                 alt="${escapeHtml(photo.data.alt || photo.data.title)}"
                  width="${photo.images.thumbnailImage.attributes.width}"
                  height="${photo.images.thumbnailImage.attributes.height}"
                  class="img-loading h-auto w-full object-contain transition-transform duration-300"
                  loading="lazy"
                  decoding="async"
-                 onload="this.classList.remove('img-loading')" />
-            <div class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/10">
-              <div class="bg-background/90 p-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:bg-background-dark/90">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary" aria-hidden="true">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                 onload="this.classList.remove('img-loading')"
+                 onerror="this.classList.remove('img-loading')" />
+            <div class="absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/15 flex items-center justify-center">
+              <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white drop-shadow" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
                 </svg>
               </div>
             </div>
@@ -217,7 +223,7 @@ const totalPhotos = validPhotosData.length;
             <div class="min-w-0 flex-1">
               <div class="mb-2 flex items-start justify-between gap-4">
                 <div class="font-display text-lg font-semibold text-primary">${photo.data.title}</div>
-                <time datetime="${new Date(photo.data.date).toISOString()}" class="whitespace-nowrap text-sm text-text-secondary dark:text-text-secondary-dark">${photo.formattedDate}</time>
+                <time datetime="${new Date(photo.data.date).toISOString()}" class="whitespace-nowrap font-mono text-xs text-text-secondary dark:text-text-secondary-dark">${photo.formattedDate}</time>
               </div>
               ${exifTags}
             </div>
@@ -257,24 +263,31 @@ const totalPhotos = validPhotosData.length;
       return acc;
     }, {});
 
-    Object.entries(photosByYear).forEach(([year, photos]) => {
-      const section = document.createElement("section");
-      section.className = "space-y-6";
-      section.innerHTML = `
-        <div class="flex justify-end">
-          <h2 class="font-display text-xl font-semibold text-primary">${year}</h2>
-        </div>
-        <div class="space-y-4" role="list" data-year="${year}">
-          ${photos.map(createPhotoHTML).join("")}
-        </div>`;
-      elements.container.appendChild(section);
-    });
+    Object.entries(photosByYear)
+      .sort(([a], [b]) => Number(b) - Number(a))
+      .forEach(([year, photos]) => {
+        const existingList = elements.container.querySelector(`[data-year="${year}"]`);
+        if (existingList) {
+          existingList.insertAdjacentHTML("beforeend", photos.map(createPhotoHTML).join(""));
+        } else {
+          const section = document.createElement("section");
+          section.className = "space-y-6";
+          section.setAttribute("aria-labelledby", `year-${year}`);
+          section.innerHTML = `
+            <div class="flex justify-end">
+              <h2 id="year-${year}" class="font-mono text-xs text-text-muted dark:text-text-muted-dark">${year}</h2>
+            </div>
+            <div class="space-y-4" role="list" data-year="${year}" aria-label="Photos from ${year}">
+              ${photos.map(createPhotoHTML).join("")}
+            </div>`;
+          elements.container.appendChild(section);
+        }
+      });
 
     currentIndex += nextPhotos.length;
     isLoading = false;
     elements.loading?.classList.add("hidden");
 
-    window.setupPhotoLightboxTriggers?.();
     if (!window.staticPhotoLoader.hasMorePhotos()) {
       elements.endIndicator?.classList.remove("hidden");
     }

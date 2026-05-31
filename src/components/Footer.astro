@@ -5,11 +5,11 @@ import { SITE } from "@lib/config";
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="mb-10 mt-10 border-t border-border pt-8 dark:border-border-dark">
+<footer aria-label="Site footer" class="mb-10 mt-10 border-t border-border pt-8 dark:border-border-dark">
   <Container>
     <div class="space-y-4">
       <div class="text-center text-sm">
-        <div class="text-secondary-color text-sm">
+        <div class="text-secondary-color">
           &copy; {currentYear} | {SITE.NAME}
         </div>
       </div>

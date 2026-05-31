@@ -71,7 +71,7 @@ export const NAVIGATION: NavigationItem[] = [
 ];
 
 export const SOCIALS: SocialLink[] = [
-  { name: "Bsky", href: "https://bsky.app/profile/maych.in" },
+  { name: "Bluesky", href: "https://bsky.app/profile/maych.in" },
   { name: "GitHub", href: "https://github.com/Thunderbottom" },
   { name: "Lobsters", href: "https://lobste.rs/u/Thunderbottom" },
   { name: "Forgejo", href: "https://git.deku.moe" },
@@ -82,7 +82,7 @@ export const PROJECTS: ProjectItem[] = [
   {
     title: "kiln",
     description:
-      "Encrypt, share, and run with secure environment variables from the command line ",
+      "Encrypt, share, and run with secure environment variables from the command line.",
     date: "2025-07-10",
     repoURL: "https://github.com/Thunderbottom/kiln",
     websiteURL: "https://kiln.sh",
@@ -122,7 +122,7 @@ export interface NowSection {
 function createLink(href: string, text: string, external = true): string {
   const target = external ? ' target="_blank"' : "";
   const rel = external ? ' rel="noopener noreferrer"' : "";
-  return `<a href="${href}"${target}${rel} class="text-link transition-all duration-200 ease-in-out hover:opacity-80">${text}</a>`;
+  return `<a href="${href}"${target}${rel} class="text-link dark:text-link-dark underline underline-offset-[3px] decoration-1 decoration-[#aaaaaa] dark:decoration-[#555555] transition-[background-color,color,text-decoration-color] duration-150 ease-out hover:bg-text-primary hover:text-background hover:no-underline dark:hover:bg-text-primary-dark dark:hover:text-background-dark">${text}</a>`;
 }
 
 export const NOW_DATA: NowSection[] = [
@@ -148,13 +148,13 @@ export const NOW_DATA: NowSection[] = [
 export const IMAGE_SETTINGS = {
   THUMBNAIL: {
     WIDTH: 800,
-    QUALITY: 75,
-    FORMAT: "webp" as const,
+    QUALITY: 65,
+    FORMAT: "avif" as const,
   },
   LIGHTBOX: {
     WIDTH: 1280,
-    QUALITY: 85,
-    FORMAT: "webp" as const,
+    QUALITY: 75,
+    FORMAT: "avif" as const,
   },
 } as const;
 

@@ -18,11 +18,12 @@ export interface ExifData {
 }
 
 export interface ProcessedPhoto {
-  slug: string;
+  id: string;
   data: {
     title: string;
     date: string;
     image: string;
+    alt?: string;
     tags?: string;
     draft?: boolean;
   };
@@ -158,12 +159,14 @@ export async function processPhotoForStatic(
       const imagePath = `./src/content/photography/images/${photo.data.image}.jpg`;
       const exifData = await extractExifData(imagePath);
       exifItems = formatExifItems(exifData);
-    } catch (error) {}
+    } catch {
+      // EXIF unavailable for this image
+    }
 
     const formattedDate = formatDate(new Date(photo.data.date), "%B %d, %Y");
 
     return {
-      slug: photo.slug,
+      id: photo.id,
       data: photo.data,
       body: photo.body || "",
       images,
@@ -171,7 +174,7 @@ export async function processPhotoForStatic(
       formattedDate,
     };
   } catch (error) {
-    console.error(`Error processing photo ${photo.slug}:`, error);
+    console.error(`Error processing photo ${photo.id}:`, error);
     return null;
   }
 }

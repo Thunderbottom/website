@@ -6,8 +6,8 @@ import PageLayout from "@layouts/PageLayout.astro";
 import PageContainer from "@components/PageContainer.astro";
 import PageHeader from "@components/PageHeader.astro";
 import Section from "@components/Section.astro";
-import ArrowCard from "@components/ArrowCard.astro";
-import { BLOG } from "@lib/config";
+import Link from "@components/Link.astro";
+import { BLOG, formatDate } from "@lib/config";
 import { sortByDateDesc } from "@lib/utils";
 
 const allPosts = await getCollection("blog", ({ data }) => {
@@ -39,19 +39,30 @@ const years = Object.keys(postsByYear)
   currentPath="/blog/"
 >
   <PageContainer spacing="md">
-    <PageHeader title={BLOG.TITLE} size="lg" />
+    <div class="flex items-end justify-between gap-4">
+      <PageHeader title={BLOG.TITLE} size="lg" />
+      <Link href="/tags" class="font-mono text-xs whitespace-nowrap mb-0.5">tags →</Link>
+    </div>
 
     {
       years.map((year) => (
-        <Section spacing="md">
+        <Section spacing="sm">
           <div class="flex justify-end">
-            <h2 class="text-primary font-display text-xl font-semibold">
+            <h2 class="font-mono text-xs text-text-muted dark:text-text-muted-dark">
               {year}
             </h2>
           </div>
-          <div class="space-y-4">
+          <div class="border-t border-border dark:border-border-dark">
             {postsByYear[year].map((post) => (
-              <ArrowCard entry={post} />
+              <a href={`/blog/${post.id}/`} class="post-item group">
+                <span class="post-item-title">{post.data.title}</span>
+                <time
+                  class="post-item-date"
+                  datetime={new Date(post.data.date).toISOString()}
+                >
+                  {formatDate(new Date(post.data.date), "%b %Y")}
+                </time>
+              </a>
             ))}
           </div>
         </Section>

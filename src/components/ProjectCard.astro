@@ -9,56 +9,68 @@ interface Props {
 }
 
 const { project } = Astro.props;
+const primaryUrl = project.websiteURL || project.repoURL || project.demoURL;
 ---
 
-<div class="card flex flex-col gap-4 p-4">
-  <div class="content-flex">
-    <div class="heading-lg mb-1">
-      {project.title}
-    </div>
-    <div class="date-meta">
-      {formatDate(new Date(project.date), "%B %d, %Y")}
-    </div>
-    <div class="text-secondary-color mb-3 text-sm leading-relaxed">
-      {project.description}
-    </div>
-
+<div class="project-entry">
+  <div class="flex items-baseline justify-between gap-4 mb-1">
     {
-      project.tags && project.tags.length > 0 && (
-        <div class="mb-3 flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
-            <Tag text={tag} />
-          ))}
-        </div>
+      primaryUrl ? (
+        <a
+          href={primaryUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-sm text-text-secondary dark:text-text-secondary-dark link-hover"
+        >
+          {project.title}
+        </a>
+      ) : (
+        <span class="text-sm text-text-secondary dark:text-text-secondary-dark">
+          {project.title}
+        </span>
       )
     }
-
-    {
-      (project.demoURL || project.repoURL || project.websiteURL) && (
-        <nav class="flex gap-1 text-sm">
-          {project.demoURL && (
-            <Link href={project.demoURL} external underline>
-              demo
-            </Link>
-          )}
-          {project.demoURL && project.repoURL && (
-            <span class="text-secondary-color">/</span>
-          )}
-          {project.repoURL && (
-            <Link href={project.repoURL} external underline>
-              source code
-            </Link>
-          )}
-          {project.repoURL && project.websiteURL && (
-            <span class="text-secondary-color">/</span>
-          )}
-          {project.websiteURL && (
-            <Link href={project.websiteURL} external underline>
-              website
-            </Link>
-          )}
-        </nav>
-      )
-    }
+    <time
+      datetime={new Date(project.date).toISOString()}
+      class="font-mono text-xs text-text-secondary dark:text-text-secondary-dark whitespace-nowrap flex-shrink-0"
+    >
+      {formatDate(new Date(project.date), "%b %Y")}
+    </time>
   </div>
+
+  <p class="text-sm text-text-secondary dark:text-text-secondary-dark leading-relaxed mb-2">
+    {project.description}
+  </p>
+
+  {
+    project.tags && project.tags.length > 0 && (
+      <div class="mb-2 flex flex-wrap gap-1.5">
+        {project.tags.map((tag) => (
+          <Tag text={tag} />
+        ))}
+      </div>
+    )
+  }
+
+  {
+    primaryUrl && (
+      <nav class="flex gap-1 text-sm" aria-label={`Links for ${project.title}`}>
+        {project.demoURL && (
+          <Link href={project.demoURL} external underline>demo</Link>
+        )}
+        {project.demoURL && project.repoURL && (
+          <span class="text-text-muted dark:text-text-muted-dark">/</span>
+        )}
+        {project.repoURL && (
+          <Link href={project.repoURL} external underline>source</Link>
+        )}
+        {(project.demoURL || project.repoURL) && project.websiteURL && (
+          <span class="text-text-muted dark:text-text-muted-dark">/</span>
+        )}
+        {project.websiteURL && (
+          <Link href={project.websiteURL} external underline>website</Link>
+        )}
+      </nav>
+    )
+  }
 </div>

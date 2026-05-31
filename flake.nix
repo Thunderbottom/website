@@ -14,22 +14,31 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+
+        nodeModules = pkgs.callPackage ./node-modules.nix {
+          src = ./.;
+          version = "25.05";
+        };
       in
       {
-        packages.maych-in = pkgs.buildNpmPackage {
+        packages.maych-in = pkgs.stdenvNoCC.mkDerivation {
           pname = "maych-in";
           version = "25.05";
           src = ./.;
 
-          npmDepsHash = "sha256-gddwSigXpLgwaIQ2Gg/7S4Ce1E0WNZz1J+v4T+Xkxno=";
+          nativeBuildInputs = with pkgs; [ bun ];
 
-          nativeBuildInputs = with pkgs; [
-            nodejs_22
-          ];
+          configurePhase = ''
+            runHook preConfigure
+            cp -a ${nodeModules} node_modules
+            chmod -R u+w node_modules
+            runHook postConfigure
+          '';
 
           buildPhase = ''
             runHook preBuild
-            npm run build
+            export HOME=$(mktemp -d)
+            NODE_ENV=production bun node_modules/astro/bin/astro.mjs build
             runHook postBuild
           '';
 
@@ -38,10 +47,6 @@
             cp -r dist $out
             runHook postInstall
           '';
-
-          # Skip npm audit and other unnecessary checks
-          dontNpmInstall = false;
-          npmBuildScript = "build:prod";
 
           meta = with pkgs.lib; {
             description = "Personal blog and website built with Astro";
@@ -54,22 +59,16 @@
         packages.default = self.packages.${system}.maych-in;
 
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            nodejs_22
-            nodePackages.npm
-            nodePackages.typescript
-            nodePackages.prettier
-          ];
+          buildInputs = with pkgs; [ bun ];
 
           shellHook = ''
             echo "Welcome to maych.in development environment!"
             echo "Available commands:"
-            echo "  npm run dev     - Start development server"
-            echo "  npm run build   - Build for production"
-            echo "  npm run preview - Preview production build"
+            echo "  bun run dev     - Start development server"
+            echo "  bun run build   - Build for production"
+            echo "  bun run preview - Preview production build"
             echo ""
-            echo "Node.js version: $(node --version)"
-            echo "npm version: $(npm --version)"
+            echo "Bun version: $(bun --version)"
           '';
         };
 
@@ -97,7 +96,7 @@
           '';
         };
 
-        # Legacy attribute for backward compatibility
+        # Legacy attributes for backward compatibility
         defaultPackage = self.packages.${system}.default;
         devShell = self.devShells.${system}.default;
       }

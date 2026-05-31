@@ -4,15 +4,15 @@ import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
 
 <button
   id="back-to-top"
+  type="button"
   data-visible="false"
-  class="group fixed bottom-12 left-1/2 z-40 inline-flex -translate-x-1/2 transform items-center gap-2 border border-border bg-card py-2 pl-8 pr-3 transition-all duration-200 hover:border-text-secondary hover:shadow-sm data-[visible=false]:pointer-events-none data-[visible=true]:pointer-events-auto data-[visible=false]:translate-y-2 data-[visible=true]:translate-y-0 data-[visible=false]:opacity-0 data-[visible=true]:opacity-100 dark:border-border-dark dark:bg-card-dark dark:hover:border-text-secondary-dark"
+  class="fixed left-1/2 z-40 inline-flex min-h-[44px] -translate-x-1/2 transform items-center gap-2 border border-border bg-card py-3 pl-8 pr-3 text-text-secondary transition-[opacity,transform,background-color,border-color,color,box-shadow] duration-200 hover:border-text-primary hover:bg-text-primary hover:text-background hover:shadow-sm data-[visible=false]:pointer-events-none data-[visible=true]:pointer-events-auto data-[visible=false]:translate-y-2 data-[visible=true]:translate-y-0 data-[visible=false]:opacity-0 data-[visible=true]:opacity-100 dark:border-border-dark dark:bg-card-dark dark:text-text-secondary-dark dark:hover:border-text-primary-dark dark:hover:bg-text-primary-dark dark:hover:text-background-dark"
+  style="bottom: calc(3rem + env(safe-area-inset-bottom, 0px))"
 >
   <IconChevronLeft
     class="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90"
   />
-  <span
-    class="group-hover:text-primary dark:group-hover:text-primary whitespace-nowrap text-sm text-text-secondary transition-colors dark:text-text-secondary-dark"
-  >
+  <span class="whitespace-nowrap font-mono text-xs">
     Back to top
   </span>
 </button>

@@ -14,11 +14,10 @@ const {
   ...rest
 } = Astro.props;
 
-const baseClasses =
-  "text-link dark:text-link-dark hover:bg-text-primary hover:text-background dark:hover:bg-text-primary-dark dark:hover:text-background-dark hover:no-underline hover:py-[0.0625rem] hover:px-[0.1875rem] hover:-my-[0.0625rem] hover:-mx-[0.1875rem] transition-all duration-200 ease-in-out";
+const baseClasses = "text-link dark:text-link-dark link-hover hover:text-background dark:hover:text-background-dark hover:no-underline";
 
 const underlineClasses = underline
-  ? "underline underline-offset-[3px] [display:inline-block]"
+  ? "underline underline-offset-[3px] decoration-1 decoration-underline dark:decoration-underline-dark"
   : "";
 
 const linkClasses = [baseClasses, underlineClasses, className]
@@ -32,6 +31,4 @@ const linkClasses = [baseClasses, underlineClasses, className]
   rel={external ? "noopener noreferrer" : undefined}
   class={linkClasses}
   {...rest}
->
-  <slot />
-</a>
+><slot /></a>

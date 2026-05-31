@@ -4,7 +4,7 @@
 
 <div
   id="photo-lightbox"
-  class="pointer-events-none fixed inset-0 z-[9999] bg-black/90 opacity-0 backdrop-blur-md transition-all duration-300"
+  class="fixed inset-0 z-[100] opacity-0 pointer-events-none"
   aria-hidden="true"
   role="dialog"
   aria-modal="true"
@@ -14,99 +14,87 @@
   <!-- Close button -->
   <button
     id="lightbox-close"
-    class="absolute right-4 top-4 z-10 bg-black/20 p-3 text-white transition-colors hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+    class="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center text-white/70 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
     aria-label="Close photo viewer"
     type="button"
   >
     <svg
-      width="24"
-      height="24"
+      width="20"
+      height="20"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="2"
+      stroke-width="1.5"
       aria-hidden="true"
     >
       <path d="M18 6L6 18M6 6l12 12"></path>
     </svg>
   </button>
 
-  <div class="absolute inset-0 flex items-center justify-center p-4 pb-32">
-    <div class="relative flex h-full w-full items-center justify-center">
-      <!-- Previous button -->
-      <button
-        id="lightbox-prev"
-        class="absolute left-4 top-1/2 z-10 hidden -translate-y-1/2 bg-black/20 p-3 text-white opacity-80 transition-colors hover:bg-black/70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
-        aria-label="Previous photo"
-        type="button"
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          aria-hidden="true"
-        >
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
+  <!-- Counter -->
+  <div
+    id="lightbox-counter"
+    class="absolute left-4 top-4 z-10 font-mono text-xs text-white/50"
+    aria-live="polite"
+  >
+  </div>
 
-      <!-- Next button -->
-      <button
-        id="lightbox-next"
-        class="absolute right-4 top-1/2 z-10 hidden -translate-y-1/2 bg-black/20 p-3 text-white opacity-80 transition-colors hover:bg-black/70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
-        aria-label="Next photo"
-        type="button"
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          aria-hidden="true"
-        >
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </button>
+  <!-- Navigation -->
+  <button
+    id="lightbox-prev"
+    class="absolute left-2 top-1/2 z-10 hidden h-12 w-11 -translate-y-1/2 items-center justify-center text-white/60 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+    aria-label="Previous photo"
+    type="button"
+  >
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  </button>
 
-      <img
-        id="lightbox-image"
-        src=""
-        alt=""
-        class="max-h-full max-w-full object-contain opacity-0 shadow-2xl transition-opacity duration-300"
-        style="image-orientation: from-image; width: auto; height: auto;"
-      />
+  <button
+    id="lightbox-next"
+    class="absolute right-2 top-1/2 z-10 hidden h-12 w-11 -translate-y-1/2 items-center justify-center text-white/60 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+    aria-label="Next photo"
+    type="button"
+  >
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </button>
 
-      <div
-        id="lightbox-loading"
-        class="absolute inset-0 flex hidden items-center justify-center"
-        aria-live="polite"
-        aria-label="Loading photo"
-      >
-        <div
-          class="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent"
-          aria-hidden="true"
-        >
-        </div>
-        <span class="sr-only">Loading photo...</span>
-      </div>
+  <!-- Image area -->
+  <div class="absolute inset-0 flex items-center justify-center p-4 pb-28">
+    <img
+      id="lightbox-image"
+      src=""
+      alt=""
+      class="max-h-full max-w-full object-contain opacity-0 transition-opacity duration-200 ease-out"
+      style="image-orientation: from-image; width: auto; height: auto;"
+    />
+
+    <!-- Loading indicator -->
+    <div
+      id="lightbox-loading"
+      class="absolute hidden items-center gap-1.5"
+      aria-live="polite"
+      aria-label="Loading photo"
+    >
+      <span class="block h-1 w-1 animate-pulse bg-white/60" style="animation-delay: 0ms"></span>
+      <span class="block h-1 w-1 animate-pulse bg-white/60" style="animation-delay: 150ms"></span>
+      <span class="block h-1 w-1 animate-pulse bg-white/60" style="animation-delay: 300ms"></span>
+      <span class="sr-only">Loading photo...</span>
     </div>
   </div>
 
-  <div
-    class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/80 to-transparent p-6 text-white"
-  >
-    <div class="mx-auto max-w-4xl text-center">
+  <!-- Info panel -->
+  <div id="lightbox-info" class="absolute bottom-0 left-0 right-0 px-6 py-5">
+    <div class="mx-auto max-w-2xl">
       <h2
         id="lightbox-title"
-        class="mb-2 font-display text-xl font-semibold text-gray-200"
+        class="font-display text-base font-semibold text-white"
       >
       </h2>
-      <div id="lightbox-content" class="text-sm leading-relaxed text-gray-300">
+      <div id="lightbox-content" class="mt-1 font-mono text-xs leading-relaxed text-white/65">
       </div>
     </div>
   </div>
@@ -117,17 +105,25 @@
     constructor() {
       this.elements = this.getElements();
       this.state = {
-        scrollPosition: 0,
         currentPhotoIndex: 0,
-        allPhotos: [],
         isOpen: false,
       };
-      this.cachedPhotos = null;
+      this.triggerElement = null;
 
-      this.boundEventHandlers = {
-        keydown: this.handleKeydown.bind(this),
-        click: this.handleBackdropClick.bind(this),
+      this.boundHandlers = {
+        documentClick: this.handleDocumentClick.bind(this),
+        documentKeydown: this.handleDocumentKeydown.bind(this),
+        backdropClick: this.handleBackdropClick.bind(this),
+        close: this.closeLightbox.bind(this),
+        prev: this.goToPrevPhoto.bind(this),
+        next: this.goToNextPhoto.bind(this),
+        trapFocus: this.handleFocusTrap.bind(this),
+        touchStart: this.handleTouchStart.bind(this),
+        touchEnd: this.handleTouchEnd.bind(this),
       };
+
+      this.touchStartX = 0;
+      this.touchStartY = 0;
 
       if (this.elements.isValid) {
         this.initialize();
@@ -140,6 +136,7 @@
       const lightboxTitle = document.getElementById("lightbox-title");
       const lightboxContent = document.getElementById("lightbox-content");
       const lightboxLoading = document.getElementById("lightbox-loading");
+      const lightboxCounter = document.getElementById("lightbox-counter");
       const closeButton = document.getElementById("lightbox-close");
       const prevButton = document.getElementById("lightbox-prev");
       const nextButton = document.getElementById("lightbox-next");
@@ -160,6 +157,7 @@
         lightboxTitle,
         lightboxContent,
         lightboxLoading,
+        lightboxCounter,
         closeButton,
         prevButton,
         nextButton,
@@ -168,98 +166,96 @@
     }
 
     initialize() {
-      this.setupEventListeners();
-      this.setupPhotoTriggers();
-
-      window.setupPhotoLightboxTriggers = this.setupPhotoTriggers.bind(this);
-      window.staticPhotoLightboxInstance = this;
+      this.elements.closeButton.addEventListener("click", this.boundHandlers.close);
+      this.elements.prevButton.addEventListener("click", this.boundHandlers.prev);
+      this.elements.nextButton.addEventListener("click", this.boundHandlers.next);
+      this.elements.lightbox.addEventListener("click", this.boundHandlers.backdropClick);
+      this.elements.lightbox.addEventListener("touchstart", this.boundHandlers.touchStart, { passive: true });
+      this.elements.lightbox.addEventListener("touchend", this.boundHandlers.touchEnd, { passive: true });
+      document.addEventListener("click", this.boundHandlers.documentClick);
+      document.addEventListener("keydown", this.boundHandlers.documentKeydown);
     }
 
-    setupEventListeners() {
-      this.elements.closeButton.addEventListener(
-        "click",
-        this.closeLightbox.bind(this),
-      );
-      this.elements.prevButton.addEventListener(
-        "click",
-        this.goToPrevPhoto.bind(this),
-      );
-      this.elements.nextButton.addEventListener(
-        "click",
-        this.goToNextPhoto.bind(this),
-      );
-
-      this.elements.lightbox.addEventListener(
-        "click",
-        this.boundEventHandlers.click,
-      );
-
-      document.addEventListener("keydown", this.boundEventHandlers.keydown);
+    getFocusableElements() {
+      const selectors = [
+        'a[href]', 'button:not([disabled])', 'input:not([disabled])',
+        'select:not([disabled])', 'textarea:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(', ');
+      return Array.from(this.elements.lightbox.querySelectorAll(selectors));
     }
 
-    setupPhotoTriggers() {
-      this.invalidatePhotoCache();
-      document.querySelectorAll("[data-photo-trigger]").forEach((trigger) => {
-        const newTrigger = trigger.cloneNode(true);
-        trigger.parentNode?.replaceChild(newTrigger, trigger);
-      });
-
-      document.querySelectorAll("[data-photo-trigger]").forEach((trigger) => {
-        trigger.addEventListener("click", (event) => {
+    handleFocusTrap(event) {
+      if (event.key !== 'Tab') return;
+      const focusable = this.getFocusableElements();
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey) {
+        if (document.activeElement === first) {
           event.preventDefault();
-          this.openLightbox(trigger);
-        });
-
-        trigger.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            this.openLightbox(trigger);
-          }
-        });
-      });
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     }
 
     getAllPhotos() {
-      if (!this.cachedPhotos) {
-        this.cachedPhotos = Array.from(
-          document.querySelectorAll("[data-photo-trigger]"),
-        );
-      }
-      return this.cachedPhotos;
+      return Array.from(document.querySelectorAll("[data-photo-trigger]"));
     }
 
-    invalidatePhotoCache() {
-      this.cachedPhotos = null;
+    handleDocumentClick(event) {
+      if (this.state.isOpen) return;
+      const trigger = event.target.closest("[data-photo-trigger]");
+      if (trigger) {
+        event.preventDefault();
+        this.openLightbox(trigger);
+      }
+    }
+
+    handleDocumentKeydown(event) {
+      if (this.state.isOpen) {
+        this.handleLightboxKeydown(event);
+      } else if (event.key === "Enter" || event.key === " ") {
+        const trigger = event.target.closest("[data-photo-trigger]");
+        if (trigger) {
+          event.preventDefault();
+          this.openLightbox(trigger);
+        }
+      }
+    }
+
+    handleBackdropClick(event) {
+      if (event.target === this.elements.lightbox) {
+        this.closeLightbox();
+      }
     }
 
     updateNavigationButtons() {
-      this.state.allPhotos = this.getAllPhotos();
-
-      const { prevButton, nextButton } = this.elements;
-      const { currentPhotoIndex, allPhotos } = this.state;
+      const allPhotos = this.getAllPhotos();
+      const { prevButton, nextButton, lightboxCounter } = this.elements;
+      const { currentPhotoIndex } = this.state;
 
       const showPrev = currentPhotoIndex > 0;
       const hasMoreLoadedPhotos = currentPhotoIndex < allPhotos.length - 1;
-      const hasMorePhotosToLoad =
-        window.staticPhotoLoader && window.staticPhotoLoader.hasMorePhotos();
+      const hasMorePhotosToLoad = window.staticPhotoLoader?.hasMorePhotos?.() ?? false;
       const showNext = hasMoreLoadedPhotos || hasMorePhotosToLoad;
 
       prevButton.classList.toggle("hidden", !showPrev);
+      prevButton.classList.toggle("flex", showPrev);
       nextButton.classList.toggle("hidden", !showNext);
+      nextButton.classList.toggle("flex", showNext);
 
-      if (currentPhotoIndex > 0) {
-        prevButton.setAttribute(
-          "aria-label",
-          `Previous photo (${currentPhotoIndex} of ${allPhotos.length})`,
-        );
+      if (lightboxCounter) {
+        const total = hasMorePhotosToLoad
+          ? `${allPhotos.length}+`
+          : `${allPhotos.length}`;
+        lightboxCounter.textContent = `${currentPhotoIndex + 1} / ${total}`;
       }
-
-      nextButton.setAttribute(
-        "aria-label",
-        hasMoreLoadedPhotos || hasMorePhotosToLoad
-          ? `Next photo (${currentPhotoIndex + 2})`
-          : "No more photos available",
-      );
     }
 
     loadPhoto(photoElement) {
@@ -275,25 +271,16 @@
       const { lightboxTitle, lightboxContent, lightboxLoading, lightboxImage } =
         this.elements;
 
-      if (title && title.trim()) {
-        const titleTempDiv = document.createElement("div");
-        titleTempDiv.innerHTML = title.trim();
-        lightboxTitle.textContent =
-          titleTempDiv.textContent || titleTempDiv.innerText || "";
-      } else {
-        lightboxTitle.textContent = "";
-      }
+      lightboxTitle.textContent = title.trim()
+        ? (new DOMParser().parseFromString(title, "text/html").body.textContent ?? "")
+        : "";
 
-      if (content && content.trim()) {
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = content.trim();
-        lightboxContent.textContent =
-          tempDiv.textContent || tempDiv.innerText || "";
-      } else {
-        lightboxContent.textContent = "";
-      }
+      lightboxContent.textContent = content?.trim()
+        ? (new DOMParser().parseFromString(content, "text/html").body.textContent ?? "")
+        : "";
 
       lightboxLoading.classList.remove("hidden");
+      lightboxLoading.classList.add("flex");
       lightboxImage.classList.add("opacity-0");
 
       const img = new Image();
@@ -302,19 +289,17 @@
         lightboxImage.src = img.src;
         lightboxImage.alt = title;
         lightboxLoading.classList.add("hidden");
+        lightboxLoading.classList.remove("flex");
         lightboxImage.classList.remove("opacity-0");
-
         lightboxImage.focus();
       };
 
       img.onerror = () => {
         console.error("[StaticPhotoLightbox] Failed to load image:", fullImage);
         lightboxLoading.classList.add("hidden");
+        lightboxLoading.classList.remove("flex");
         lightboxImage.classList.remove("opacity-0");
-
         lightboxImage.alt = `Failed to load: ${title}`;
-        lightboxImage.src =
-          "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDlWMTNNMTIgMTdIMTIuMDFNMjEgMTJDMjEgMTYuOTcwNiAxNi45NzA2IDIxIDEyIDIxQzcuMDI5NCAyMSAzIDE2Ljk3MDYgMyAxMkMzIDcuMDI5NCA3LjAyOTQgMyAxMiAzQzE2Ljk3MDYgMyAyMSA3LjAyOTQgMjEgMTJaIiBzdHJva2U9InJlZCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+";
       };
 
       img.src = fullImage;
@@ -322,27 +307,23 @@
     }
 
     openLightbox(trigger) {
-      this.state.allPhotos = this.getAllPhotos();
-      this.state.currentPhotoIndex = this.state.allPhotos.indexOf(trigger);
+      const allPhotos = this.getAllPhotos();
+      const index = allPhotos.indexOf(trigger);
 
-      if (this.state.currentPhotoIndex === -1) {
-        console.warn(
-          "[StaticPhotoLightbox] Photo trigger not found in collection",
-        );
+      if (index === -1) {
+        console.warn("[StaticPhotoLightbox] Photo trigger not found in collection");
         return;
       }
 
-      this.state.scrollPosition = window.scrollY;
+      this.triggerElement = document.activeElement;
+      this.state.currentPhotoIndex = index;
       this.state.isOpen = true;
 
-      this.elements.lightbox.classList.remove(
-        "opacity-0",
-        "pointer-events-none",
-      );
+      this.elements.lightbox.classList.remove("opacity-0", "pointer-events-none");
       this.elements.lightbox.setAttribute("aria-hidden", "false");
+      document.documentElement.classList.add("lightbox-open");
 
-      document.body.classList.add("lightbox-open");
-      document.body.style.top = `-${this.state.scrollPosition}px`;
+      this.elements.lightbox.addEventListener("keydown", this.boundHandlers.trapFocus);
 
       this.loadPhoto(trigger);
 
@@ -354,57 +335,70 @@
     closeLightbox() {
       this.state.isOpen = false;
 
+      this.elements.lightbox.removeEventListener("keydown", this.boundHandlers.trapFocus);
       this.elements.lightbox.classList.add("opacity-0", "pointer-events-none");
       this.elements.lightbox.setAttribute("aria-hidden", "true");
-
-      document.body.style.top = "";
-      document.body.classList.remove("lightbox-open");
-
-      requestAnimationFrame(() => {
-        window.scrollTo({
-          top: this.state.scrollPosition,
-          left: 0,
-          behavior: "instant",
-        });
-      });
+      document.documentElement.classList.remove("lightbox-open");
 
       this.elements.lightboxImage.src = "";
       this.elements.lightboxImage.classList.add("opacity-0");
-      this.elements.lightboxLoading.classList.remove("hidden");
+      this.elements.lightboxLoading.classList.add("hidden");
+      this.elements.lightboxLoading.classList.remove("flex");
+
+      if (this.triggerElement) {
+        this.triggerElement.focus();
+        this.triggerElement = null;
+      }
     }
 
     goToNextPhoto() {
-      this.state.allPhotos = this.getAllPhotos();
+      const allPhotos = this.getAllPhotos();
 
-      if (this.state.currentPhotoIndex < this.state.allPhotos.length - 1) {
+      if (this.state.currentPhotoIndex < allPhotos.length - 1) {
         this.state.currentPhotoIndex++;
-        this.loadPhoto(this.state.allPhotos[this.state.currentPhotoIndex]);
-      } else if (
-        window.staticPhotoLoader &&
-        window.staticPhotoLoader.hasMorePhotos()
-      ) {
+        this.loadPhoto(allPhotos[this.state.currentPhotoIndex]);
+      } else if (window.staticPhotoLoader?.hasMorePhotos?.()) {
         window.staticPhotoLoader.loadMorePhotos().then(() => {
-          this.state.allPhotos = this.getAllPhotos();
-          if (this.state.currentPhotoIndex < this.state.allPhotos.length - 1) {
+          const updatedPhotos = this.getAllPhotos();
+          if (this.state.currentPhotoIndex < updatedPhotos.length - 1) {
             this.state.currentPhotoIndex++;
-            this.loadPhoto(this.state.allPhotos[this.state.currentPhotoIndex]);
+            this.loadPhoto(updatedPhotos[this.state.currentPhotoIndex]);
           }
         });
       }
     }
 
     goToPrevPhoto() {
-      this.state.allPhotos = this.getAllPhotos();
-
+      const allPhotos = this.getAllPhotos();
       if (this.state.currentPhotoIndex > 0) {
         this.state.currentPhotoIndex--;
-        this.loadPhoto(this.state.allPhotos[this.state.currentPhotoIndex]);
+        this.loadPhoto(allPhotos[this.state.currentPhotoIndex]);
       }
     }
 
-    handleKeydown(event) {
-      if (!this.state.isOpen) return;
+    handleTouchStart(event) {
+      const touch = event.changedTouches[0];
+      this.touchStartX = touch.clientX;
+      this.touchStartY = touch.clientY;
+    }
 
+    handleTouchEnd(event) {
+      if (!this.state.isOpen) return;
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - this.touchStartX;
+      const deltaY = touch.clientY - this.touchStartY;
+
+      // Require primarily horizontal movement: |deltaX| > |deltaY| and at least 50px
+      if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+
+      if (deltaX < 0) {
+        this.goToNextPhoto();
+      } else {
+        this.goToPrevPhoto();
+      }
+    }
+
+    handleLightboxKeydown(event) {
       switch (event.key) {
         case "Escape":
           event.preventDefault();
@@ -418,90 +412,85 @@
           event.preventDefault();
           this.goToNextPhoto();
           break;
-        case "Home":
+        case "Home": {
           event.preventDefault();
-          if (this.state.allPhotos.length > 0) {
+          const allPhotos = this.getAllPhotos();
+          if (allPhotos.length > 0) {
             this.state.currentPhotoIndex = 0;
-            this.loadPhoto(this.state.allPhotos[0]);
+            this.loadPhoto(allPhotos[0]);
           }
           break;
-        case "End":
+        }
+        case "End": {
           event.preventDefault();
-          if (this.state.allPhotos.length > 0) {
-            this.state.currentPhotoIndex = this.state.allPhotos.length - 1;
-            this.loadPhoto(this.state.allPhotos[this.state.currentPhotoIndex]);
+          const allPhotos = this.getAllPhotos();
+          if (allPhotos.length > 0) {
+            this.state.currentPhotoIndex = allPhotos.length - 1;
+            this.loadPhoto(allPhotos[this.state.currentPhotoIndex]);
           }
           break;
-      }
-    }
-
-    handleBackdropClick(event) {
-      if (event.target === this.elements.lightbox) {
-        this.closeLightbox();
+        }
       }
     }
 
     destroy() {
-      document.removeEventListener("keydown", this.boundEventHandlers.keydown);
-      this.elements.lightbox.removeEventListener(
-        "click",
-        this.boundEventHandlers.click,
-      );
-
-      delete window.setupPhotoLightboxTriggers;
-      delete window.staticPhotoLightboxInstance;
+      document.removeEventListener("click", this.boundHandlers.documentClick);
+      document.removeEventListener("keydown", this.boundHandlers.documentKeydown);
+      if (this.elements.lightbox) {
+        this.elements.lightbox.removeEventListener("click", this.boundHandlers.backdropClick);
+        this.elements.lightbox.removeEventListener("keydown", this.boundHandlers.trapFocus);
+        this.elements.lightbox.removeEventListener("touchstart", this.boundHandlers.touchStart);
+        this.elements.lightbox.removeEventListener("touchend", this.boundHandlers.touchEnd);
+      }
+      if (this.elements.closeButton) {
+        this.elements.closeButton.removeEventListener("click", this.boundHandlers.close);
+      }
+      if (this.elements.prevButton) {
+        this.elements.prevButton.removeEventListener("click", this.boundHandlers.prev);
+      }
+      if (this.elements.nextButton) {
+        this.elements.nextButton.removeEventListener("click", this.boundHandlers.next);
+      }
     }
   }
+
+  let lightboxInstance = null;
 
   function initStaticLightbox() {
-    if (window.staticPhotoLightboxInstance) {
-      window.staticPhotoLightboxInstance.destroy();
+    if (lightboxInstance) {
+      lightboxInstance.destroy();
     }
-
-    const lightbox = new StaticPhotoLightbox();
-
-    return lightbox;
+    const lb = document.getElementById("photo-lightbox");
+    if (!lb) return;
+    lightboxInstance = new StaticPhotoLightbox();
   }
 
-  function waitForPhotoTriggers() {
-    return new Promise((resolve) => {
-      const checkTriggers = () => {
-        const triggers = document.querySelectorAll("[data-photo-trigger]");
-        if (triggers.length > 0) {
-          resolve(triggers);
-        } else {
-          requestAnimationFrame(checkTriggers);
-        }
-      };
-      checkTriggers();
-    });
-  }
-
-  async function initWhenReady() {
-    await waitForPhotoTriggers();
-    initStaticLightbox();
-  }
-
-  document.addEventListener("astro:page-load", initWhenReady);
+  document.addEventListener("astro:page-load", initStaticLightbox);
 </script>
 
-<style>
-  #photo-lightbox[aria-hidden="true"] {
-    display: none;
+<style is:global>
+  html.lightbox-open {
+    overflow: hidden;
   }
 
-  #photo-lightbox img {
-    transition: opacity 0.3s ease-in-out;
+  #photo-lightbox {
+    background-color: rgba(0, 0, 0, 0.92);
+    transition: opacity 200ms ease;
+  }
+
+  #lightbox-info {
+    background-color: rgba(0, 0, 0, 0.82);
   }
 
   #photo-lightbox button:focus-visible {
-    outline: 2px solid white;
+    outline: 1px solid rgba(255, 255, 255, 0.6);
     outline-offset: 2px;
   }
 
-  body.lightbox-open {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
+  @media (prefers-reduced-motion: reduce) {
+    #photo-lightbox,
+    #lightbox-image {
+      transition: none;
+    }
   }
 </style>

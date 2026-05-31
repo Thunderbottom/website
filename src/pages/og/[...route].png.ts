@@ -64,7 +64,7 @@ export async function getStaticPaths() {
     for (const post of blogPosts) {
       if (!post.data.draft) {
         paths.push({
-          params: { route: `blog/${post.slug}` },
+          params: { route: `blog/${post.id}` },
         });
       }
     }
