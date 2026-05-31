@@ -38,6 +38,7 @@
           buildPhase = ''
             runHook preBuild
             export HOME=$(mktemp -d)
+            export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
             NODE_ENV=production bun node_modules/astro/bin/astro.mjs build
             runHook postBuild
           '';
