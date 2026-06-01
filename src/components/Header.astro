@@ -6,7 +6,9 @@ import { NAVIGATION, SITE } from "@lib/config";
 
 const currentPath = Astro.url.pathname;
 const isActive = (url: string) =>
-  url === "/" ? currentPath === "/" : currentPath === url || currentPath.startsWith(url + "/");
+  url === "/"
+    ? currentPath === "/"
+    : currentPath === url || currentPath.startsWith(url + "/");
 ---
 
 <header>
@@ -14,12 +16,12 @@ const isActive = (url: string) =>
     <div class="flex flex-wrap items-center justify-between gap-y-2">
       <a
         href="/"
-        class="text-primary font-bold font-display text-base sm:text-lg transition-colors duration-150 hover:text-text-secondary dark:hover:text-text-secondary-dark"
+        class="text-primary font-display hover:text-text-secondary dark:hover:text-text-secondary-dark text-base font-bold transition-colors duration-150 sm:text-lg"
       >
         {SITE.DOMAIN}
       </a>
 
-      <div class="flex items-center gap-2 sm:gap-3 text-sm md:text-base">
+      <div class="flex items-center gap-2 text-sm sm:gap-3 md:text-base">
         <nav class="flex items-center gap-1" aria-label="Main navigation">
           {
             NAVIGATION.map((item, index) => (
@@ -27,12 +29,17 @@ const isActive = (url: string) =>
                 <a
                   href={item.url}
                   aria-current={isActive(item.url) ? "page" : undefined}
-                  class="whitespace-nowrap font-mono transition-colors duration-150 text-primary py-1 px-1 sm:px-1.5"
+                  class="text-primary px-1.5 py-2 font-mono whitespace-nowrap transition-colors duration-150 sm:px-2"
                 >
                   {item.name.toLowerCase()}
                 </a>
                 {index < NAVIGATION.length - 1 && (
-                  <span class="hidden sm:inline mx-1 text-text-muted dark:text-text-muted-dark" aria-hidden="true">/</span>
+                  <span
+                    class="text-text-muted dark:text-text-muted-dark mx-1 hidden sm:inline"
+                    aria-hidden="true"
+                  >
+                    /
+                  </span>
                 )}
               </>
             ))
@@ -46,10 +53,10 @@ const isActive = (url: string) =>
           class="relative flex h-11 w-11 items-center justify-center transition-colors duration-150"
         >
           <IconSun
-            class="absolute size-4 rotate-0 scale-100 transition-transform duration-300 dark:-rotate-90 dark:scale-0"
+            class="absolute size-4 scale-100 rotate-0 transition-transform duration-300 dark:scale-0 dark:-rotate-90"
           />
           <IconMoon
-            class="absolute size-4 rotate-90 scale-0 transition-transform duration-300 dark:rotate-0 dark:scale-100"
+            class="absolute size-4 scale-0 rotate-90 transition-transform duration-300 dark:scale-100 dark:rotate-0"
           />
         </button>
       </div>

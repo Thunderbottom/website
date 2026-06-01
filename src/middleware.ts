@@ -1,5 +1,9 @@
 import { defineMiddleware } from "astro:middleware";
-import { getOgMetadataForPath, generateOgImageUrl, pathnameToRoute } from "@lib/og/utils";
+import {
+  getOgMetadataForPath,
+  generateOgImageUrl,
+  pathnameToRoute,
+} from "@lib/og/utils";
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const pathname = context.url.pathname;

@@ -12,17 +12,15 @@ const { photo, loading = "lazy" } = Astro.props;
 const { data, images, exifItems, formattedDate } = photo;
 ---
 
-<div
-  class="card group flex flex-col overflow-hidden"
+<button
+  type="button"
+  class="card group flex w-full flex-col overflow-hidden text-left"
   data-photo-trigger
   data-full-image={images.lightboxImage.src}
   data-title={escapeHtml(data.title)}
   data-content={escapeHtml(photo.body || "")}
-  tabindex={0}
-  role="button"
   aria-haspopup="dialog"
   aria-label={`View photo: ${data.title}`}
-  onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}"
 >
   <div class="relative cursor-pointer">
     <img
@@ -38,11 +36,21 @@ const { data, images, exifItems, formattedDate } = photo;
     />
 
     <div
-      class="absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/15 flex items-center justify-center"
+      class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/15"
     >
-      <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white drop-shadow" aria-hidden="true">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+      <div
+        class="text-white opacity-0 drop-shadow transition-opacity duration-200 group-hover:opacity-100"
+        aria-hidden="true"
+      >
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        >
+          <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
         </svg>
       </div>
     </div>
@@ -56,7 +64,7 @@ const { data, images, exifItems, formattedDate } = photo;
         </div>
         <time
           datetime={new Date(data.date).toISOString()}
-          class="text-secondary-color whitespace-nowrap font-mono text-xs"
+          class="text-secondary-color font-mono text-xs whitespace-nowrap"
         >
           {formattedDate}
         </time>
@@ -73,4 +81,4 @@ const { data, images, exifItems, formattedDate } = photo;
       }
     </div>
   </div>
-</div>
+</button>

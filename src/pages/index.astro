@@ -48,12 +48,12 @@ const jsonLd = {
 <PageLayout currentPath="/" jsonLd={jsonLd}>
   <PageContainer spacing="lg">
     <Section spacing="md">
-      <h1 class="heading-xl mb-6">
+      <h1 class="heading-display mb-6">
         {SITE.NAME}
       </h1>
 
       <div class="space-y-6">
-        <div class="prose max-w-none dark:prose-invert">
+        <div class="prose dark:prose-invert max-w-none">
           <p>
             I make servers go beep boop. Also a hobbyist <Link
               href="/photography"
@@ -75,7 +75,10 @@ const jsonLd = {
             to <Link href="/now" underline>now</Link>.
           </p>
 
-          <p class="italic text-center text-text-muted dark:text-text-muted-dark text-sm" lang="es">
+          <p
+            class="text-text-muted dark:text-text-muted-dark text-sm italic"
+            lang="es"
+          >
             "El camarón que se duerme se lo lleva la corriente"
           </p>
         </div>
@@ -85,11 +88,15 @@ const jsonLd = {
     {
       blog.length > 0 && (
         <Section spacing="sm">
-          <div class="flex flex-wrap items-center justify-between gap-y-2">
-            <h2 class="font-mono text-xs text-text-muted dark:text-text-muted-dark font-normal">posts</h2>
-            <Link href="/blog" class="font-mono text-xs">all posts →</Link>
+          <div class="flex items-center justify-between">
+            <span class="text-text-muted dark:text-text-muted-dark font-mono text-xs">
+              posts
+            </span>
+            <Link href="/blog" class="font-mono text-xs">
+              all posts →
+            </Link>
           </div>
-          <div class="border-t border-border dark:border-border-dark">
+          <div class="border-border dark:border-border-dark border-t">
             {blog.map((post) => (
               <a href={`/blog/${post.id}/`} class="post-item group">
                 <span class="post-item-title">{post.data.title}</span>
@@ -109,11 +116,15 @@ const jsonLd = {
     {
       recentProjects.length > 0 && (
         <Section spacing="md">
-          <div class="flex flex-wrap items-center justify-between gap-y-2">
-            <h2 class="font-mono text-xs text-text-muted dark:text-text-muted-dark font-normal">projects</h2>
-            <Link href="/projects" class="font-mono text-xs">all projects →</Link>
+          <div class="flex items-center justify-between">
+            <span class="text-text-muted dark:text-text-muted-dark font-mono text-xs">
+              projects
+            </span>
+            <Link href="/projects" class="font-mono text-xs">
+              all projects →
+            </Link>
           </div>
-          <div class="border-t border-border dark:border-border-dark">
+          <div class="border-border dark:border-border-dark border-t">
             {recentProjects.map((project) => (
               <ProjectCard project={project} />
             ))}
@@ -123,8 +134,10 @@ const jsonLd = {
     }
 
     <Section spacing="md">
-      <h2 class="font-mono text-xs text-text-muted dark:text-text-muted-dark font-normal">contact</h2>
-      <div class="prose max-w-none dark:prose-invert">
+      <span class="text-text-muted dark:text-text-muted-dark font-mono text-xs"
+        >contact</span
+      >
+      <div class="prose dark:prose-invert max-w-none">
         <p>
           If you want to get in touch with me about something or just to say
           "hello" sometime, here's where you can find me.

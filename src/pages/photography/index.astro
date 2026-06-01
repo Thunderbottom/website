@@ -88,7 +88,7 @@ const totalPhotos = validPhotosData.length;
             <div class="flex justify-end">
               <h2
                 id={`year-${year}`}
-                class="font-mono text-xs text-text-muted dark:text-text-muted-dark"
+                class="text-text-muted dark:text-text-muted-dark font-mono text-xs"
               >
                 {year}
               </h2>
@@ -122,16 +122,22 @@ const totalPhotos = validPhotosData.length;
       aria-label="Loading more photos"
     >
       <div class="inline-flex items-center gap-1.5" aria-hidden="true">
-        <span class="block h-1 w-1 animate-pulse bg-text-secondary dark:bg-text-secondary-dark" style="animation-delay: 0ms"></span>
-        <span class="block h-1 w-1 animate-pulse bg-text-secondary dark:bg-text-secondary-dark" style="animation-delay: 150ms"></span>
-        <span class="block h-1 w-1 animate-pulse bg-text-secondary dark:bg-text-secondary-dark" style="animation-delay: 300ms"></span>
+        <span
+          class="bg-text-secondary dark:bg-text-secondary-dark block h-1 w-1 animate-pulse"
+          style="animation-delay: 0ms"></span>
+        <span
+          class="bg-text-secondary dark:bg-text-secondary-dark block h-1 w-1 animate-pulse"
+          style="animation-delay: 150ms"></span>
+        <span
+          class="bg-text-secondary dark:bg-text-secondary-dark block h-1 w-1 animate-pulse"
+          style="animation-delay: 300ms"></span>
       </div>
       <span class="sr-only">Loading more photos...</span>
     </div>
 
     <!-- End indicator -->
     <div id="end-indicator" class="hidden py-8 text-center" aria-live="polite">
-      <p class="italic text-text-secondary dark:text-text-secondary-dark">
+      <p class="text-text-secondary dark:text-text-secondary-dark italic">
         That's all folks!
       </p>
     </div>
@@ -139,7 +145,9 @@ const totalPhotos = validPhotosData.length;
     {
       initialProcessedPhotos.length === 0 && (
         <div class="py-12 text-center">
-          <p class="text-text-secondary dark:text-text-secondary-dark">No photos found.</p>
+          <p class="text-text-secondary dark:text-text-secondary-dark">
+            No photos found.
+          </p>
         </div>
       )
     }
@@ -266,9 +274,14 @@ const totalPhotos = validPhotosData.length;
     Object.entries(photosByYear)
       .sort(([a], [b]) => Number(b) - Number(a))
       .forEach(([year, photos]) => {
-        const existingList = elements.container.querySelector(`[data-year="${year}"]`);
+        const existingList = elements.container.querySelector(
+          `[data-year="${year}"]`,
+        );
         if (existingList) {
-          existingList.insertAdjacentHTML("beforeend", photos.map(createPhotoHTML).join(""));
+          existingList.insertAdjacentHTML(
+            "beforeend",
+            photos.map(createPhotoHTML).join(""),
+          );
         } else {
           const section = document.createElement("section");
           section.className = "space-y-6";

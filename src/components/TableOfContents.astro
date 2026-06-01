@@ -59,7 +59,8 @@ const { headings, defaultOpen = true } = Astro.props;
   function initTOC() {
     if (cleanup) cleanup();
 
-    const tocLinks = document.querySelectorAll<HTMLAnchorElement>("[data-heading]");
+    const tocLinks =
+      document.querySelectorAll<HTMLAnchorElement>("[data-heading]");
     if (!tocLinks.length) return;
 
     const headingEls = Array.from(tocLinks)

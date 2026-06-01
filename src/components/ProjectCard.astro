@@ -13,32 +13,34 @@ const primaryUrl = project.websiteURL || project.repoURL || project.demoURL;
 ---
 
 <div class="project-entry">
-  <div class="flex items-baseline justify-between gap-4 mb-1">
+  <div class="mb-1 flex items-baseline justify-between gap-4">
     {
       primaryUrl ? (
         <a
           href={primaryUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-sm text-text-secondary dark:text-text-secondary-dark link-hover"
+          class="text-text-secondary dark:text-text-secondary-dark link-hover text-sm"
         >
           {project.title}
         </a>
       ) : (
-        <span class="text-sm text-text-secondary dark:text-text-secondary-dark">
+        <span class="text-text-secondary dark:text-text-secondary-dark text-sm">
           {project.title}
         </span>
       )
     }
     <time
       datetime={new Date(project.date).toISOString()}
-      class="font-mono text-xs text-text-secondary dark:text-text-secondary-dark whitespace-nowrap flex-shrink-0"
+      class="text-text-secondary dark:text-text-secondary-dark flex-shrink-0 font-mono text-xs whitespace-nowrap"
     >
       {formatDate(new Date(project.date), "%b %Y")}
     </time>
   </div>
 
-  <p class="text-sm text-text-secondary dark:text-text-secondary-dark leading-relaxed mb-2">
+  <p
+    class="text-text-secondary dark:text-text-secondary-dark mb-2 text-sm leading-relaxed"
+  >
     {project.description}
   </p>
 
@@ -56,19 +58,25 @@ const primaryUrl = project.websiteURL || project.repoURL || project.demoURL;
     primaryUrl && (
       <nav class="flex gap-1 text-sm" aria-label={`Links for ${project.title}`}>
         {project.demoURL && (
-          <Link href={project.demoURL} external underline>demo</Link>
+          <Link href={project.demoURL} external underline>
+            demo
+          </Link>
         )}
         {project.demoURL && project.repoURL && (
           <span class="text-text-muted dark:text-text-muted-dark">/</span>
         )}
         {project.repoURL && (
-          <Link href={project.repoURL} external underline>source</Link>
+          <Link href={project.repoURL} external underline>
+            source
+          </Link>
         )}
         {(project.demoURL || project.repoURL) && project.websiteURL && (
           <span class="text-text-muted dark:text-text-muted-dark">/</span>
         )}
         {project.websiteURL && (
-          <Link href={project.websiteURL} external underline>website</Link>
+          <Link href={project.websiteURL} external underline>
+            website
+          </Link>
         )}
       </nav>
     )

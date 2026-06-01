@@ -49,7 +49,9 @@ const allPosts = sortByDateDesc(
 
     <div>
       <h1 class="heading-2xl">{displayTag}</h1>
-      <p class="mt-2 font-mono text-xs text-text-muted dark:text-text-muted-dark">
+      <p
+        class="text-text-muted dark:text-text-muted-dark mt-2 font-mono text-xs"
+      >
         {allPosts.length}
         {allPosts.length === 1 ? "post" : "posts"}
       </p>
@@ -57,7 +59,7 @@ const allPosts = sortByDateDesc(
 
     {
       allPosts.length > 0 ? (
-        <div class="border-t border-border dark:border-border-dark">
+        <div class="border-border dark:border-border-dark border-t">
           {allPosts.map((post) => (
             <a href={`/blog/${post.id}/`} class="post-item group">
               <span class="post-item-title">{post.data.title}</span>

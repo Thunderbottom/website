@@ -14,7 +14,8 @@ const {
   ...rest
 } = Astro.props;
 
-const baseClasses = "text-link dark:text-link-dark link-hover hover:text-background dark:hover:text-background-dark hover:no-underline";
+const baseClasses =
+  "text-link dark:text-link-dark link-hover hover:text-background dark:hover:text-background-dark hover:no-underline";
 
 const underlineClasses = underline
   ? "underline underline-offset-[3px] decoration-1 decoration-underline dark:decoration-underline-dark"
@@ -30,5 +31,5 @@ const linkClasses = [baseClasses, underlineClasses, className]
   target={external ? "_blank" : "_self"}
   rel={external ? "noopener noreferrer" : undefined}
   class={linkClasses}
-  {...rest}
-><slot /></a>
+  {...rest}><slot /></a
+>

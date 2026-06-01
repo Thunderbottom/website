@@ -36,7 +36,10 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -119,7 +122,10 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
       document.addEventListener("astro:before-swap", (e) => {
         const theme = getTheme();
         e.newDocument.documentElement.setAttribute("data-theme", theme);
-        e.newDocument.documentElement.classList.toggle("dark", theme === "dark");
+        e.newDocument.documentElement.classList.toggle(
+          "dark",
+          theme === "dark",
+        );
       });
 
       document.addEventListener("astro:after-swap", () => {
@@ -239,12 +245,20 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
     <link rel="manifest" href="/icons/favicon/site.webmanifest" />
 
-    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    {
+      jsonLd && (
+        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+      )
+    }
 
     <script type="speculationrules">
       {
-        "prerender": [{ "where": { "selector_matches": "nav a" }, "eagerness": "moderate" }],
-        "prefetch": [{ "where": { "href_matches": "/*" }, "eagerness": "conservative" }]
+        "prerender": [
+          { "where": { "selector_matches": "nav a" }, "eagerness": "moderate" }
+        ],
+        "prefetch": [
+          { "where": { "href_matches": "/*" }, "eagerness": "conservative" }
+        ]
       }
     </script>
 

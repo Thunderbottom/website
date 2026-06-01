@@ -120,9 +120,14 @@
   }
 
   *:focus-visible {
-    @apply outline-none ring-2 ring-link ring-offset-2 ring-offset-background;
+    @apply ring-link ring-offset-background ring-2 ring-offset-2 outline-none;
     @apply dark:ring-link-dark dark:ring-offset-background-dark;
     transition: box-shadow var(--timing-fast) var(--ease-out-expo);
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
   }
 
   h1,
@@ -163,20 +168,23 @@
   }
 
   header {
-    @apply fixed left-0 right-0 top-0 z-50 py-4;
+    @apply fixed top-0 right-0 left-0 z-50 py-4;
     @apply bg-background/80 dark:bg-background-dark/80;
-    @apply border-b border-border dark:border-border-dark;
+    @apply border-border dark:border-border-dark border-b;
     @apply backdrop-blur-sm;
     width: 100%;
     overflow-x: hidden;
+    padding-top: max(1rem, env(safe-area-inset-top));
   }
 
   main {
-    @apply flex-1 pb-16 pt-32;
+    @apply flex-1 pb-16;
+    padding-top: calc(8rem + env(safe-area-inset-top, 0px));
   }
 
   footer {
     @apply py-5 text-sm;
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
   }
 
   .text-primary {
@@ -184,7 +192,7 @@
   }
 
   .border-default {
-    @apply border border-border dark:border-border-dark;
+    @apply border-border dark:border-border-dark border;
   }
 
   .transition-default {
@@ -202,18 +210,25 @@
     text-wrap: balance;
   }
 
+  .heading-display {
+    @apply text-text-primary dark:text-text-primary-dark font-display font-bold;
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
   .heading-lg {
-    @apply text-text-primary dark:text-text-primary-dark font-display font-semibold text-lg;
+    @apply text-text-primary dark:text-text-primary-dark font-display text-lg font-semibold;
     text-wrap: balance;
   }
 
   .heading-xl {
-    @apply text-text-primary dark:text-text-primary-dark font-display font-semibold text-xl;
+    @apply text-text-primary dark:text-text-primary-dark font-display text-xl font-bold;
     text-wrap: balance;
   }
 
   .heading-2xl {
-    @apply text-text-primary dark:text-text-primary-dark font-display font-semibold text-2xl;
+    @apply text-text-primary dark:text-text-primary-dark font-display text-2xl font-bold;
     text-wrap: balance;
   }
 
@@ -222,7 +237,7 @@
   }
 
   .card {
-    @apply relative border border-border bg-card dark:border-border-dark dark:bg-card-dark;
+    @apply border-border bg-card dark:border-border-dark dark:bg-card-dark relative border;
     transition:
       border-color 200ms var(--ease-out-expo),
       box-shadow 200ms var(--ease-out-expo),
@@ -230,7 +245,7 @@
   }
 
   .card:hover {
-    @apply border-text-secondary shadow-sm dark:border-text-secondary-dark;
+    @apply border-text-secondary dark:border-text-secondary-dark shadow-sm;
     transform: translateY(-2px);
   }
 
@@ -251,8 +266,8 @@
   }
 
   .post-item {
-    @apply flex items-baseline justify-between gap-4 py-3 min-h-[44px];
-    @apply border-b border-border dark:border-border-dark;
+    @apply flex min-h-[44px] items-baseline justify-between gap-4 py-3;
+    @apply border-border dark:border-border-dark border-b;
     @apply no-underline;
     transition: background-color 150ms ease;
   }
@@ -262,23 +277,19 @@
   }
 
   .post-item-title {
-    @apply text-sm text-text-secondary dark:text-text-secondary-dark;
+    @apply text-text-primary dark:text-text-primary-dark text-sm;
     text-wrap: pretty;
     transition: color 150ms ease;
   }
 
-  .post-item:hover .post-item-title {
-    @apply text-text-primary dark:text-text-primary-dark;
-  }
-
   .post-item-date {
-    @apply font-mono text-xs whitespace-nowrap flex-shrink-0;
+    @apply flex-shrink-0 font-mono text-xs whitespace-nowrap;
     @apply text-text-muted dark:text-text-muted-dark;
     transition: color 150ms ease;
   }
 
   .project-entry {
-    @apply py-4 border-b border-border dark:border-border-dark;
+    @apply border-border dark:border-border-dark border-b py-4;
     transition: background-color 150ms ease;
   }
 
@@ -317,6 +328,25 @@
   .sidenote a:hover *,
   .marginnote a:hover * {
     color: inherit;
+  }
+
+  @media (hover: none) {
+    .link-hover:active,
+    article a:active,
+    nav a:not([aria-current="page"]):active,
+    .sidenote a:active,
+    .marginnote a:active {
+      @apply bg-text-primary text-background dark:bg-text-primary-dark dark:text-background-dark;
+      text-decoration: none;
+    }
+
+    .link-hover:active *,
+    article a:active *,
+    nav a:not([aria-current="page"]):active *,
+    .sidenote a:active *,
+    .marginnote a:active * {
+      color: inherit;
+    }
   }
 }
 
@@ -476,7 +506,7 @@
 
 @layer components {
   article {
-    @apply prose max-w-full dark:prose-invert;
+    @apply prose dark:prose-invert max-w-full;
     @apply prose-headings:font-sans prose-headings:font-semibold;
     @apply prose-p:font-sans;
     @apply prose-a:text-link;
@@ -507,7 +537,7 @@
   article h4,
   article h5,
   article h6 {
-    scroll-margin-top: 6rem;
+    scroll-margin-top: max(6rem, calc(5rem + env(safe-area-inset-top, 0px)));
   }
 
   article code,
@@ -540,7 +570,7 @@
     justify-content: space-between;
     cursor: pointer;
     list-style: none;
-    @apply font-mono text-xs text-text-secondary dark:text-text-secondary-dark;
+    @apply text-text-secondary dark:text-text-secondary-dark font-mono text-xs;
     transition: color 150ms ease;
   }
 
@@ -615,7 +645,7 @@
     position: relative;
     @apply text-text-muted dark:text-text-muted-dark;
     padding-left: 0.5rem;
-    @apply border-l border-border dark:border-border-dark;
+    @apply border-border dark:border-border-dark border-l;
   }
 
   .sidenote a,
@@ -667,7 +697,7 @@
     width: 95%;
     margin: 1rem 0;
     padding: 0.75rem;
-    @apply border border-border/60 dark:border-border-dark;
+    @apply border-border/60 dark:border-border-dark border;
     @apply bg-card/80 dark:bg-card-dark/40;
     border-radius: 0;
     font-family: "Commit Mono", "SF Mono", "Monaco", "Menlo", monospace;
@@ -681,38 +711,7 @@
     width: 95%;
     margin: 1rem 0;
     padding: 0.75rem;
-    @apply border border-border/60 dark:border-border-dark;
-    @apply bg-card/80 dark:bg-card-dark/40;
-    border-radius: 0;
-    font-family: "Commit Mono", "SF Mono", "Monaco", "Menlo", monospace;
-    font-size: 0.8rem;
-    @apply text-text-muted dark:text-text-muted-dark;
-  }
-
-  .sidenote-ref-mobile {
-    cursor: pointer;
-    font-size: 0.85rem;
-    position: relative;
-    font-weight: 600;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 0.2em;
-    padding: 0;
-    line-height: 1;
-  }
-
-  .sidenote-checked-mobile {
-    display: block;
-    float: left;
-    left: 0;
-    clear: both;
-    width: 95%;
-    margin: 1rem 2.5%;
-    position: relative;
-    padding: 0.75rem;
-    @apply border border-border/60 dark:border-border-dark;
+    @apply border-border/60 dark:border-border-dark border;
     @apply bg-card/80 dark:bg-card-dark/40;
     border-radius: 0;
     font-family: "Commit Mono", "SF Mono", "Monaco", "Menlo", monospace;
@@ -728,7 +727,7 @@
       width: 95%;
       margin: 1rem 0;
       padding: 0.75rem;
-      @apply border border-border/60 dark:border-border-dark;
+      @apply border-border/60 dark:border-border-dark border;
       @apply bg-card/80 dark:bg-card-dark/40;
       border-radius: 0;
       font-family: "Commit Mono", "SF Mono", "Monaco", "Menlo", monospace;
@@ -774,7 +773,7 @@
       margin: 1rem 2.5%;
       position: relative;
       padding: 0.75rem;
-      @apply border border-border/60 dark:border-border-dark;
+      @apply border-border/60 dark:border-border-dark border;
       @apply bg-card/80 dark:bg-card-dark/40;
       border-radius: 0;
       font-family: "Commit Mono", "SF Mono", "Monaco", "Menlo", monospace;
@@ -810,7 +809,7 @@
       width: 95%;
       margin: 1rem 0;
       padding: 0.75rem;
-      @apply border border-border/60 dark:border-border-dark;
+      @apply border-border/60 dark:border-border-dark border;
       @apply bg-card/80 dark:bg-card-dark/40;
       border-radius: 0;
       font-family: "Commit Mono", "SF Mono", "Monaco", "Menlo", monospace;
@@ -869,7 +868,7 @@
       margin: 1rem 2.5%;
       position: relative;
       padding: 0.75rem;
-      @apply border border-border/60 dark:border-border-dark;
+      @apply border-border/60 dark:border-border-dark border;
       @apply bg-card/80 dark:bg-card-dark/40;
       border-radius: 0;
       font-family: "Commit Mono", "SF Mono", "Monaco", "Menlo", monospace;
@@ -902,7 +901,6 @@
       line-height: 1;
     }
   }
-
 }
 
 /* ==========================================================================
@@ -961,14 +959,24 @@
   }
 
   .img-loading {
-    background: linear-gradient(90deg, var(--color-card) 25%, var(--color-card-hover) 50%, var(--color-card) 75%);
+    background: linear-gradient(
+      90deg,
+      var(--color-card) 25%,
+      var(--color-card-hover) 50%,
+      var(--color-card) 75%
+    );
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
     color: transparent;
   }
 
   .dark .img-loading {
-    background: linear-gradient(90deg, var(--color-card-dark) 25%, var(--color-border-dark) 50%, var(--color-card-dark) 75%);
+    background: linear-gradient(
+      90deg,
+      var(--color-card-dark) 25%,
+      var(--color-border-dark) 50%,
+      var(--color-card-dark) 75%
+    );
     background-size: 200% 100%;
   }
 
@@ -1013,14 +1021,14 @@
   }
 
   .message-title {
-    @apply mb-2 mt-0 font-mono text-xs;
+    @apply mt-0 mb-2 font-mono text-xs;
     @apply text-text-primary dark:text-text-primary-dark;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   .message-content {
-    @apply prose prose-sm max-w-none dark:prose-invert;
+    @apply prose prose-sm dark:prose-invert max-w-none;
   }
 
   .message-content > *:first-child {

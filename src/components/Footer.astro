@@ -1,18 +1,31 @@
 ---
 import Container from "@components/Container.astro";
+import Link from "@components/Link.astro";
 import { SITE } from "@lib/config";
 
 const currentYear = new Date().getFullYear();
 ---
 
-<footer aria-label="Site footer" class="mb-10 mt-10 border-t border-border pt-8 dark:border-border-dark">
+<footer
+  aria-label="Site footer"
+  class="border-border dark:border-border-dark mt-10 mb-10 border-t pt-8"
+>
   <Container>
-    <div class="space-y-4">
-      <div class="text-center text-sm">
-        <div class="text-secondary-color">
-          &copy; {currentYear} | {SITE.NAME}
-        </div>
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div
+        class="text-text-secondary dark:text-text-secondary-dark font-mono text-xs"
+      >
+        &copy; {currentYear}
+        {SITE.NAME}
       </div>
+      <nav
+        class="flex items-center gap-4 font-mono text-xs"
+        aria-label="Footer links"
+      >
+        <Link href="/rss.xml">rss</Link>
+        <Link href="https://github.com/Thunderbottom" external>github</Link>
+        <Link href={`mailto:${SITE.EMAIL}`}>email</Link>
+      </nav>
     </div>
   </Container>
 </footer>

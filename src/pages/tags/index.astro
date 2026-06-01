@@ -32,7 +32,7 @@ const sortedTags = Array.from(tagMap.entries()).sort((a, b) => {
           {sortedTags.map(([tag, count]) => (
             <a
               href={`/tags/${tagToSlug(tag)}/`}
-              class="group inline-flex min-h-[44px] items-center gap-2 border border-border dark:border-border-dark px-3 font-mono text-xs text-text-secondary dark:text-text-secondary-dark hover:bg-text-primary hover:text-background dark:hover:bg-text-primary-dark dark:hover:text-background-dark transition-[background-color,color,border-color] duration-150"
+              class="group border-border dark:border-border-dark text-text-secondary dark:text-text-secondary-dark hover:bg-text-primary hover:text-background dark:hover:bg-text-primary-dark dark:hover:text-background-dark inline-flex min-h-[44px] items-center gap-2 border px-3 font-mono text-xs transition-[background-color,color,border-color] duration-150"
             >
               {tag}
               <span class="text-text-muted dark:text-text-muted-dark group-hover:text-background dark:group-hover:text-background-dark transition-colors duration-150">

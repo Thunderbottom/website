@@ -4,7 +4,7 @@
 
 <div
   id="photo-lightbox"
-  class="fixed inset-0 z-[100] opacity-0 pointer-events-none"
+  class="pointer-events-none fixed inset-0 z-[100] flex flex-col opacity-0"
   aria-hidden="true"
   role="dialog"
   aria-modal="true"
@@ -14,7 +14,8 @@
   <!-- Close button -->
   <button
     id="lightbox-close"
-    class="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center text-white/70 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+    class="absolute right-4 z-10 flex h-11 w-11 items-center justify-center text-white/70 transition-colors duration-150 hover:text-white focus-visible:ring-1 focus-visible:ring-white focus-visible:outline-none"
+    style="top: max(1rem, env(safe-area-inset-top, 0px));"
     aria-label="Close photo viewer"
     type="button"
   >
@@ -34,7 +35,8 @@
   <!-- Counter -->
   <div
     id="lightbox-counter"
-    class="absolute left-4 top-4 z-10 font-mono text-xs text-white/50"
+    class="absolute left-4 z-10 font-mono text-xs text-white/50"
+    style="top: max(1.3rem, calc(env(safe-area-inset-top, 0px) + 0.3rem));"
     aria-live="polite"
   >
   </div>
@@ -42,28 +44,47 @@
   <!-- Navigation -->
   <button
     id="lightbox-prev"
-    class="absolute left-2 top-1/2 z-10 hidden h-12 w-11 -translate-y-1/2 items-center justify-center text-white/60 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+    class="absolute top-1/2 left-2 z-10 hidden h-12 w-11 -translate-y-1/2 items-center justify-center text-white/60 transition-colors duration-150 hover:text-white focus-visible:ring-1 focus-visible:ring-white focus-visible:outline-none"
     aria-label="Previous photo"
     type="button"
   >
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      aria-hidden="true"
+    >
       <polyline points="15 18 9 12 15 6"></polyline>
     </svg>
   </button>
 
   <button
     id="lightbox-next"
-    class="absolute right-2 top-1/2 z-10 hidden h-12 w-11 -translate-y-1/2 items-center justify-center text-white/60 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+    class="absolute top-1/2 right-2 z-10 hidden h-12 w-11 -translate-y-1/2 items-center justify-center text-white/60 transition-colors duration-150 hover:text-white focus-visible:ring-1 focus-visible:ring-white focus-visible:outline-none"
     aria-label="Next photo"
     type="button"
   >
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      aria-hidden="true"
+    >
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </button>
 
-  <!-- Image area -->
-  <div class="absolute inset-0 flex items-center justify-center p-4 pb-28">
+  <!-- Image area: flex-1 so it fills whatever space is above the info panel -->
+  <div
+    class="relative flex min-h-0 flex-1 items-center justify-center p-4"
+    style="padding-top: max(4rem, calc(env(safe-area-inset-top, 0px) + 3rem));"
+  >
     <img
       id="lightbox-image"
       src=""
@@ -79,22 +100,35 @@
       aria-live="polite"
       aria-label="Loading photo"
     >
-      <span class="block h-1 w-1 animate-pulse bg-white/60" style="animation-delay: 0ms"></span>
-      <span class="block h-1 w-1 animate-pulse bg-white/60" style="animation-delay: 150ms"></span>
-      <span class="block h-1 w-1 animate-pulse bg-white/60" style="animation-delay: 300ms"></span>
+      <span
+        class="block h-1 w-1 animate-pulse bg-white/60"
+        style="animation-delay: 0ms"></span>
+      <span
+        class="block h-1 w-1 animate-pulse bg-white/60"
+        style="animation-delay: 150ms"></span>
+      <span
+        class="block h-1 w-1 animate-pulse bg-white/60"
+        style="animation-delay: 300ms"></span>
       <span class="sr-only">Loading photo...</span>
     </div>
   </div>
 
-  <!-- Info panel -->
-  <div id="lightbox-info" class="absolute bottom-0 left-0 right-0 px-6 py-5">
+  <!-- Info panel: natural height, sits at the bottom of the flex column -->
+  <div
+    id="lightbox-info"
+    class="flex-none px-6 py-5"
+    style="padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));"
+  >
     <div class="mx-auto max-w-2xl">
       <h2
         id="lightbox-title"
         class="font-display text-base font-semibold text-white"
       >
       </h2>
-      <div id="lightbox-content" class="mt-1 font-mono text-xs leading-relaxed text-white/65">
+      <div
+        id="lightbox-content"
+        class="mt-1 font-mono text-xs leading-relaxed text-white/65"
+      >
       </div>
     </div>
   </div>
@@ -166,27 +200,50 @@
     }
 
     initialize() {
-      this.elements.closeButton.addEventListener("click", this.boundHandlers.close);
-      this.elements.prevButton.addEventListener("click", this.boundHandlers.prev);
-      this.elements.nextButton.addEventListener("click", this.boundHandlers.next);
-      this.elements.lightbox.addEventListener("click", this.boundHandlers.backdropClick);
-      this.elements.lightbox.addEventListener("touchstart", this.boundHandlers.touchStart, { passive: true });
-      this.elements.lightbox.addEventListener("touchend", this.boundHandlers.touchEnd, { passive: true });
+      this.elements.closeButton.addEventListener(
+        "click",
+        this.boundHandlers.close,
+      );
+      this.elements.prevButton.addEventListener(
+        "click",
+        this.boundHandlers.prev,
+      );
+      this.elements.nextButton.addEventListener(
+        "click",
+        this.boundHandlers.next,
+      );
+      this.elements.lightbox.addEventListener(
+        "click",
+        this.boundHandlers.backdropClick,
+      );
+      this.elements.lightbox.addEventListener(
+        "touchstart",
+        this.boundHandlers.touchStart,
+        { passive: true },
+      );
+      this.elements.lightbox.addEventListener(
+        "touchend",
+        this.boundHandlers.touchEnd,
+        { passive: true },
+      );
       document.addEventListener("click", this.boundHandlers.documentClick);
       document.addEventListener("keydown", this.boundHandlers.documentKeydown);
     }
 
     getFocusableElements() {
       const selectors = [
-        'a[href]', 'button:not([disabled])', 'input:not([disabled])',
-        'select:not([disabled])', 'textarea:not([disabled])',
+        "a[href]",
+        "button:not([disabled])",
+        "input:not([disabled])",
+        "select:not([disabled])",
+        "textarea:not([disabled])",
         '[tabindex]:not([tabindex="-1"])',
-      ].join(', ');
+      ].join(", ");
       return Array.from(this.elements.lightbox.querySelectorAll(selectors));
     }
 
     handleFocusTrap(event) {
-      if (event.key !== 'Tab') return;
+      if (event.key !== "Tab") return;
       const focusable = this.getFocusableElements();
       if (!focusable.length) return;
       const first = focusable[0];
@@ -242,7 +299,8 @@
 
       const showPrev = currentPhotoIndex > 0;
       const hasMoreLoadedPhotos = currentPhotoIndex < allPhotos.length - 1;
-      const hasMorePhotosToLoad = window.staticPhotoLoader?.hasMorePhotos?.() ?? false;
+      const hasMorePhotosToLoad =
+        window.staticPhotoLoader?.hasMorePhotos?.() ?? false;
       const showNext = hasMoreLoadedPhotos || hasMorePhotosToLoad;
 
       prevButton.classList.toggle("hidden", !showPrev);
@@ -272,11 +330,13 @@
         this.elements;
 
       lightboxTitle.textContent = title.trim()
-        ? (new DOMParser().parseFromString(title, "text/html").body.textContent ?? "")
+        ? (new DOMParser().parseFromString(title, "text/html").body
+            .textContent ?? "")
         : "";
 
       lightboxContent.textContent = content?.trim()
-        ? (new DOMParser().parseFromString(content, "text/html").body.textContent ?? "")
+        ? (new DOMParser().parseFromString(content, "text/html").body
+            .textContent ?? "")
         : "";
 
       lightboxLoading.classList.remove("hidden");
@@ -311,7 +371,9 @@
       const index = allPhotos.indexOf(trigger);
 
       if (index === -1) {
-        console.warn("[StaticPhotoLightbox] Photo trigger not found in collection");
+        console.warn(
+          "[StaticPhotoLightbox] Photo trigger not found in collection",
+        );
         return;
       }
 
@@ -319,11 +381,17 @@
       this.state.currentPhotoIndex = index;
       this.state.isOpen = true;
 
-      this.elements.lightbox.classList.remove("opacity-0", "pointer-events-none");
+      this.elements.lightbox.classList.remove(
+        "opacity-0",
+        "pointer-events-none",
+      );
       this.elements.lightbox.setAttribute("aria-hidden", "false");
       document.documentElement.classList.add("lightbox-open");
 
-      this.elements.lightbox.addEventListener("keydown", this.boundHandlers.trapFocus);
+      this.elements.lightbox.addEventListener(
+        "keydown",
+        this.boundHandlers.trapFocus,
+      );
 
       this.loadPhoto(trigger);
 
@@ -335,7 +403,10 @@
     closeLightbox() {
       this.state.isOpen = false;
 
-      this.elements.lightbox.removeEventListener("keydown", this.boundHandlers.trapFocus);
+      this.elements.lightbox.removeEventListener(
+        "keydown",
+        this.boundHandlers.trapFocus,
+      );
       this.elements.lightbox.classList.add("opacity-0", "pointer-events-none");
       this.elements.lightbox.setAttribute("aria-hidden", "true");
       document.documentElement.classList.remove("lightbox-open");
@@ -435,21 +506,45 @@
 
     destroy() {
       document.removeEventListener("click", this.boundHandlers.documentClick);
-      document.removeEventListener("keydown", this.boundHandlers.documentKeydown);
+      document.removeEventListener(
+        "keydown",
+        this.boundHandlers.documentKeydown,
+      );
       if (this.elements.lightbox) {
-        this.elements.lightbox.removeEventListener("click", this.boundHandlers.backdropClick);
-        this.elements.lightbox.removeEventListener("keydown", this.boundHandlers.trapFocus);
-        this.elements.lightbox.removeEventListener("touchstart", this.boundHandlers.touchStart);
-        this.elements.lightbox.removeEventListener("touchend", this.boundHandlers.touchEnd);
+        this.elements.lightbox.removeEventListener(
+          "click",
+          this.boundHandlers.backdropClick,
+        );
+        this.elements.lightbox.removeEventListener(
+          "keydown",
+          this.boundHandlers.trapFocus,
+        );
+        this.elements.lightbox.removeEventListener(
+          "touchstart",
+          this.boundHandlers.touchStart,
+        );
+        this.elements.lightbox.removeEventListener(
+          "touchend",
+          this.boundHandlers.touchEnd,
+        );
       }
       if (this.elements.closeButton) {
-        this.elements.closeButton.removeEventListener("click", this.boundHandlers.close);
+        this.elements.closeButton.removeEventListener(
+          "click",
+          this.boundHandlers.close,
+        );
       }
       if (this.elements.prevButton) {
-        this.elements.prevButton.removeEventListener("click", this.boundHandlers.prev);
+        this.elements.prevButton.removeEventListener(
+          "click",
+          this.boundHandlers.prev,
+        );
       }
       if (this.elements.nextButton) {
-        this.elements.nextButton.removeEventListener("click", this.boundHandlers.next);
+        this.elements.nextButton.removeEventListener(
+          "click",
+          this.boundHandlers.next,
+        );
       }
     }
   }

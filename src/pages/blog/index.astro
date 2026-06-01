@@ -41,18 +41,25 @@ const years = Object.keys(postsByYear)
   <PageContainer spacing="md">
     <div class="flex items-end justify-between gap-4">
       <PageHeader title={BLOG.TITLE} size="lg" />
-      <Link href="/tags" class="font-mono text-xs whitespace-nowrap mb-0.5">tags →</Link>
+      <div class="mb-0.5 flex items-center gap-3">
+        <Link href="/rss.xml" class="font-mono text-xs whitespace-nowrap"
+          >rss</Link
+        >
+        <Link href="/tags" class="font-mono text-xs whitespace-nowrap"
+          >tags →</Link
+        >
+      </div>
     </div>
 
     {
       years.map((year) => (
         <Section spacing="sm">
           <div class="flex justify-end">
-            <h2 class="font-mono text-xs text-text-muted dark:text-text-muted-dark">
+            <h2 class="text-text-muted dark:text-text-muted-dark font-mono text-xs">
               {year}
             </h2>
           </div>
-          <div class="border-t border-border dark:border-border-dark">
+          <div class="border-border dark:border-border-dark border-t">
             {postsByYear[year].map((post) => (
               <a href={`/blog/${post.id}/`} class="post-item group">
                 <span class="post-item-title">{post.data.title}</span>

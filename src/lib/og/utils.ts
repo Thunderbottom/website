@@ -36,7 +36,8 @@ export function pathnameToRoute(pathname: string): string {
     return `blog/${pathname.replace("/blog/", "").replace(/\/$/, "")}`;
   }
   if (pathname === "/blog/" || pathname === "/blog") return "blog";
-  if (pathname === "/photography/" || pathname === "/photography") return "photography";
+  if (pathname === "/photography/" || pathname === "/photography")
+    return "photography";
   if (pathname === "/now/" || pathname === "/now") return "now";
   if (pathname === "/projects/" || pathname === "/projects") return "projects";
   return "index";

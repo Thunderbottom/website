@@ -13,7 +13,8 @@ const { id, ariaLabel = `Sidenote ${id}` } = Astro.props;
     class="sidenote-number sidenote-ref"
     data-footnote-id={id}
     aria-label={ariaLabel}
-    tabindex="0"></label>
+    tabindex="0"
+    role="button"></label>
   <input
     type="checkbox"
     id={`sidenote-${id}`}
