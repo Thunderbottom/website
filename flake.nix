@@ -3,17 +3,51 @@
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
+  inputs.treefmt-nix.url = "github:numtide/treefmt-nix";
 
   outputs =
     {
       self,
       nixpkgs,
       flake-utils,
+      treefmt-nix,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+
+        treefmtEval = treefmt-nix.lib.evalModule pkgs {
+          projectRootFile = "flake.nix";
+          programs.nixfmt.enable = true;
+          settings.formatter.prettier = {
+            command = "${pkgs.bun}/bin/bun";
+            options = [
+              "node_modules/.bin/prettier"
+              "--write"
+            ];
+            includes = [
+              "*.js"
+              "*.ts"
+              "*.mjs"
+              "*.cjs"
+              "*.astro"
+              "*.css"
+              "*.json"
+              "*.jsonc"
+              "*.md"
+              "*.mdx"
+              "*.yaml"
+              "*.yml"
+            ];
+            excludes = [
+              "dist/**"
+              "node_modules/**"
+              ".astro/**"
+              "result/**"
+            ];
+          };
+        };
 
         nodeModules = pkgs.callPackage ./node-modules.nix {
           src = ./.;
@@ -59,10 +93,18 @@
 
         packages.default = self.packages.${system}.maych-in;
 
+        formatter = treefmtEval.config.build.wrapper;
+
+        checks.formatting = treefmtEval.config.build.check self;
+
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [ bun ];
+          buildInputs = with pkgs; [
+            bun
+            stdenv.cc.cc.lib
+          ];
 
           shellHook = ''
+            export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
             echo "Welcome to maych.in development environment!"
             echo "Available commands:"
             echo "  bun run dev     - Start development server"
