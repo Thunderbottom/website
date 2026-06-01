@@ -128,16 +128,7 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
         );
       });
 
-      document.addEventListener("astro:after-swap", () => {
-        if (!window.location.hash) {
-          window.scrollTo({ top: 0, behavior: "instant" });
-        }
-        const theme = getTheme();
-        applyTheme(theme);
-      });
-
       document.addEventListener("astro:page-load", () => {
-        // Scroll to top on every page load — overrides browser scroll restoration
         if (!window.location.hash) {
           window.scrollTo({ top: 0, behavior: "instant" });
         }
