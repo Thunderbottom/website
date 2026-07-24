@@ -2,6 +2,11 @@ import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import { PHOTOGRAPHY, SITE, IMAGE_SETTINGS } from "@lib/config";
 
+const photoImages = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/content/photography/images/*.jpg",
+  { eager: true },
+);
+
 export interface ImageSet {
   thumbnailImage: ImageMetadata;
   lightboxImage: ImageMetadata;
@@ -143,16 +148,15 @@ export async function processPhotoForStatic(
   formatDate: (date: Date | string, format?: string) => string,
 ): Promise<ProcessedPhoto | null> {
   try {
-    const photoImage = await import(
-      `../content/photography/images/${photo.data.image}.jpg`
-    );
+    const photoImagePath = `/src/content/photography/images/${photo.data.image}.jpg`;
+    const photoImage = photoImages[photoImagePath]?.default;
 
-    if (!photoImage?.default) {
+    if (!photoImage) {
       console.error(`Failed to import image: ${photo.data.image}`);
       return null;
     }
 
-    const images = await generatePhotoImages(photoImage.default);
+    const images = await generatePhotoImages(photoImage);
 
     let exifItems: string[] = [];
     try {
@@ -177,16 +181,6 @@ export async function processPhotoForStatic(
     console.error(`Error processing photo ${photo.id}:`, error);
     return null;
   }
-}
-
-export function sortPhotosByDate<T extends { data: { date: string | Date } }>(
-  photos: T[],
-): T[] {
-  return photos.sort((a, b) => {
-    const dateA = new Date(a.data.date);
-    const dateB = new Date(b.data.date);
-    return dateB.getTime() - dateA.getTime();
-  });
 }
 
 export function generateImageStructuredData(

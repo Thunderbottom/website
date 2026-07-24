@@ -1,6 +1,7 @@
 import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
 import { SITE } from "@lib/config";
+import { sortByDateDesc } from "@lib/utils";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async (context) => {
@@ -8,9 +9,7 @@ export const GET: APIRoute = async (context) => {
     return !data.draft;
   });
 
-  const sortedPosts = blog.sort(
-    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
-  );
+  const sortedPosts = sortByDateDesc(blog);
 
   return rss({
     title: SITE.NAME,

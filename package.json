@@ -11,30 +11,30 @@
     "build:prod": "NODE_ENV=production astro build"
   },
   "dependencies": {
-    "@astrojs/mdx": "^6.0.1",
-    "@astrojs/rss": "^4.0.18",
+    "@astrojs/mdx": "^7.0.3",
+    "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
-    "@expressive-code/plugin-line-numbers": "^0.42.0",
+    "@expressive-code/plugin-line-numbers": "^0.44.1",
     "@resvg/resvg-js": "^2.6.2",
-    "@tailwindcss/postcss": "^4.3.0",
-    "@tailwindcss/typography": "^0.5.19",
-    "astro": "^6.4.2",
-    "astro-expressive-code": "^0.42.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.1.3",
+    "astro-expressive-code": "^0.44.1",
     "astro-robots-txt": "^1.0.0",
     "exifr": "^7.1.3",
     "reading-time": "^1.5.0",
-    "satori": "^0.26.0",
-    "sharp": "^0.34.2",
-    "tailwindcss": "^4",
-    "terser": "^5.40.0"
+    "satori": "^0.29.0",
+    "sharp": "^0.35.3",
+    "tailwindcss": "^4.3.3",
+    "terser": "^5.49.0"
   },
   "devDependencies": {
     "astro-compressor": "^1.3.0",
-    "autoprefixer": "^10.4.21",
-    "cssnano": "^8.0.1",
-    "postcss": "^8.5.14",
-    "prettier": "3.8.3",
+    "autoprefixer": "^10.5.4",
+    "cssnano": "^8.0.2",
+    "postcss": "^8.5.23",
+    "prettier": "3.9.6",
     "prettier-plugin-astro": "0.14.1",
-    "prettier-plugin-tailwindcss": "^0.7.0"
+    "prettier-plugin-tailwindcss": "^0.8.1"
   }
 }

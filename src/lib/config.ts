@@ -36,7 +36,7 @@ export interface ProjectItem {
 export const SITE: SiteConfig = {
   NAME: "Chinmay D. Pai",
   EMAIL: "chinmaydpai@gmail.com",
-  URL: "https://maych.in",
+  URL: import.meta.env.SITE ?? "https://maych.in",
   DOMAIN: "maych.in",
   DESCRIPTION: "Notes from the intersection of tech and life",
   NUM_POSTS_ON_HOMEPAGE: 3,

@@ -1,6 +1,5 @@
 import { defineConfig } from "astro/config";
-import { remarkReadingTime } from "./src/utils/remark-reading-time.ts";
-import { unified } from "@astrojs/markdown-remark";
+import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import robotsTxt from "astro-robots-txt";
@@ -11,11 +10,6 @@ import compressor from "astro-compressor";
 export default defineConfig({
   site: "https://maych.in",
   output: "static",
-
-  prefetch: {
-    prefetchAll: true,
-    defaultStrategy: "viewport",
-  },
 
   integrations: [
     astroExpressiveCode({
@@ -65,12 +59,6 @@ export default defineConfig({
     }),
   ],
 
-  markdown: {
-    processor: unified({
-      remarkPlugins: [remarkReadingTime],
-    }),
-  },
-
   image: {
     domains: ["maych.in"],
     remotePatterns: [
@@ -82,6 +70,7 @@ export default defineConfig({
   },
 
   vite: {
+    plugins: [tailwindcss()],
     server: {
       host: true,
     },

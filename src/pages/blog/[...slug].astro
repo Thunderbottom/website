@@ -7,11 +7,9 @@ import Message from "@components/Message.astro";
 import Sidenote from "@components/Sidenote.astro";
 import TableOfContents from "@components/TableOfContents.astro";
 import Tag from "@components/Tag.astro";
-import { parseTags, tagToSlug } from "@lib/utils";
+import { parseTags, tagToSlug, getBodyReadingTime } from "@lib/utils";
 import Link from "@components/Link.astro";
 import { SITE } from "@lib/config";
-
-export const prerender = true;
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection("blog", ({ data }) => {
@@ -25,9 +23,9 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content, headings, remarkPluginFrontmatter } = await render(entry);
+const { Content, headings } = await render(entry);
 
-const readingTime = remarkPluginFrontmatter?.minutesRead || "1 min read";
+const readingTime = getBodyReadingTime(entry.body);
 const tags = parseTags(entry.data.tags);
 const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 const hasToc = entry.data.toc !== false && tocHeadings.length >= 2;

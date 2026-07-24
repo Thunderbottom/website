@@ -1,3 +1,13 @@
+import getReadingTime from "reading-time";
+
+/**
+ * Estimate reading time from a raw Markdown/MDX body.
+ */
+export function getBodyReadingTime(body?: string): string {
+  if (!body) return "1 min read";
+  return getReadingTime(body).text;
+}
+
 /**
  * Sort items by date in descending order (most recent first)
  */

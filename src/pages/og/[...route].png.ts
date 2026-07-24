@@ -77,5 +77,3 @@ export async function getStaticPaths() {
 
   return paths;
 }
-
-export const prerender = true;

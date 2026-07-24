@@ -1,7 +1,5 @@
 ---
-export const prerender = true;
-
-import { getCollection } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import PageContainer from "@components/PageContainer.astro";
 import BackToPrev from "@components/BackToPrev.astro";
@@ -11,30 +9,28 @@ import { parseTags, tagToSlug, sortByDateDesc } from "@lib/utils";
 export async function getStaticPaths() {
   const allPosts = await getCollection("blog", ({ data }) => !data.draft);
 
-  const tagMap = new Map<string, string>();
+  const tagMap = new Map<
+    string,
+    { displayTag: string; posts: CollectionEntry<"blog">[] }
+  >();
   for (const post of allPosts) {
     for (const tag of parseTags(post.data.tags)) {
       const slug = tagToSlug(tag);
       if (!tagMap.has(slug)) {
-        tagMap.set(slug, tag);
+        tagMap.set(slug, { displayTag: tag, posts: [] });
       }
+      tagMap.get(slug)!.posts.push(post);
     }
   }
 
-  return Array.from(tagMap.entries()).map(([slug, displayTag]) => ({
+  return Array.from(tagMap.entries()).map(([slug, { displayTag, posts }]) => ({
     params: { tag: slug },
-    props: { displayTag },
+    props: { displayTag, posts: sortByDateDesc(posts) },
   }));
 }
 
 const { tag } = Astro.params;
-const { displayTag } = Astro.props;
-
-const allPosts = sortByDateDesc(
-  (await getCollection("blog", ({ data }) => !data.draft)).filter((post) =>
-    parseTags(post.data.tags).some((t) => tagToSlug(t) === tag),
-  ),
-);
+const { displayTag, posts: allPosts } = Astro.props;
 ---
 
 <PageLayout

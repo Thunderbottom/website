@@ -1,6 +1,4 @@
 ---
-export const prerender = true;
-
 import { getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import PageContainer from "@components/PageContainer.astro";
@@ -12,26 +10,23 @@ import { PHOTOGRAPHY } from "@lib/config";
 import {
   generateImageStructuredData,
   processPhotoForStatic,
-  sortPhotosByDate,
   type ProcessedPhoto,
 } from "@lib/photo-utils";
+import { sortByDateDesc } from "@lib/utils";
 import { formatDate } from "@lib/config";
 
 const allPhotos = await getCollection("photography", ({ data }) => !data.draft);
-const sortedPhotos = sortPhotosByDate(allPhotos);
+const sortedPhotos = sortByDateDesc(allPhotos);
 
 const PHOTOS_PER_PAGE = 8;
 const INITIAL_PHOTOS_COUNT = 6;
 
-const initialPhotoEntries = sortedPhotos.slice(0, INITIAL_PHOTOS_COUNT);
-const initialProcessedPhotos: ProcessedPhoto[] = [];
+const allPhotosData = await Promise.all(
+  sortedPhotos.map((photo) => processPhotoForStatic(photo, formatDate)),
+);
 
-for (const photo of initialPhotoEntries) {
-  const processed = await processPhotoForStatic(photo, formatDate);
-  if (processed) {
-    initialProcessedPhotos.push(processed);
-  }
-}
+const validPhotosData = allPhotosData.filter(Boolean) as ProcessedPhoto[];
+const initialProcessedPhotos = validPhotosData.slice(0, INITIAL_PHOTOS_COUNT);
 
 const photosByYear = initialProcessedPhotos.reduce(
   (acc, photo) => {
@@ -48,15 +43,6 @@ const photosByYear = initialProcessedPhotos.reduce(
 const years = Object.keys(photosByYear)
   .map(Number)
   .sort((a, b) => b - a);
-
-const allPhotosData = await Promise.all(
-  sortedPhotos.map(async (photo) => {
-    const processed = await processPhotoForStatic(photo, formatDate);
-    return processed;
-  }),
-);
-
-const validPhotosData = allPhotosData.filter(Boolean) as ProcessedPhoto[];
 
 const structuredData = generateImageStructuredData(sortedPhotos);
 const totalPhotos = validPhotosData.length;
