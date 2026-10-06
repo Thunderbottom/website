@@ -11,6 +11,15 @@ interface Props {
 }
 
 const { headings, defaultOpen = true } = Astro.props;
+
+// Nest each h3 under the h2 before it. An h3 with no preceding h2 gets its own
+// top-level entry so nothing is lost.
+const groups: { slug: string; text: string; children: Heading[] }[] = [];
+for (const h of headings) {
+  const last = groups[groups.length - 1];
+  if (h.depth === 3 && last) last.children.push(h);
+  else groups.push({ slug: h.slug, text: h.text, children: [] });
+}
 ---
 
 {
@@ -35,16 +44,31 @@ const { headings, defaultOpen = true } = Astro.props;
         </svg>
       </summary>
       <nav aria-label="Table of contents">
-        <ul class="mt-3 space-y-2.5" role="list">
-          {headings.map((heading) => (
-            <li role="listitem">
+        <ul class="toc-list" role="list">
+          {groups.map((group) => (
+            <li data-group>
               <a
-                href={`#${heading.slug}`}
-                class:list={["toc-link", heading.depth === 3 && "pl-3"]}
-                data-heading={heading.slug}
+                href={`#${group.slug}`}
+                class="toc-link"
+                data-heading={group.slug}
               >
-                {heading.text}
+                {group.text}
               </a>
+              {group.children.length > 0 && (
+                <ul class="toc-sub" role="list">
+                  {group.children.map((child) => (
+                    <li>
+                      <a
+                        href={`#${child.slug}`}
+                        class="toc-link sub"
+                        data-heading={child.slug}
+                      >
+                        {child.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>
@@ -54,53 +78,100 @@ const { headings, defaultOpen = true } = Astro.props;
 }
 
 <script>
-  let cleanup: (() => void) | null = null;
+  // Scroll-spy.
+  //
+  // The active heading is the last one above a "reading line" that sits about
+  // a third of the way down the viewport. In the final screenful of the page
+  // the line slides to the bottom edge, so a short last section (a "Coda")
+  // is reached as soon as it is visible, instead of needing to scroll past a
+  // line it can never get to. A passive scroll listener, throttled to one
+  // update per frame, drives it; observers only report threshold crossings,
+  // which is not enough for a line that moves.
+  const MIN_LINE = 112; // just under the sticky header, in px
 
   function initTOC() {
-    if (cleanup) cleanup();
+    const lists = document.querySelectorAll<HTMLElement>(".toc-list");
+    const links = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>("[data-heading]"),
+    );
+    if (!links.length) return;
 
-    const tocLinks =
-      document.querySelectorAll<HTMLAnchorElement>("[data-heading]");
-    if (!tocLinks.length) return;
+    const headings = Array.from(
+      new Set(links.map((l) => l.dataset.heading || "")),
+    )
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (!headings.length) return;
 
-    const headingEls = Array.from(tocLinks)
-      .map((link) => document.getElementById(link.dataset.heading || ""))
-      .filter(Boolean) as HTMLElement[];
+    // Opt in to progressive disclosure: without JS every entry stays visible.
+    lists.forEach((l) => l.classList.add("toc-js"));
 
-    if (!headingEls.length) return;
+    let current = "";
+
+    function readingLine(): number {
+      const vh = window.innerHeight;
+      const line = Math.max(MIN_LINE, vh * 0.3);
+      const root = document.documentElement;
+      if (root.scrollHeight <= vh) return line;
+      const remaining = root.scrollHeight - vh - window.scrollY;
+      const slide = Math.min(1, Math.max(0, 1 - remaining / vh));
+      return line + (vh - line) * slide;
+    }
+
+    function activeId(): string {
+      const line = readingLine();
+      let id = "";
+      for (const h of headings) {
+        if (h.getBoundingClientRect().top <= line) id = h.id;
+        else break;
+      }
+      return id;
+    }
 
     function setActive(id: string) {
-      tocLinks.forEach((link) => {
-        const isActive = link.dataset.heading === id;
-        link.classList.toggle("toc-active", isActive);
-        if (isActive) {
-          link.setAttribute("aria-current", "location");
-        } else {
-          link.removeAttribute("aria-current");
-        }
-      });
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActive(entry.target.id);
+      if (id === current) return;
+      current = id;
+      for (const link of links) {
+        const on = link.dataset.heading === id;
+        link.classList.toggle("toc-active", on);
+        if (on) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      }
+      // Open the group (h2 plus its h3s) that holds the active entry.
+      for (const list of lists) {
+        list.querySelectorAll<HTMLElement>("li[data-group]").forEach((li) => {
+          li.toggleAttribute(
+            "data-open",
+            !!li.querySelector(`[data-heading="${CSS.escape(id)}"]`),
+          );
+        });
+        // Keep the active entry visible inside the scrollable rail.
+        const rail = list.closest<HTMLElement>(".post-toc-sticky");
+        const link = list.querySelector<HTMLElement>(".toc-active");
+        if (rail && link && rail.scrollHeight > rail.clientHeight) {
+          const r = rail.getBoundingClientRect();
+          const l = link.getBoundingClientRect();
+          if (l.top < r.top + 24 || l.bottom > r.bottom - 24) {
+            rail.scrollTop += l.top - r.top - rail.clientHeight / 3;
           }
         }
-      },
-      { rootMargin: "0px 0px -80% 0px", threshold: 0 },
-    );
+      }
+    }
 
-    headingEls.forEach((el) => observer.observe(el));
-    cleanup = () => observer.disconnect();
+    let queued = false;
+    const update = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        setActive(activeId());
+      });
+    };
+
+    addEventListener("scroll", update, { passive: true });
+    addEventListener("resize", update, { passive: true });
+    update();
   }
 
-  document.addEventListener("astro:page-load", initTOC);
-  document.addEventListener("astro:before-swap", () => {
-    if (cleanup) {
-      cleanup();
-      cleanup = null;
-    }
-  });
+  initTOC();
 </script>

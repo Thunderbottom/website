@@ -1,0 +1,147 @@
+/* ==========================================================================
+   MOTION: native CSS only, each piece answers a question.
+   - header hairline: "has the page scrolled under me?"
+   - reading progress: "how far through am I?"
+   - page entrance: "where do I start reading?" (every page)
+   - item reveal: "this list is still filling in" (rows, photos)
+   ========================================================================== */
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .site-header {
+    border-bottom-color: transparent;
+    animation: header-line linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 3rem;
+  }
+
+  @keyframes header-line {
+    to {
+      border-bottom-color: var(--rule);
+    }
+  }
+}
+
+/* Cross-page transitions are native now that nothing hijacks navigation. The
+   header keeps its own layer so it doesn't fade with the page. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  .site-header {
+    view-transition-name: site-header;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 160ms;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Page entrance, on every page: the first blocks of the page settle in one
+     after another, so the eye knows where to start. */
+  :is(main > .wrap, .post-main) > :nth-child(-n + 5) {
+    animation: rise 450ms var(--ease) both;
+  }
+
+  :is(main > .wrap, .post-main) > :nth-child(2) {
+    animation-delay: 60ms;
+  }
+
+  :is(main > .wrap, .post-main) > :nth-child(3) {
+    animation-delay: 120ms;
+  }
+
+  :is(main > .wrap, .post-main) > :nth-child(4) {
+    animation-delay: 180ms;
+  }
+
+  :is(main > .wrap, .post-main) > :nth-child(5) {
+    animation-delay: 240ms;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  /* Repeated items (list rows, photos) reveal as they scroll into view. */
+  @supports (animation-timeline: view()) {
+    :is(.log, .photo-grid) > * {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 30%;
+    }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(1rem);
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .reading-progress {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 60;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: reading-progress linear both;
+      animation-timeline: scroll(root block);
+      pointer-events: none;
+    }
+
+    @keyframes reading-progress {
+      to {
+        transform: scaleX(1);
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The header hairline is simply always there, instead of fading in. */
+  .site-header {
+    animation: none;
+    border-bottom-color: var(--rule);
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  .to-top,
+  .theme-toggle svg {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .photo-card,
+  .message,
+  .tag,
+  a.tag-link {
+    border-width: 2px;
+  }
+
+  :focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+}

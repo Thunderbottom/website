@@ -1,8 +1,7 @@
 ---
 import { formatDate } from "@lib/config";
 import Link from "@components/Link.astro";
-import Tag from "@components/Tag.astro";
-import type { ProjectItem } from "@lib/config";
+import type { ProjectItem } from "@lib/projects";
 
 interface Props {
   project: ProjectItem;
@@ -10,75 +9,57 @@ interface Props {
 
 const { project } = Astro.props;
 const primaryUrl = project.websiteURL || project.repoURL || project.demoURL;
+const links = [
+  project.demoURL && { label: "demo", href: project.demoURL },
+  project.repoURL && { label: "source", href: project.repoURL },
+  project.websiteURL && { label: "website", href: project.websiteURL },
+].filter(Boolean) as { label: string; href: string }[];
 ---
 
-<div class="project-entry">
-  <div class="mb-1 flex items-baseline justify-between gap-4">
+<div class="log-row">
+  <time class="log-date" datetime={new Date(project.date).toISOString()}>
+    {formatDate(project.date, "%Y-%m-%d")}
+  </time>
+  <div>
+    <span class="log-title">
+      {
+        primaryUrl ? (
+          <a
+            href={primaryUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link"
+          >
+            {project.title}
+          </a>
+        ) : (
+          project.title
+        )
+      }
+    </span>
+    <p class="log-desc full">{project.description}</p>
     {
-      primaryUrl ? (
-        <a
-          href={primaryUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-text-secondary dark:text-text-secondary-dark link-hover text-sm"
-        >
-          {project.title}
-        </a>
-      ) : (
-        <span class="text-text-secondary dark:text-text-secondary-dark text-sm">
-          {project.title}
+      project.tags && project.tags.length > 0 && (
+        <span class="log-tags">
+          {project.tags.map((tag) => (
+            <span>{tag}</span>
+          ))}
         </span>
       )
     }
-    <time
-      datetime={new Date(project.date).toISOString()}
-      class="text-text-secondary dark:text-text-secondary-dark flex-shrink-0 font-mono text-xs whitespace-nowrap"
-    >
-      {formatDate(new Date(project.date), "%b %Y")}
-    </time>
+    {
+      links.length > 0 && (
+        <nav class="project-links" aria-label={`Links for ${project.title}`}>
+          {links.map((item, i) => (
+            <>
+              {i > 0 && <span class="sep">/</span>}
+              <Link href={item.href} external underline>
+                {item.label}
+              </Link>
+            </>
+          ))}
+        </nav>
+      )
+    }
   </div>
-
-  <p
-    class="text-text-secondary dark:text-text-secondary-dark mb-2 text-sm leading-relaxed"
-  >
-    {project.description}
-  </p>
-
-  {
-    project.tags && project.tags.length > 0 && (
-      <div class="mb-2 flex flex-wrap gap-1.5">
-        {project.tags.map((tag) => (
-          <Tag text={tag} />
-        ))}
-      </div>
-    )
-  }
-
-  {
-    primaryUrl && (
-      <nav class="flex gap-1 text-sm" aria-label={`Links for ${project.title}`}>
-        {project.demoURL && (
-          <Link href={project.demoURL} external underline>
-            demo
-          </Link>
-        )}
-        {project.demoURL && project.repoURL && (
-          <span class="text-text-muted dark:text-text-muted-dark">/</span>
-        )}
-        {project.repoURL && (
-          <Link href={project.repoURL} external underline>
-            source
-          </Link>
-        )}
-        {(project.demoURL || project.repoURL) && project.websiteURL && (
-          <span class="text-text-muted dark:text-text-muted-dark">/</span>
-        )}
-        {project.websiteURL && (
-          <Link href={project.websiteURL} external underline>
-            website
-          </Link>
-        )}
-      </nav>
-    )
-  }
 </div>

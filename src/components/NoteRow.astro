@@ -1,0 +1,67 @@
+---
+import { render } from "astro:content";
+import Message from "@components/Message.astro";
+import Sidenote from "@components/Sidenote.astro";
+import { formatDate } from "@lib/config";
+import { parseTags } from "@lib/utils";
+import { noteHeadline, noteHref, type Note } from "@lib/writing";
+
+interface Props {
+  note: Note;
+  /** One line linking to the note, instead of the whole note inline. */
+  compact?: boolean;
+  /** Label it "note" (for lists that mix notes with posts). */
+  showKind?: boolean;
+}
+
+const { note, compact = false, showKind = false } = Astro.props;
+const href = noteHref(note);
+const date = new Date(note.data.date).toISOString();
+const labels = [...(showKind ? ["note"] : []), ...parseTags(note.data.tags)];
+const { Content } = compact ? { Content: null } : await render(note);
+---
+
+{
+  compact ? (
+    <a href={href} class="log-row">
+      <time class="log-date" datetime={date}>
+        {formatDate(note.data.date, "%Y-%m-%d")}
+      </time>
+      <span>
+        <span class="log-title">{noteHeadline(note)}</span>
+        {labels.length > 0 && (
+          <span class="log-tags">
+            {labels.map((label) => (
+              <span>{label}</span>
+            ))}
+          </span>
+        )}
+      </span>
+    </a>
+  ) : (
+    <article class="log-row note-row">
+      <a href={href} class="log-date">
+        <time datetime={date}>{formatDate(note.data.date, "%Y-%m-%d")}</time>
+      </a>
+      <div>
+        {note.data.title && (
+          <h3 class="log-title">
+            <a href={href} class="link">
+              {note.data.title}
+            </a>
+          </h3>
+        )}
+        <div class="prose note-body">
+          {Content && <Content components={{ Message, Sidenote }} />}
+        </div>
+        {labels.length > 0 && (
+          <span class="log-tags">
+            {labels.map((label) => (
+              <span>{label}</span>
+            ))}
+          </span>
+        )}
+      </div>
+    </article>
+  )
+}

@@ -1,0 +1,70 @@
+---
+import PostRow from "@components/PostRow.astro";
+import NoteRow from "@components/NoteRow.astro";
+import YearHead from "@components/YearHead.astro";
+import type { WritingItem } from "@lib/writing";
+
+interface Props {
+  items: WritingItem[];
+  /** Label notes "note" (for lists that mix notes with posts). */
+  showKind?: boolean;
+  /** Notes as one-line links rather than inline. */
+  compact?: boolean;
+  /** Group under year headings (the indexes) or one plain list. */
+  byYear?: boolean;
+  /** Singular noun for the year counts: "post", "note", "piece". */
+  unit?: string;
+  empty?: string;
+}
+
+const {
+  items,
+  showKind = false,
+  compact = false,
+  byYear = true,
+  unit = "piece",
+  empty = "Nothing here yet.",
+} = Astro.props;
+
+const years = Map.groupBy(items, (item) =>
+  new Date(item.entry.data.date).getFullYear(),
+);
+const groups = byYear
+  ? [...years.entries()].sort((a, b) => b[0] - a[0])
+  : [[0, items] as const];
+---
+
+{
+  items.length === 0 ? (
+    <p class="empty">{empty}</p>
+  ) : (
+    groups.map(([year, group]) =>
+      byYear ? (
+        <section>
+          <YearHead year={year} count={group.length} unit={unit} />
+          <div class="log">
+            {group.map((item) =>
+              item.kind === "post" ? (
+                <PostRow post={item.entry} />
+              ) : (
+                <NoteRow
+                  note={item.entry}
+                  showKind={showKind}
+                  compact={compact}
+                />
+              ),
+            )}
+          </div>
+        </section>
+      ) : (
+        group.map((item) =>
+          item.kind === "post" ? (
+            <PostRow post={item.entry} details={false} />
+          ) : (
+            <NoteRow note={item.entry} showKind={showKind} compact={compact} />
+          ),
+        )
+      ),
+    )
+  )
+}

@@ -1,0 +1,61 @@
+---
+# An example, and a how-to. It is a draft, so it never appears on the site.
+# Copy this file to start a post; set `draft: false` (or delete the line).
+
+title: "How to write a post"
+
+# One sentence. Shown under the title and in search results and share previews.
+description: "Every front matter field and writing feature this site supports, in one place."
+
+# When it was published.
+date: "2025-01-01T09:00:00+00:00"
+
+# Optional. Shown as "updated ..." beside the date.
+# last_modified_at: "2025-02-01T09:00:00+00:00"
+
+# Optional. The address of the post: /blog/<slug>/. Defaults to the file name.
+slug: "how-to-write-a-post"
+
+# Optional. Comma separated.
+tags: "example,guide"
+
+# Optional. Set to false to hide the table of contents on a post.
+# toc: false
+
+# Optional. A cover image: the name of a file in src/content/blog/images/
+# (without its extension), its alt text, and a caption.
+# cover: "my-cover"
+# coverAlt: "A description of the image"
+# coverCaption: "Shown under the image"
+
+# Drafts are left out of every page, feed and sitemap.
+draft: true
+---
+
+Posts are Markdown (MDX). The headings you write become the table of contents.
+
+## A section
+
+Text, **bold**, _italics_, `inline code`, [links](https://example.com), lists and
+quotes all work.
+
+### A subsection
+
+Sub-headings nest under their section in the table of contents.
+
+## Sidenotes
+
+A sidenote sits in the margin on wide screens and opens on tap on a phone.<Sidenote id="1">The text of the note. It can have [a link](https://example.com) too.</Sidenote> Give each one a number that is unique within the post.
+
+## Message boxes
+
+<Message type="tip">
+  Types are `note`, `tip`, `info` and `warning`.
+</Message>
+
+## Code
+
+```ts title="example.ts" {2}
+const greeting = "hello";
+console.log(greeting); // line 2 is highlighted
+```

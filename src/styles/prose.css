@@ -1,0 +1,633 @@
+/* ==========================================================================
+   PROSE: long-form reading. Serif body, sans headings, mono annotations.
+   ========================================================================== */
+
+.prose {
+  overflow-wrap: break-word;
+  counter-reset: sidenote-counter;
+}
+
+.prose > * + * {
+  margin-top: 1.25em;
+}
+
+.prose p {
+  text-wrap: pretty;
+}
+
+/* html already reserves 5rem for the sticky header (scroll-padding-top); this
+   adds a little air above an anchored heading. */
+.prose :is(h2, h3, h4, h5, h6) {
+  scroll-margin-top: 1rem;
+}
+
+.prose h2 {
+  margin-top: 2.5em;
+}
+
+.prose h3 {
+  margin-top: 2em;
+}
+
+.prose :is(h4, h5, h6) {
+  margin-top: 1.75em;
+}
+
+.prose :is(h2, h3, h4, h5, h6) + * {
+  margin-top: 0.6em;
+}
+
+.prose strong {
+  color: var(--ink);
+}
+
+.prose a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 0.2em;
+  text-decoration-skip-ink: auto;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+
+.prose li + li {
+  margin-top: 0.35em;
+}
+
+.prose li::marker {
+  color: var(--ink-3);
+}
+
+.prose li > :is(ul, ol) {
+  margin-top: 0.35em;
+}
+
+.prose blockquote {
+  padding: 0.125rem 0 0.125rem 1.25rem;
+  border-left: 2px solid var(--accent);
+  color: var(--ink-2);
+}
+
+.prose hr {
+  margin-block: 2.5em;
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.prose img {
+  height: auto;
+  border: 1px solid var(--rule);
+}
+
+.prose figcaption {
+  margin-top: 0.5rem;
+  color: var(--ink-3);
+}
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.prose :is(th, td) {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+}
+
+.prose kbd {
+  padding: 0 0.3em;
+  border: 1px solid var(--control);
+}
+
+.prose :not(pre) > code {
+  margin: 0 0.1em;
+  padding: 0.025rem 0.25rem;
+  border: 1px solid var(--rule);
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+
+.expressive-code {
+  margin-top: 1.5em;
+}
+
+.expressive-code .copy {
+  transition: color 150ms ease;
+}
+
+@media (max-width: 768px) {
+  .expressive-code .copy button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Heading permalinks (added by a small script on post pages) -------------- */
+
+.heading-anchor {
+  margin-left: 0.5rem;
+  color: var(--accent);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+:is(h2, h3, h4):hover > .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .heading-anchor {
+    opacity: 0.5;
+  }
+}
+
+/* Message (callout) ------------------------------------------------------- */
+
+.message {
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  background: var(--bg-sunk);
+}
+
+.message-title {
+  margin: 0 0 0.5rem;
+  color: var(--ink);
+}
+
+.message-content > :first-child {
+  margin-top: 0;
+}
+
+.message-content > :last-child {
+  margin-bottom: 0;
+}
+
+/* Sidenotes: the notebook's margin ---------------------------------------- */
+
+.sidenote {
+  float: right;
+  clear: right;
+  position: relative;
+  width: 30%;
+  margin: 0 -35% 0.5rem 0;
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--rule);
+  color: var(--ink-3);
+}
+
+.sidenote a {
+  color: inherit;
+}
+
+.sidenote-number::after {
+  content: attr(data-footnote-id);
+  position: relative;
+  top: -0.25em;
+  vertical-align: super;
+  color: var(--accent);
+}
+
+.sidenote .sidenote-number::after {
+  content: attr(data-footnote-id) ". ";
+  top: 0;
+  vertical-align: baseline;
+}
+
+.sidenote-toggle {
+  display: none;
+}
+
+/* Margin notes need ~1060px of viewport; below that they become
+   tap-to-expand notes inline. */
+@media (max-width: 1099px) {
+  .sidenote {
+    display: none;
+    float: none;
+    width: 95%;
+    margin: 1rem 0;
+    padding: 0.75rem;
+    border: 1px solid var(--rule);
+    background: var(--bg-sunk);
+  }
+
+  .sidenote.active,
+  .sidenote-container:has(.sidenote-toggle:checked) .sidenote {
+    display: block;
+    animation: slide-down 250ms ease-out;
+  }
+
+  .sidenote-toggle:checked + .sidenote {
+    display: block;
+    float: left;
+    clear: both;
+    width: 95%;
+    margin: 1rem 2.5%;
+  }
+
+  .sidenote-ref {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.2em;
+    padding: 0;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+
+  /* Invisible hit-slop so the tiny glyph still has a 44px tap target. */
+  .sidenote-ref::before {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+
+  /* A small square button, like the site's other controls: + opens the note,
+     the minus closes it. */
+  .sidenote-ref::after {
+    content: "+";
+    display: inline-grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+
+  .sidenote-container:has(.sidenote-toggle:checked) .sidenote-ref::after {
+    content: "\2212";
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+}
+
+/* Table of contents ------------------------------------------------------- */
+
+.toc-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.toc-summary::-webkit-details-marker {
+  display: none;
+}
+
+.toc-chevron {
+  flex-shrink: 0;
+  transition: transform 150ms ease;
+}
+
+details[open] .toc-chevron {
+  transform: rotate(180deg);
+}
+
+.toc-list {
+  list-style: none;
+  margin-top: 0.75rem;
+}
+
+.toc-list li + li {
+  margin-top: 0.65rem;
+}
+
+.toc-link {
+  display: block;
+  color: var(--ink-3);
+  overflow-wrap: break-word;
+  transition: color 150ms ease;
+}
+
+.toc-sub {
+  list-style: none;
+  margin-top: 0.5rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--rule);
+}
+
+.toc-sub li + li {
+  margin-top: 0.5rem;
+}
+
+/* With JS, only the section being read shows its sub-headings. */
+.toc-js .toc-sub {
+  display: none;
+}
+
+.toc-js li[data-open] > .toc-sub {
+  display: block;
+}
+
+.toc-link:hover {
+  color: var(--ink);
+}
+
+.toc-link.toc-active {
+  color: var(--accent);
+}
+
+/* Post layout ------------------------------------------------------------- */
+
+.post-layout {
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .post-layout {
+    padding-inline: 1.5rem;
+  }
+}
+
+.post-toc-side {
+  display: none;
+}
+
+.post-toc-inline {
+  padding: 1rem;
+  border: 1px solid var(--control);
+}
+
+@media (min-width: 1280px) {
+  .post-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--measure) minmax(0, 1fr);
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  .post-main {
+    padding-inline: 1.5rem;
+  }
+
+  .post-toc-side {
+    display: block;
+    justify-self: end;
+    width: 13rem;
+    padding-right: 2rem;
+  }
+
+  .post-toc-inline {
+    display: none;
+  }
+
+  .post-toc-sticky {
+    position: sticky;
+    top: 7rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+}
+
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1.25rem;
+  color: var(--ink-2);
+}
+
+.post-desc {
+  margin-top: 1rem;
+  max-width: 55ch;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.post-cover img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
+}
+
+.post-cover figcaption {
+  margin-top: 0.5rem;
+  color: var(--ink-3);
+}
+
+.post-nav {
+  display: grid;
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+
+@media (min-width: 640px) {
+  .post-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .post-nav .next {
+    text-align: right;
+  }
+}
+
+.post-nav-label {
+  display: block;
+  color: var(--ink-3);
+}
+
+.post-nav-title {
+  display: block;
+  margin-top: 0.25rem;
+  text-wrap: balance;
+}
+
+.post-end {
+  color: var(--ink-2);
+}
+
+/* Home: "currently" ------------------------------------------------------- */
+
+.currently {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 0.5rem 1rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.currently dt {
+  color: var(--ink-3);
+}
+
+.currently dd {
+  color: var(--ink-2);
+}
+
+@media (max-width: 520px) {
+  .currently {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .currently dd {
+    margin-bottom: 0.6rem;
+  }
+}
+
+.featured {
+  display: block;
+  padding-block: 1.25rem 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.featured-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+/* A small square tag, in the accent: the one thing on the page that says
+   "start here". */
+.pill {
+  display: inline-block;
+  padding: 0.05rem 0.5rem;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.featured-title {
+  margin-top: 0.4rem;
+  display: block;
+}
+
+.featured .log-desc {
+  display: block;
+  margin-top: 0.6rem;
+}
+
+/* Notes: the text sits inline in the list --------------------------------- */
+
+.note-body > :first-child {
+  margin-top: 0;
+}
+
+.note-row .log-title + .note-body {
+  margin-top: 0.5rem;
+}
+
+.note-row .log-tags {
+  display: flex;
+  margin-top: 0.6rem;
+}
+
+a.log-date:is(:hover, :focus-visible) {
+  color: var(--accent);
+}
+
+/* Resume ------------------------------------------------------------------ */
+
+/* Company on the left, its location on the right, like a printed resume. */
+.cv-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.1rem 1rem;
+}
+
+.cv-location {
+  color: var(--ink-3);
+}
+
+.cv-points {
+  margin-top: 0.6rem;
+  padding-left: 1.1rem;
+  max-width: 60ch;
+  color: var(--ink-2);
+}
+
+.cv-points li + li {
+  margin-top: 0.4rem;
+}
+
+.cv-skills {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: 0.6rem 1rem;
+  padding-top: 1rem;
+}
+
+.cv-skills dt {
+  color: var(--ink-3);
+}
+
+.cv-skills dd {
+  color: var(--ink-2);
+}
+
+@media (max-width: 520px) {
+  .cv-skills {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .cv-skills dd {
+    margin-bottom: 0.7rem;
+  }
+}
+
+/* Now page ---------------------------------------------------------------- */
+
+.now-list {
+  list-style: none;
+  color: var(--ink-2);
+}
+
+.now-list li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.now-list li + li {
+  margin-top: 0.5rem;
+}
+
+.now-list li::before {
+  content: "→";
+  flex-shrink: 0;
+  color: var(--ink-3);
+}
+
+.now-section {
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-3);
+}
+
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.project-links .sep {
+  color: var(--ink-3);
+}
+
+.project-links a {
+  padding-block: 0.25rem;
+}

@@ -1,0 +1,59 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import WritingList from "@components/WritingList.astro";
+import { tagToSlug } from "@lib/utils";
+import { getWriting, itemTags, type WritingItem } from "@lib/writing";
+
+export async function getStaticPaths() {
+  const writing = await getWriting();
+
+  const tagMap = new Map<
+    string,
+    { displayTag: string; items: WritingItem[] }
+  >();
+  for (const item of writing) {
+    for (const tag of itemTags(item)) {
+      const slug = tagToSlug(tag);
+      if (!tagMap.has(slug)) {
+        tagMap.set(slug, { displayTag: tag, items: [] });
+      }
+      tagMap.get(slug)!.items.push(item);
+    }
+  }
+
+  return [...tagMap.entries()].map(([slug, { displayTag, items }]) => ({
+    params: { tag: slug },
+    props: { displayTag, items },
+  }));
+}
+
+interface Props {
+  displayTag: string;
+  items: WritingItem[];
+}
+
+const { displayTag, items } = Astro.props;
+---
+
+<PageLayout
+  title={`Writing tagged "${displayTag}"`}
+  description={`All writing tagged with ${displayTag}`}
+>
+  <Container class="stack stack-md">
+    <BackToPrev href="/tags">All Tags</BackToPrev>
+
+    <div class="page-head">
+      <h1 class="title">{displayTag}</h1>
+      <p class="label sub">
+        {items.length}
+        {items.length === 1 ? "piece" : "pieces"}
+      </p>
+    </div>
+
+    <div class="log">
+      <WritingList items={items} byYear={false} compact showKind />
+    </div>
+  </Container>
+</PageLayout>

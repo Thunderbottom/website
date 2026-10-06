@@ -1,22 +1,22 @@
 import { defineConfig } from "astro/config";
-import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import robotsTxt from "astro-robots-txt";
 import astroExpressiveCode from "astro-expressive-code";
-import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import compressor from "astro-compressor";
+import features from "./src/integrations/features.ts";
+import { SITE } from "./site.config.ts";
 
 export default defineConfig({
-  site: "https://maych.in",
+  site: SITE.URL,
   output: "static",
 
   integrations: [
+    features(),
     astroExpressiveCode({
       defaultProps: {
         showLineNumbers: false,
       },
-      plugins: [pluginLineNumbers()],
       themeCssSelector(theme, { styleVariants }) {
         if (styleVariants.length >= 2) {
           const baseTheme = styleVariants[0]?.theme;
@@ -36,6 +36,9 @@ export default defineConfig({
           shadowColor: "transparent",
         },
         codeFontFamily: "Commit Mono, SF Mono, Monaco, Menlo, monospace",
+        codeFontSize: "0.875rem",
+        codeLineHeight: "1.5",
+        uiFontSize: "0.75rem",
         uiFontFamily: "Commit Mono, SF Mono, Monaco, Menlo, monospace",
         borderRadius: "0",
       },
@@ -52,30 +55,34 @@ export default defineConfig({
       ],
       sitemap: true,
     }),
-    sitemap(),
+    // /resume is noindex, so it stays out of the sitemap too.
+    sitemap({
+      filter: (page) => !new URL(page).pathname.startsWith("/resume"),
+    }),
     compressor({
       gzip: true,
       brotli: true,
     }),
   ],
 
-  image: {
-    domains: ["maych.in"],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**.maych.in",
-      },
-    ],
-  },
-
   vite: {
-    plugins: [tailwindcss()],
     server: {
       host: true,
     },
     css: {
       postcss: "./postcss.config.mjs",
+    },
+    build: {
+      // Vite 8 minifies CSS with Lightning CSS by default, which drops the
+      // standard backdrop-filter when a -webkit- one sits beside it (so the
+      // header glass vanished in Chrome and Firefox). esbuild keeps both.
+      cssMinify: "esbuild",
+      minify: "terser",
+      terserOptions: {
+        compress: {
+          drop_console: true,
+        },
+      },
     },
   },
 

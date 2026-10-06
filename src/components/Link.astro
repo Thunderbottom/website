@@ -14,22 +14,16 @@ const {
   ...rest
 } = Astro.props;
 
-const baseClasses =
-  "text-link dark:text-link-dark link-hover hover:text-background dark:hover:text-background-dark hover:no-underline";
-
-const underlineClasses = underline
-  ? "underline underline-offset-[3px] decoration-1 decoration-underline dark:decoration-underline-dark"
-  : "";
-
-const linkClasses = [baseClasses, underlineClasses, className]
-  .filter(Boolean)
-  .join(" ");
+// One unbroken string: whitespace between the icon and the screen-reader
+// text would render as a visible gap before following punctuation.
+const EXTERNAL_ICON =
+  '<svg class="link-ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg><span class="sr-only"> (opens in a new tab)</span>';
 ---
 
 <a
   href={href}
-  target={external ? "_blank" : "_self"}
+  target={external ? "_blank" : undefined}
   rel={external ? "noopener noreferrer" : undefined}
-  class={linkClasses}
-  {...rest}><slot /></a
+  class:list={["link", underline && "link-underline", className]}
+  {...rest}><slot /><Fragment set:html={external ? EXTERNAL_ICON : ""} /></a
 >

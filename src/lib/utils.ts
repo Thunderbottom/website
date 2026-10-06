@@ -8,6 +8,13 @@ export function getBodyReadingTime(body?: string): string {
   return getReadingTime(body).text;
 }
 
+function extractDate(item: {
+  data?: { date: string | Date };
+  date?: string | Date;
+}): string | Date {
+  return item.data?.date ?? item.date ?? new Date(0);
+}
+
 /**
  * Sort items by date in descending order (most recent first)
  */
@@ -20,12 +27,10 @@ export function sortByDateDesc<T extends { date: string | Date }>(
 export function sortByDateDesc<
   T extends { data?: { date: string | Date }; date?: string | Date },
 >(items: T[]): T[] {
-  return [...items].sort((a, b) => {
-    const dateA = "data" in a && a.data?.date ? a.data.date : (a as any).date;
-    const dateB = "data" in b && b.data?.date ? b.data.date : (b as any).date;
-
-    return new Date(dateB).valueOf() - new Date(dateA).valueOf();
-  });
+  return [...items].sort(
+    (a, b) =>
+      new Date(extractDate(b)).valueOf() - new Date(extractDate(a)).valueOf(),
+  );
 }
 
 /**
@@ -44,17 +49,4 @@ export function parseTags(tags?: string): string[] {
  */
 export function tagToSlug(tag: string): string {
   return tag.toLowerCase().replace(/\s+/g, "-");
-}
-
-/**
- * Escape HTML special characters for safe attribute and content usage
- */
-export function escapeHtml(text: string): string {
-  if (typeof text !== "string") return "";
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }

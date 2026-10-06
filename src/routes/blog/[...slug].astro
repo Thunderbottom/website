@@ -1,0 +1,211 @@
+---
+import { getCollection, render } from "astro:content";
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import PageLayout from "@layouts/PageLayout.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import Message from "@components/Message.astro";
+import Sidenote from "@components/Sidenote.astro";
+import TableOfContents from "@components/TableOfContents.astro";
+import Link from "@components/Link.astro";
+import {
+  parseTags,
+  tagToSlug,
+  getBodyReadingTime,
+  sortByDateDesc,
+} from "@lib/utils";
+import { SITE } from "@lib/config";
+
+const coverImages = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/content/blog/images/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection("blog", ({ data }) => {
+    return !data.draft;
+  });
+  const sorted = sortByDateDesc(blogEntries);
+
+  return sorted.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      newer: i > 0 ? sorted[i - 1] : undefined,
+      older: i < sorted.length - 1 ? sorted[i + 1] : undefined,
+    },
+  }));
+}
+
+const { entry, newer, older } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const coverSource = entry.data.cover
+  ? Object.entries(coverImages).find(([path]) =>
+      path.startsWith(`/src/content/blog/images/${entry.data.cover}.`),
+    )?.[1].default
+  : undefined;
+const cover = coverSource
+  ? await getImage({ src: coverSource, width: 1344, format: "avif" })
+  : undefined;
+
+const readingTime = getBodyReadingTime(entry.body);
+const tags = parseTags(entry.data.tags);
+const description = entry.data.description || entry.data.summary;
+const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+const hasToc = entry.data.toc !== false && tocHeadings.length >= 2;
+
+const jsonLd: Record<string, unknown> = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: entry.data.title,
+  description,
+  datePublished: new Date(entry.data.date).toISOString(),
+  ...(entry.data.last_modified_at && {
+    dateModified: new Date(entry.data.last_modified_at).toISOString(),
+  }),
+  url: `${SITE.URL}/blog/${entry.id}/`,
+  author: {
+    "@type": "Person",
+    "@id": `${SITE.URL}/#person`,
+    name: SITE.NAME,
+    url: SITE.URL,
+  },
+  publisher: {
+    "@type": "Person",
+    "@id": `${SITE.URL}/#person`,
+    name: SITE.NAME,
+    url: SITE.URL,
+  },
+};
+
+const components = { Message, Sidenote };
+---
+
+<PageLayout
+  title={entry.data.title}
+  description={description}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <div class="reading-progress" aria-hidden="true"></div>
+
+  <div class="post-layout">
+    <aside class="post-toc-side" aria-label="Table of contents">
+      <div class="post-toc-sticky">
+        {
+          hasToc && (
+            <TableOfContents headings={tocHeadings} defaultOpen={true} />
+          )
+        }
+      </div>
+    </aside>
+
+    <div class="post-main stack">
+      <BackToPrev href="/blog">Back to Blog</BackToPrev>
+
+      <header>
+        <div class="post-meta">
+          <FormattedDate date={entry.data.date} />
+          <span>{readingTime}</span>
+          {
+            entry.data.last_modified_at && (
+              <span>
+                updated <FormattedDate date={entry.data.last_modified_at} />
+              </span>
+            )
+          }
+        </div>
+        <h1 class="title" style="margin-top: 0.75rem">{entry.data.title}</h1>
+        {description && <p class="post-desc">{description}</p>}
+      </header>
+
+      {
+        cover && (
+          <figure class="post-cover">
+            <img
+              src={cover.src}
+              width={cover.attributes.width}
+              height={cover.attributes.height}
+              alt={entry.data.coverAlt ?? ""}
+              decoding="async"
+              fetchpriority="high"
+            />
+            {entry.data.coverCaption && (
+              <figcaption>{entry.data.coverCaption}</figcaption>
+            )}
+          </figure>
+        )
+      }
+
+      {
+        hasToc && (
+          <div class="post-toc-inline">
+            <TableOfContents headings={tocHeadings} defaultOpen={false} />
+          </div>
+        )
+      }
+
+      <article class="prose">
+        <Content components={components} />
+      </article>
+
+      {
+        tags.length > 0 && (
+          <div class="tag-list post-tags-end">
+            {tags.map((tag) => (
+              <a href={`/tags/${tagToSlug(tag)}/`} class="tag-link">
+                {tag}
+              </a>
+            ))}
+          </div>
+        )
+      }
+
+      {
+        (newer || older) && (
+          <nav class="post-nav" aria-label="More posts">
+            {older ? (
+              <a href={`/blog/${older.id}/`} rel="prev">
+                <span class="post-nav-label">← Older</span>
+                <span class="post-nav-title">{older.data.title}</span>
+              </a>
+            ) : (
+              <span />
+            )}
+            {newer && (
+              <a href={`/blog/${newer.id}/`} rel="next" class="next">
+                <span class="post-nav-label">Newer →</span>
+                <span class="post-nav-title">{newer.data.title}</span>
+              </a>
+            )}
+          </nav>
+        )
+      }
+
+      <p class="post-end">
+        Questions or comments? <Link href={`mailto:${SITE.EMAIL}`} underline
+          >Email me.</Link
+        >
+      </p>
+    </div>
+
+    <div aria-hidden="true"></div>
+  </div>
+</PageLayout>
+
+<script>
+  // Permalink "#" on each section heading. Added client-side because Astro
+  // assigns heading ids after user rehype plugins run.
+  document
+    .querySelectorAll<HTMLElement>(".prose :is(h2, h3, h4)[id]")
+    .forEach((heading) => {
+      const a = document.createElement("a");
+      a.className = "heading-anchor";
+      a.href = `#${heading.id}`;
+      a.setAttribute("aria-label", "Link to this section");
+      a.textContent = "#";
+      heading.append(a);
+    });
+</script>

@@ -1,591 +1,203 @@
 ---
+import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
 
+// The photo page, shown in an overlay. Every photo card is a real link to
+// /photography/<slug>/; this layer only intercepts the click, fetches that
+// page, and shows its .photo-page here, so the URL is always shareable and
+// the page works without JavaScript.
 ---
 
-<div
-  id="photo-lightbox"
-  class="pointer-events-none fixed inset-0 z-[100] flex flex-col opacity-0"
-  aria-hidden="true"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="lightbox-title"
-  aria-describedby="lightbox-content"
->
-  <!-- Close button -->
-  <button
-    id="lightbox-close"
-    class="absolute right-4 z-10 flex h-11 w-11 items-center justify-center text-white/70 transition-colors duration-150 hover:text-white focus-visible:ring-1 focus-visible:ring-white focus-visible:outline-none"
-    style="top: max(1rem, env(safe-area-inset-top, 0px));"
-    aria-label="Close photo viewer"
-    type="button"
-  >
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      aria-hidden="true"
-    >
-      <path d="M18 6L6 18M6 6l12 12"></path>
-    </svg>
+<dialog id="lightbox" aria-label="Photo">
+  <button type="button" class="lightbox-close" data-lightbox-close>
+    Close <kbd>Esc</kbd>
   </button>
-
-  <!-- Counter -->
-  <div
-    id="lightbox-counter"
-    class="absolute left-4 z-10 font-mono text-xs text-white/50"
-    style="top: max(1.3rem, calc(env(safe-area-inset-top, 0px) + 0.3rem));"
-    aria-live="polite"
-  >
-  </div>
-
-  <!-- Navigation -->
+  <div class="lightbox-body"></div>
   <button
-    id="lightbox-prev"
-    class="absolute top-1/2 left-2 z-10 hidden h-12 w-11 -translate-y-1/2 items-center justify-center text-white/60 transition-colors duration-150 hover:text-white focus-visible:ring-1 focus-visible:ring-white focus-visible:outline-none"
-    aria-label="Previous photo"
     type="button"
+    class="lightbox-step prev"
+    data-lightbox-step="prev"
+    aria-label="Newer photo"
+    hidden
   >
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      aria-hidden="true"
-    >
-      <polyline points="15 18 9 12 15 6"></polyline>
-    </svg>
+    <IconChevronLeft />
   </button>
-
   <button
-    id="lightbox-next"
-    class="absolute top-1/2 right-2 z-10 hidden h-12 w-11 -translate-y-1/2 items-center justify-center text-white/60 transition-colors duration-150 hover:text-white focus-visible:ring-1 focus-visible:ring-white focus-visible:outline-none"
-    aria-label="Next photo"
     type="button"
+    class="lightbox-step next"
+    data-lightbox-step="next"
+    aria-label="Older photo"
+    hidden
   >
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      aria-hidden="true"
-    >
-      <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
+    <IconChevronLeft />
   </button>
-
-  <!-- Image area: flex-1 so it fills whatever space is above the info panel -->
-  <div
-    class="relative flex min-h-0 flex-1 items-center justify-center p-4"
-    style="padding-top: max(4rem, calc(env(safe-area-inset-top, 0px) + 3rem));"
-  >
-    <img
-      id="lightbox-image"
-      src=""
-      alt=""
-      class="max-h-full max-w-full object-contain opacity-0 transition-opacity duration-200 ease-out"
-      style="image-orientation: from-image; width: auto; height: auto;"
-    />
-
-    <!-- Loading indicator -->
-    <div
-      id="lightbox-loading"
-      class="absolute hidden items-center gap-1.5"
-      aria-live="polite"
-      aria-label="Loading photo"
-    >
-      <span
-        class="block h-1 w-1 animate-pulse bg-white/60"
-        style="animation-delay: 0ms"></span>
-      <span
-        class="block h-1 w-1 animate-pulse bg-white/60"
-        style="animation-delay: 150ms"></span>
-      <span
-        class="block h-1 w-1 animate-pulse bg-white/60"
-        style="animation-delay: 300ms"></span>
-      <span class="sr-only">Loading photo...</span>
-    </div>
-  </div>
-
-  <!-- Info panel: natural height, sits at the bottom of the flex column -->
-  <div
-    id="lightbox-info"
-    class="flex-none px-6 py-5"
-    style="padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));"
-  >
-    <div class="mx-auto max-w-2xl">
-      <h2
-        id="lightbox-title"
-        class="font-display text-base font-semibold text-white"
-      >
-      </h2>
-      <div
-        id="lightbox-content"
-        class="mt-1 font-mono text-xs leading-relaxed text-white/65"
-      >
-      </div>
-    </div>
-  </div>
-</div>
+</dialog>
 
 <script>
-  class StaticPhotoLightbox {
-    constructor() {
-      this.elements = this.getElements();
-      this.state = {
-        currentPhotoIndex: 0,
-        isOpen: false,
-      };
-      this.triggerElement = null;
+  const dialog = document.getElementById(
+    "lightbox",
+  ) as HTMLDialogElement | null;
+  const body = dialog?.querySelector<HTMLElement>(".lightbox-body");
 
-      this.boundHandlers = {
-        documentClick: this.handleDocumentClick.bind(this),
-        documentKeydown: this.handleDocumentKeydown.bind(this),
-        backdropClick: this.handleBackdropClick.bind(this),
-        close: this.closeLightbox.bind(this),
-        prev: this.goToPrevPhoto.bind(this),
-        next: this.goToNextPhoto.bind(this),
-        trapFocus: this.handleFocusTrap.bind(this),
-        touchStart: this.handleTouchStart.bind(this),
-        touchEnd: this.handleTouchEnd.bind(this),
-      };
+  if (dialog && body) {
+    const galleryTitle = document.title;
+    // Photo pages are /photography/<slug>/. Filter pages have two segments.
+    const isPhotoPath = (path: string) =>
+      /^\/photography\/[^/]+\/?$/.test(path);
 
-      this.touchStartX = 0;
-      this.touchStartY = 0;
+    interface Loaded {
+      html: string;
+      title: string;
+      image?: string;
+    }
+    const cache = new Map<string, Promise<Loaded | null>>();
 
-      if (this.elements.isValid) {
-        this.initialize();
+    function load(path: string): Promise<Loaded | null> {
+      let hit = cache.get(path);
+      if (!hit) {
+        hit = fetch(path)
+          .then((res) => (res.ok ? res.text() : Promise.reject()))
+          .then((text) => {
+            const doc = new DOMParser().parseFromString(text, "text/html");
+            const page = doc.querySelector(".photo-page");
+            if (!page) return null;
+            return {
+              html: page.outerHTML,
+              title: doc.title,
+              image:
+                page.querySelector(".photo-stage img")?.getAttribute("src") ??
+                undefined,
+            };
+          })
+          .catch(() => null);
+        cache.set(path, hit);
       }
+      return hit;
     }
 
-    getElements() {
-      const lightbox = document.getElementById("photo-lightbox");
-      const lightboxImage = document.getElementById("lightbox-image");
-      const lightboxTitle = document.getElementById("lightbox-title");
-      const lightboxContent = document.getElementById("lightbox-content");
-      const lightboxLoading = document.getElementById("lightbox-loading");
-      const lightboxCounter = document.getElementById("lightbox-counter");
-      const closeButton = document.getElementById("lightbox-close");
-      const prevButton = document.getElementById("lightbox-prev");
-      const nextButton = document.getElementById("lightbox-next");
-
-      const isValid =
-        lightbox &&
-        lightboxImage &&
-        lightboxTitle &&
-        lightboxContent &&
-        lightboxLoading &&
-        closeButton &&
-        prevButton &&
-        nextButton;
-
-      return {
-        lightbox,
-        lightboxImage,
-        lightboxTitle,
-        lightboxContent,
-        lightboxLoading,
-        lightboxCounter,
-        closeButton,
-        prevButton,
-        nextButton,
-        isValid,
-      };
-    }
-
-    initialize() {
-      this.elements.closeButton.addEventListener(
-        "click",
-        this.boundHandlers.close,
-      );
-      this.elements.prevButton.addEventListener(
-        "click",
-        this.boundHandlers.prev,
-      );
-      this.elements.nextButton.addEventListener(
-        "click",
-        this.boundHandlers.next,
-      );
-      this.elements.lightbox.addEventListener(
-        "click",
-        this.boundHandlers.backdropClick,
-      );
-      this.elements.lightbox.addEventListener(
-        "touchstart",
-        this.boundHandlers.touchStart,
-        { passive: true },
-      );
-      this.elements.lightbox.addEventListener(
-        "touchend",
-        this.boundHandlers.touchEnd,
-        { passive: true },
-      );
-      document.addEventListener("click", this.boundHandlers.documentClick);
-      document.addEventListener("keydown", this.boundHandlers.documentKeydown);
-    }
-
-    getFocusableElements() {
-      const selectors = [
-        "a[href]",
-        "button:not([disabled])",
-        "input:not([disabled])",
-        "select:not([disabled])",
-        "textarea:not([disabled])",
-        '[tabindex]:not([tabindex="-1"])',
-      ].join(", ");
-      return Array.from(this.elements.lightbox.querySelectorAll(selectors));
-    }
-
-    handleFocusTrap(event) {
-      if (event.key !== "Tab") return;
-      const focusable = this.getFocusableElements();
-      if (!focusable.length) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey) {
-        if (document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    }
-
-    getAllPhotos() {
-      return Array.from(document.querySelectorAll("[data-photo-trigger]"));
-    }
-
-    handleDocumentClick(event) {
-      if (this.state.isOpen) return;
-      const trigger = event.target.closest("[data-photo-trigger]");
-      if (trigger) {
-        event.preventDefault();
-        this.openLightbox(trigger);
-      }
-    }
-
-    handleDocumentKeydown(event) {
-      if (this.state.isOpen) {
-        this.handleLightboxKeydown(event);
-      } else if (event.key === "Enter" || event.key === " ") {
-        const trigger = event.target.closest("[data-photo-trigger]");
-        if (trigger) {
-          event.preventDefault();
-          this.openLightbox(trigger);
-        }
-      }
-    }
-
-    handleBackdropClick(event) {
-      if (event.target === this.elements.lightbox) {
-        this.closeLightbox();
-      }
-    }
-
-    updateNavigationButtons() {
-      const allPhotos = this.getAllPhotos();
-      const { prevButton, nextButton, lightboxCounter } = this.elements;
-      const { currentPhotoIndex } = this.state;
-
-      const showPrev = currentPhotoIndex > 0;
-      const hasMoreLoadedPhotos = currentPhotoIndex < allPhotos.length - 1;
-      const hasMorePhotosToLoad =
-        window.staticPhotoLoader?.hasMorePhotos?.() ?? false;
-      const showNext = hasMoreLoadedPhotos || hasMorePhotosToLoad;
-
-      prevButton.classList.toggle("hidden", !showPrev);
-      prevButton.classList.toggle("flex", showPrev);
-      nextButton.classList.toggle("hidden", !showNext);
-      nextButton.classList.toggle("flex", showNext);
-
-      if (lightboxCounter) {
-        const total = hasMorePhotosToLoad
-          ? `${allPhotos.length}+`
-          : `${allPhotos.length}`;
-        lightboxCounter.textContent = `${currentPhotoIndex + 1} / ${total}`;
-      }
-    }
-
-    loadPhoto(photoElement) {
-      const fullImage = photoElement.getAttribute("data-full-image");
-      const title = photoElement.getAttribute("data-title");
-      const content = photoElement.getAttribute("data-content");
-
-      if (!fullImage || !title) {
-        console.warn("[StaticPhotoLightbox] Missing required photo data");
-        return;
-      }
-
-      const { lightboxTitle, lightboxContent, lightboxLoading, lightboxImage } =
-        this.elements;
-
-      lightboxTitle.textContent = title.trim()
-        ? (new DOMParser().parseFromString(title, "text/html").body
-            .textContent ?? "")
-        : "";
-
-      lightboxContent.textContent = content?.trim()
-        ? (new DOMParser().parseFromString(content, "text/html").body
-            .textContent ?? "")
-        : "";
-
-      lightboxLoading.classList.remove("hidden");
-      lightboxLoading.classList.add("flex");
-      lightboxImage.classList.add("opacity-0");
-
-      const img = new Image();
-
-      img.onload = () => {
-        lightboxImage.src = img.src;
-        lightboxImage.alt = title;
-        lightboxLoading.classList.add("hidden");
-        lightboxLoading.classList.remove("flex");
-        lightboxImage.classList.remove("opacity-0");
-        lightboxImage.focus();
-      };
-
-      img.onerror = () => {
-        console.error("[StaticPhotoLightbox] Failed to load image:", fullImage);
-        lightboxLoading.classList.add("hidden");
-        lightboxLoading.classList.remove("flex");
-        lightboxImage.classList.remove("opacity-0");
-        lightboxImage.alt = `Failed to load: ${title}`;
-      };
-
-      img.src = fullImage;
-      this.updateNavigationButtons();
-    }
-
-    openLightbox(trigger) {
-      const allPhotos = this.getAllPhotos();
-      const index = allPhotos.indexOf(trigger);
-
-      if (index === -1) {
-        console.warn(
-          "[StaticPhotoLightbox] Photo trigger not found in collection",
-        );
-        return;
-      }
-
-      this.triggerElement = document.activeElement;
-      this.state.currentPhotoIndex = index;
-      this.state.isOpen = true;
-
-      this.elements.lightbox.classList.remove(
-        "opacity-0",
-        "pointer-events-none",
-      );
-      this.elements.lightbox.setAttribute("aria-hidden", "false");
-      document.documentElement.classList.add("lightbox-open");
-
-      this.elements.lightbox.addEventListener(
-        "keydown",
-        this.boundHandlers.trapFocus,
-      );
-
-      this.loadPhoto(trigger);
-
-      setTimeout(() => {
-        this.elements.closeButton.focus();
-      }, 100);
-    }
-
-    closeLightbox() {
-      this.state.isOpen = false;
-
-      this.elements.lightbox.removeEventListener(
-        "keydown",
-        this.boundHandlers.trapFocus,
-      );
-      this.elements.lightbox.classList.add("opacity-0", "pointer-events-none");
-      this.elements.lightbox.setAttribute("aria-hidden", "true");
-      document.documentElement.classList.remove("lightbox-open");
-
-      this.elements.lightboxImage.src = "";
-      this.elements.lightboxImage.classList.add("opacity-0");
-      this.elements.lightboxLoading.classList.add("hidden");
-      this.elements.lightboxLoading.classList.remove("flex");
-
-      if (this.triggerElement) {
-        this.triggerElement.focus();
-        this.triggerElement = null;
-      }
-    }
-
-    goToNextPhoto() {
-      const allPhotos = this.getAllPhotos();
-
-      if (this.state.currentPhotoIndex < allPhotos.length - 1) {
-        this.state.currentPhotoIndex++;
-        this.loadPhoto(allPhotos[this.state.currentPhotoIndex]);
-      } else if (window.staticPhotoLoader?.hasMorePhotos?.()) {
-        window.staticPhotoLoader.loadMorePhotos().then(() => {
-          const updatedPhotos = this.getAllPhotos();
-          if (this.state.currentPhotoIndex < updatedPhotos.length - 1) {
-            this.state.currentPhotoIndex++;
-            this.loadPhoto(updatedPhotos[this.state.currentPhotoIndex]);
-          }
+    // Warm the neighbours so stepping through photos is instant.
+    function prefetch(root: ParentNode) {
+      root.querySelectorAll<HTMLAnchorElement>(".photo-nav a").forEach((a) => {
+        load(new URL(a.href).pathname).then((data) => {
+          if (data?.image) new Image().src = data.image;
         });
-      }
+      });
     }
 
-    goToPrevPhoto() {
-      const allPhotos = this.getAllPhotos();
-      if (this.state.currentPhotoIndex > 0) {
-        this.state.currentPhotoIndex--;
-        this.loadPhoto(allPhotos[this.state.currentPhotoIndex]);
+    async function show(path: string, history_: "push" | "replace" | "none") {
+      const data = await load(path);
+      if (!data) {
+        location.href = path;
+        return;
       }
+      body!.innerHTML = data.html;
+      document.title = data.title;
+      if (!dialog!.open) dialog!.showModal();
+      if (history_ === "push") history.pushState({ lightbox: true }, "", path);
+      else if (history_ === "replace")
+        history.replaceState({ lightbox: true }, "", path);
+      body!.querySelector(".photo-info")?.scrollTo(0, 0);
+      syncSteps();
+      prefetch(body!);
     }
 
-    handleTouchStart(event) {
-      const touch = event.changedTouches[0];
-      this.touchStartX = touch.clientX;
-      this.touchStartY = touch.clientY;
+    const stepLink = (rel: string) =>
+      body!.querySelector<HTMLAnchorElement>(`.photo-nav [rel="${rel}"]`);
+
+    // The edge arrows only exist where there is a photo to go to.
+    function syncSteps() {
+      dialog!
+        .querySelectorAll<HTMLElement>("[data-lightbox-step]")
+        .forEach((btn) => {
+          btn.hidden = !stepLink(btn.dataset.lightboxStep!);
+        });
     }
 
-    handleTouchEnd(event) {
-      if (!this.state.isOpen) return;
-      const touch = event.changedTouches[0];
-      const deltaX = touch.clientX - this.touchStartX;
-      const deltaY = touch.clientY - this.touchStartY;
-
-      // Require primarily horizontal movement: |deltaX| > |deltaY| and at least 50px
-      if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
-
-      if (deltaX < 0) {
-        this.goToNextPhoto();
-      } else {
-        this.goToPrevPhoto();
-      }
+    function hide() {
+      if (dialog!.open) dialog!.close();
+      body!.innerHTML = "";
+      document.title = galleryTitle;
     }
 
-    handleLightboxKeydown(event) {
-      switch (event.key) {
-        case "Escape":
-          event.preventDefault();
-          this.closeLightbox();
-          break;
-        case "ArrowLeft":
-          event.preventDefault();
-          this.goToPrevPhoto();
-          break;
-        case "ArrowRight":
-          event.preventDefault();
-          this.goToNextPhoto();
-          break;
-        case "Home": {
-          event.preventDefault();
-          const allPhotos = this.getAllPhotos();
-          if (allPhotos.length > 0) {
-            this.state.currentPhotoIndex = 0;
-            this.loadPhoto(allPhotos[0]);
-          }
-          break;
-        }
-        case "End": {
-          event.preventDefault();
-          const allPhotos = this.getAllPhotos();
-          if (allPhotos.length > 0) {
-            this.state.currentPhotoIndex = allPhotos.length - 1;
-            this.loadPhoto(allPhotos[this.state.currentPhotoIndex]);
-          }
-          break;
-        }
-      }
+    // Closing steps back in history, so the gallery URL returns and the
+    // browser's own back button does the same thing.
+    function close() {
+      if (history.state?.lightbox) history.back();
+      else hide();
     }
 
-    destroy() {
-      document.removeEventListener("click", this.boundHandlers.documentClick);
-      document.removeEventListener(
-        "keydown",
-        this.boundHandlers.documentKeydown,
-      );
-      if (this.elements.lightbox) {
-        this.elements.lightbox.removeEventListener(
-          "click",
-          this.boundHandlers.backdropClick,
-        );
-        this.elements.lightbox.removeEventListener(
-          "keydown",
-          this.boundHandlers.trapFocus,
-        );
-        this.elements.lightbox.removeEventListener(
-          "touchstart",
-          this.boundHandlers.touchStart,
-        );
-        this.elements.lightbox.removeEventListener(
-          "touchend",
-          this.boundHandlers.touchEnd,
-        );
+    document.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      const plain =
+        e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey);
+
+      const card = target.closest<HTMLAnchorElement>("a.photo-card");
+      if (card && plain && isPhotoPath(new URL(card.href).pathname)) {
+        e.preventDefault();
+        show(new URL(card.href).pathname, "push");
+        return;
       }
-      if (this.elements.closeButton) {
-        this.elements.closeButton.removeEventListener(
-          "click",
-          this.boundHandlers.close,
-        );
+
+      const step = target.closest<HTMLAnchorElement>("#lightbox .photo-nav a");
+      if (step && plain) {
+        e.preventDefault();
+        show(new URL(step.href).pathname, "replace");
+        return;
       }
-      if (this.elements.prevButton) {
-        this.elements.prevButton.removeEventListener(
-          "click",
-          this.boundHandlers.prev,
-        );
+
+      const arrow = target.closest<HTMLElement>("[data-lightbox-step]");
+      if (arrow) {
+        stepLink(arrow.dataset.lightboxStep!)?.click();
+        return;
       }
-      if (this.elements.nextButton) {
-        this.elements.nextButton.removeEventListener(
-          "click",
-          this.boundHandlers.next,
-        );
-      }
-    }
+
+      if (target.closest("[data-lightbox-close]")) close();
+    });
+
+    dialog.addEventListener("cancel", (e) => {
+      e.preventDefault();
+      close();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (!dialog.open || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey)
+        return;
+      if (e.key === "ArrowLeft") stepLink("prev")?.click();
+      else if (e.key === "ArrowRight") stepLink("next")?.click();
+    });
+
+    // Swipe: a mostly-horizontal flick on the photo steps to the neighbour,
+    // like turning a page. The gallery runs newest to oldest, left to right,
+    // so the next photo (older) is to the right and a flick left brings it in.
+    let touch: { x: number; y: number } | null = null;
+    dialog.addEventListener(
+      "touchstart",
+      (e) => {
+        const t = e.touches[0];
+        touch =
+          e.touches.length === 1 &&
+          (e.target as HTMLElement).closest(".photo-stage, .lightbox-step")
+            ? { x: t.clientX, y: t.clientY }
+            : null;
+      },
+      { passive: true },
+    );
+    dialog.addEventListener(
+      "touchend",
+      (e) => {
+        if (!touch) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - touch.x;
+        const dy = t.clientY - touch.y;
+        touch = null;
+        if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        stepLink(dx < 0 ? "next" : "prev")?.click();
+      },
+      { passive: true },
+    );
+
+    addEventListener("popstate", () => {
+      if (isPhotoPath(location.pathname)) show(location.pathname, "none");
+      else hide();
+    });
   }
-
-  let lightboxInstance = null;
-
-  function initStaticLightbox() {
-    if (lightboxInstance) {
-      lightboxInstance.destroy();
-    }
-    const lb = document.getElementById("photo-lightbox");
-    if (!lb) return;
-    lightboxInstance = new StaticPhotoLightbox();
-  }
-
-  document.addEventListener("astro:page-load", initStaticLightbox);
 </script>
-
-<style is:global>
-  html.lightbox-open {
-    overflow: hidden;
-  }
-
-  #photo-lightbox {
-    background-color: rgba(0, 0, 0, 0.92);
-    transition: opacity 200ms ease;
-  }
-
-  #lightbox-info {
-    background-color: rgba(0, 0, 0, 0.82);
-  }
-
-  #photo-lightbox button:focus-visible {
-    outline: 1px solid rgba(255, 255, 255, 0.6);
-    outline-offset: 2px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    #photo-lightbox,
-    #lightbox-image {
-      transition: none;
-    }
-  }
-</style>

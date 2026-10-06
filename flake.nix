@@ -51,13 +51,13 @@
 
         nodeModules = pkgs.callPackage ./node-modules.nix {
           src = ./.;
-          version = "25.05";
+          version = "26.11";
         };
       in
       {
         packages.maych-in = pkgs.stdenvNoCC.mkDerivation {
           pname = "maych-in";
-          version = "25.05";
+          version = "26.11";
           src = ./.;
 
           nativeBuildInputs = with pkgs; [ bun ];

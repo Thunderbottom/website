@@ -1,0 +1,14 @@
+# The /now page, and the "Now" block on the homepage (which shows the first
+# item of each section). Items are plain text; use [text](url) for links.
+- id: now
+  quip: "Here lieth a liste, certes in no certaine ordre or prioritie, of that which I might be about in this presente houre"
+  sections:
+    - title: Personal
+      items:
+        - "Working on [kiln](https://github.com/Thunderbottom/kiln), an encrypted environment variables manager."
+    - title: Reading
+      items:
+        - "[Blood, Sweat, and Pixels](https://www.goodreads.com/book/show/34376766-blood-sweat-and-pixels), by Jason Schreier"
+        - "[Stranger in a Strange Land](https://www.goodreads.com/book/show/350.Stranger_in_a_Strange_Land), by Robert A. Heinlein"
+    - title: Playing
+      items: []

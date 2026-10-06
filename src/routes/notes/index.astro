@@ -1,0 +1,43 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import PageHeader from "@components/PageHeader.astro";
+import WritingList from "@components/WritingList.astro";
+import WritingTabs from "@components/WritingTabs.astro";
+import Link from "@components/Link.astro";
+import { NOTES } from "@lib/config";
+import { getNotes, getPosts } from "@lib/writing";
+import { FEATURES } from "@site";
+
+const [posts, notes] = await Promise.all([getPosts(), getNotes()]);
+const counts = {
+  all: posts.length + notes.length,
+  blog: posts.length,
+  notes: notes.length,
+};
+---
+
+<PageLayout title={NOTES.TITLE} description={NOTES.DESCRIPTION}>
+  <Container class="stack stack-lg">
+    <div class="stack stack-md">
+      <div class="head-row">
+        <PageHeader title={NOTES.TITLE} description={NOTES.DESCRIPTION} />
+        <div class="head-links">
+          <Link href="/notes/rss.xml">RSS</Link>
+          <Link href="/tags">Tags <span class="arrow">→</span></Link>
+        </div>
+      </div>
+      {
+        FEATURES.blog && FEATURES.notes && (
+          <WritingTabs current="notes" counts={counts} />
+        )
+      }
+    </div>
+
+    <WritingList
+      items={notes.map((entry) => ({ kind: "note" as const, entry }))}
+      unit="note"
+      empty="No notes yet."
+    />
+  </Container>
+</PageLayout>

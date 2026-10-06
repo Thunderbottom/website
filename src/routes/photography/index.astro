@@ -1,0 +1,45 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import PageHeader from "@components/PageHeader.astro";
+import PhotoGrid from "@components/PhotoGrid.astro";
+import { PHOTOGRAPHY } from "@lib/config";
+import {
+  collectFacets,
+  facetHref,
+  generateImageStructuredData,
+  getAllPhotos,
+} from "@lib/photo-utils";
+
+const photos = await getAllPhotos();
+const cameras = collectFacets(photos, "camera");
+---
+
+<PageLayout
+  title={PHOTOGRAPHY.TITLE}
+  description={PHOTOGRAPHY.DESCRIPTION}
+  keywords="photography, photos, art, creative, visual"
+  jsonLd={generateImageStructuredData(photos)}
+>
+  <Container class="stack stack-md">
+    <PageHeader
+      title={PHOTOGRAPHY.TITLE}
+      description={PHOTOGRAPHY.DESCRIPTION}
+    />
+    {
+      cameras.length > 1 && (
+        <nav class="tag-list" aria-label="Filter by camera">
+          {cameras.map(({ facet, photos }) => (
+            <a href={facetHref("camera", facet)} class="tag-link">
+              {facet.name} <span>{photos.length}</span>
+            </a>
+          ))}
+        </nav>
+      )
+    }
+  </Container>
+
+  <Container wide>
+    <PhotoGrid photos={photos} />
+  </Container>
+</PageLayout>

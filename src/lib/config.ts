@@ -1,12 +1,9 @@
-export interface SiteConfig {
-  NAME: string;
-  EMAIL: string;
-  URL: string;
-  DOMAIN: string;
-  DESCRIPTION: string;
-  NUM_POSTS_ON_HOMEPAGE: number;
-  NUM_PROJECTS_ON_HOMEPAGE: number;
-}
+import {
+  FEATURES,
+  PAGES,
+  SITE as SITE_CONFIG,
+  SOCIALS as SOCIAL_LINKS,
+} from "@site";
 
 export interface PageConfig {
   TITLE: string;
@@ -16,6 +13,8 @@ export interface PageConfig {
 export interface NavigationItem {
   name: string;
   url: string;
+  /** Path prefixes that light this item up (defaults to `url`). */
+  match?: string[];
 }
 
 export interface SocialLink {
@@ -23,136 +22,71 @@ export interface SocialLink {
   href: string;
 }
 
-export interface ProjectItem {
-  title: string;
-  description: string;
-  date: string;
-  demoURL?: string;
-  repoURL?: string;
-  websiteURL?: string;
-  tags?: string[];
-}
+// The settings themselves live in site.config.ts; they're re-exported here so
+// the rest of the code has one place to import them from.
+export const SITE = SITE_CONFIG;
+export const SOCIALS: SocialLink[] = SOCIAL_LINKS;
+export const BLOG: PageConfig = PAGES.blog;
+export const WRITING: PageConfig = PAGES.writing;
+export const NOTES: PageConfig = PAGES.notes;
+export const PHOTOGRAPHY: PageConfig = PAGES.photography;
+export const PROJECTS_CONFIG: PageConfig = PAGES.projects;
+export const NOW: PageConfig = PAGES.now;
 
-export const SITE: SiteConfig = {
-  NAME: "Chinmay D. Pai",
-  EMAIL: "chinmaydpai@gmail.com",
-  URL: import.meta.env.SITE ?? "https://maych.in",
-  DOMAIN: "maych.in",
-  DESCRIPTION: "Notes from the intersection of tech and life",
-  NUM_POSTS_ON_HOMEPAGE: 3,
-  NUM_PROJECTS_ON_HOMEPAGE: 3,
-};
+/**
+ * Where all the writing lives: the combined page when blog and notes are both
+ * on, otherwise whichever one is. Undefined when neither is.
+ */
+export const WRITING_HOME = FEATURES.blog
+  ? FEATURES.notes
+    ? "/writing"
+    : "/blog"
+  : FEATURES.notes
+    ? "/notes"
+    : undefined;
 
-export const BLOG: PageConfig = {
-  TITLE: "Blog",
-  DESCRIPTION: "A collection of articles on topics I am passionate about.",
-};
-
-export const NOW: PageConfig = {
-  TITLE: "Now",
-  DESCRIPTION: "What I'm up to right now.",
-};
-
-export const PROJECTS_CONFIG: PageConfig = {
-  TITLE: "Projects",
-  DESCRIPTION: "A collection of what I have been working on.",
-};
-
-export const PHOTOGRAPHY: PageConfig = {
-  TITLE: "Photography",
-  DESCRIPTION: "A collection of moments straight off the camera.",
-};
+// The nav follows FEATURES. Writing is one item when both kinds exist.
+const writingNav: NavigationItem | undefined =
+  WRITING_HOME === "/writing"
+    ? {
+        name: "Writing",
+        url: "/writing",
+        match: ["/writing", "/blog", "/notes"],
+      }
+    : WRITING_HOME === "/blog"
+      ? { name: "Blog", url: "/blog" }
+      : WRITING_HOME === "/notes"
+        ? { name: "Notes", url: "/notes" }
+        : undefined;
 
 export const NAVIGATION: NavigationItem[] = [
-  { name: "Blog", url: "/blog" },
-  { name: "Photos", url: "/photography" },
-  { name: "Projects", url: "/projects" },
-  { name: "Now", url: "/now" },
-];
+  writingNav,
+  FEATURES.photography && { name: "Photos", url: "/photography" },
+  FEATURES.projects && { name: "Projects", url: "/projects" },
+  FEATURES.now && { name: "Now", url: "/now" },
+].filter((item): item is NavigationItem => Boolean(item));
 
-export const SOCIALS: SocialLink[] = [
-  { name: "Bluesky", href: "https://bsky.app/profile/maych.in" },
-  { name: "GitHub", href: "https://github.com/Thunderbottom" },
-  { name: "Lobsters", href: "https://lobste.rs/u/Thunderbottom" },
-  { name: "Forgejo", href: "https://git.deku.moe" },
-  { name: "Email", href: `mailto:${SITE.EMAIL}` },
-];
-
-export const PROJECTS: ProjectItem[] = [
-  {
-    title: "kiln",
-    description:
-      "Encrypt, share, and run with secure environment variables from the command line.",
-    date: "2025-07-10",
-    repoURL: "https://github.com/Thunderbottom/kiln",
-    websiteURL: "https://kiln.sh",
-    tags: ["Go", "Encryption", "Secrets Manager"],
-  },
-  {
-    title: "umami-alerts",
-    description:
-      "A fast, efficient daily analytics report generator for Umami Analytics.",
-    date: "2025-03-01",
-    repoURL: "https://github.com/Thunderbottom/umami-alerts",
-    tags: ["Rust", "Analytics", "Automation"],
-  },
-  {
-    title: "damon",
-    description:
-      "A Nomad operator to automate deployment workflows and reduce manual gruntwork.",
-    date: "2024-12-01",
-    repoURL: "https://github.com/Thunderbottom/damon",
-    tags: ["Go", "Nomad", "Automation"],
-  },
-  {
-    title: "NixOS Flakes",
-    description:
-      "Personal NixOS configuration flakes for reproducible system management.",
-    date: "2024-10-15",
-    repoURL: "https://git.deku.moe/thunderbottom/flakes",
-    tags: ["Nix", "NixOS", "System Configuration"],
-  },
-];
-
-export interface NowSection {
-  title: string;
-  items: string[];
+export interface PhotoGroup {
+  key: string;
+  label: string;
+  /** Photos in the whole year, not just the ones loaded so far. */
+  count?: number;
 }
 
-function createLink(href: string, text: string, external = true): string {
-  const target = external ? ' target="_blank"' : "";
-  const rel = external ? ' rel="noopener noreferrer"' : "";
-  return `<a href="${href}"${target}${rel} class="text-link dark:text-link-dark underline underline-offset-[3px] decoration-1 decoration-[#aaaaaa] dark:decoration-[#555555] transition-[background-color,color,text-decoration-color] duration-150 ease-out hover:bg-text-primary hover:text-background hover:no-underline dark:hover:bg-text-primary-dark dark:hover:text-background-dark">${text}</a>`;
+export function getPhotoGroup(date: Date | string): PhotoGroup {
+  const year =
+    typeof date === "string" ? date.slice(0, 4) : String(date.getFullYear());
+  return { key: year, label: year };
 }
-
-export const NOW_DATA: NowSection[] = [
-  {
-    title: "Personal",
-    items: [
-      `Working on ${createLink("https://github.com/Thunderbottom/kiln", "kiln")}, an encrypted environment variables manager.`,
-    ],
-  },
-  {
-    title: "Reading",
-    items: [
-      `${createLink("https://www.goodreads.com/book/show/34376766-blood-sweat-and-pixels", "Blood, Sweat, and Pixels")}, by Jason Schreier`,
-      `${createLink("https://www.goodreads.com/book/show/350.Stranger_in_a_Strange_Land", "Stranger in a Strange Land")}, by Robert A. Heinlein`,
-    ],
-  },
-  {
-    title: "Playing",
-    items: [],
-  },
-];
 
 export const IMAGE_SETTINGS = {
   THUMBNAIL: {
-    WIDTH: 800,
+    WIDTH: 1200,
     QUALITY: 65,
     FORMAT: "avif" as const,
   },
-  LIGHTBOX: {
-    WIDTH: 1280,
+  FULL: {
+    WIDTH: 2400,
     QUALITY: 75,
     FORMAT: "avif" as const,
   },

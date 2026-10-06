@@ -1,0 +1,27 @@
+---
+interface Props {
+  current: "all" | "blog" | "notes";
+  counts: { all: number; blog: number; notes: number };
+}
+
+const { current, counts } = Astro.props;
+const tabs = [
+  { key: "all", label: "All", href: "/writing", count: counts.all },
+  { key: "blog", label: "Blog", href: "/blog", count: counts.blog },
+  { key: "notes", label: "Notes", href: "/notes", count: counts.notes },
+] as const;
+---
+
+<nav class="tag-list" aria-label="Kinds of writing">
+  {
+    tabs.map((tab) => (
+      <a
+        href={tab.href}
+        class="tag-link"
+        aria-current={tab.key === current ? "page" : undefined}
+      >
+        {tab.label} <span>{tab.count}</span>
+      </a>
+    ))
+  }
+</nav>

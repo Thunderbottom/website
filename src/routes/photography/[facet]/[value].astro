@@ -1,0 +1,50 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import PhotoGrid from "@components/PhotoGrid.astro";
+import { PHOTOGRAPHY } from "@lib/config";
+import {
+  collectFacets,
+  getAllPhotos,
+  type FacetKind,
+  type ProcessedPhoto,
+} from "@lib/photo-utils";
+
+export async function getStaticPaths() {
+  const photos = await getAllPhotos();
+  const kinds: FacetKind[] = ["camera", "lens"];
+  return kinds.flatMap((kind) =>
+    collectFacets(photos, kind).map(({ facet, photos }) => ({
+      params: { facet: kind, value: facet.slug },
+      props: { kind, name: facet.name, photos },
+    })),
+  );
+}
+
+interface Props {
+  kind: FacetKind;
+  name: string;
+  photos: ProcessedPhoto[];
+}
+
+const { kind, name, photos } = Astro.props;
+const count = `${photos.length} ${photos.length === 1 ? "photo" : "photos"}`;
+---
+
+<PageLayout
+  title={`${name} photos`}
+  description={`${count} shot with the ${name}.`}
+>
+  <Container class="stack stack-md">
+    <BackToPrev href="/photography">{PHOTOGRAPHY.TITLE}</BackToPrev>
+    <div class="page-head">
+      <h1 class="title">{name}</h1>
+      <p class="label sub">{kind}, {count}</p>
+    </div>
+  </Container>
+
+  <Container wide>
+    <PhotoGrid photos={photos} />
+  </Container>
+</PageLayout>

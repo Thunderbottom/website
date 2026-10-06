@@ -1,0 +1,44 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import PageHeader from "@components/PageHeader.astro";
+import YearHead from "@components/YearHead.astro";
+import ProjectCard from "@components/ProjectCard.astro";
+import { PROJECTS_CONFIG } from "@lib/config";
+import { getProjects } from "@lib/projects";
+
+const projects = await getProjects();
+const byYear = Map.groupBy(projects, (p) => new Date(p.date).getFullYear());
+const years = [...byYear.keys()].sort((a, b) => b - a);
+---
+
+<PageLayout
+  title={PROJECTS_CONFIG.TITLE}
+  description={PROJECTS_CONFIG.DESCRIPTION}
+>
+  <Container class="stack stack-lg">
+    <PageHeader
+      title={PROJECTS_CONFIG.TITLE}
+      description={PROJECTS_CONFIG.DESCRIPTION}
+    />
+
+    {
+      years.map((year) => (
+        <section>
+          <YearHead
+            year={year}
+            count={byYear.get(year)!.length}
+            unit="project"
+          />
+          <div class="log">
+            {byYear.get(year)!.map((project) => (
+              <ProjectCard project={project} />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+
+    {projects.length === 0 && <p class="empty">Nothing to show yet.</p>}
+  </Container>
+</PageLayout>

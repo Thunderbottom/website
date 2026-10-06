@@ -1,0 +1,37 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "@lib/config";
+import { parseTags } from "@lib/utils";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+  details?: boolean;
+}
+
+const { post, details = true } = Astro.props;
+const description = post.data.description || post.data.summary;
+const tags = parseTags(post.data.tags);
+---
+
+<a href={`/blog/${post.id}/`} class="log-row">
+  <time class="log-date" datetime={new Date(post.data.date).toISOString()}>
+    {formatDate(post.data.date, "%Y-%m-%d")}
+  </time>
+  <span>
+    <span class="log-title">{post.data.title}</span>
+    {
+      details && description && (
+        <span class="log-desc post-summary">{description}</span>
+      )
+    }
+    {
+      details && tags.length > 0 && (
+        <span class="log-tags">
+          {tags.map((tag) => (
+            <span>{tag}</span>
+          ))}
+        </span>
+      )
+    }
+  </span>
+</a>

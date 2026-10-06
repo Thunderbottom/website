@@ -4,6 +4,7 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
+      "@site": ["./site.config.ts"],
       "@assets/*": ["./src/assets/*"],
       "@layouts/*": ["./src/layouts/*"],
       "@components/*": ["./src/components/*"],

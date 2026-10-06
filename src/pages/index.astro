@@ -1,21 +1,49 @@
 ---
-import { getCollection } from "astro:content";
+import { getEntry, render } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
-import PageContainer from "@components/PageContainer.astro";
-import Section from "@components/Section.astro";
+import Container from "@components/Container.astro";
+import WritingList from "@components/WritingList.astro";
 import ProjectCard from "@components/ProjectCard.astro";
+import InlineText from "@components/InlineText.astro";
+import MarkdownLink from "@components/MarkdownLink.astro";
 import Link from "@components/Link.astro";
-import { SITE, SOCIALS, PROJECTS, formatDate } from "@lib/config";
-import { sortByDateDesc } from "@lib/utils";
+import { SITE, SOCIALS, WRITING_HOME, formatDate } from "@lib/config";
+import { FEATURES } from "@site";
+import { getProjects } from "@lib/projects";
+import { getWriting } from "@lib/writing";
 
-const blog = sortByDateDesc(
-  (await getCollection("blog")).filter((post) => !post.data.draft),
-).slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+// The introduction is src/content/pages/home.md.
+const home = await getEntry("pages", "home");
+const { Content } = home ? await render(home) : { Content: null };
 
-const recentProjects = sortByDateDesc(PROJECTS).slice(
+// The featured slot is always the latest long-form post; the rows under it are
+// the newest writing of any kind (so a short note can show up here too).
+const writing = await getWriting();
+const featuredItem = writing.find((item) => item.kind === "post");
+const featured = featuredItem?.entry;
+const rest = writing
+  .filter((item) => item !== featuredItem)
+  .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE - (featured ? 1 : 0));
+const writingLink =
+  WRITING_HOME === "/writing"
+    ? "All Writing"
+    : WRITING_HOME === "/notes"
+      ? "All Notes"
+      : "All Posts";
+
+const recentProjects = (await getProjects()).slice(
   0,
   SITE.NUM_PROJECTS_ON_HOMEPAGE,
 );
+
+// "Now": the first item of each section that has one.
+const now = FEATURES.now ? (await getEntry("now", "now"))?.data : undefined;
+const currently = (now?.sections ?? [])
+  .filter((section) => section.items.length > 0)
+  .map((section) => ({
+    label: section.title.toLowerCase(),
+    text: section.items[0],
+  }));
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -33,130 +61,110 @@ const jsonLd = {
       name: SITE.NAME,
       url: SITE.URL,
       email: SITE.EMAIL,
-      sameAs: [
-        "https://bsky.app/profile/maych.in",
-        "https://github.com/Thunderbottom",
-        "https://git.deku.moe",
-      ],
+      sameAs: SOCIALS.map((s) => s.href).filter(
+        (href) => !href.startsWith("mailto:"),
+      ),
     },
   ],
 };
 ---
 
-<PageLayout currentPath="/" jsonLd={jsonLd}>
-  <PageContainer spacing="lg">
-    <Section spacing="md">
-      <h1 class="heading-display mb-6">
-        {SITE.NAME}
-      </h1>
+<PageLayout jsonLd={jsonLd}>
+  <Container class="stack stack-lg">
+    <section class="stack stack-md">
+      <h1 class="title">{SITE.NAME}</h1>
 
-      <div class="space-y-6">
-        <div class="prose dark:prose-invert max-w-none">
-          <p>
-            I make servers go beep boop. Also a hobbyist <Link
-              href="/photography"
-              underline>photographer</Link
-            >, part-time gamer, and a full-time golden retriever dad. This is my
-            personal page, where I post my thoughts on engineering, philosophy,
-            and system design.
-          </p>
+      {
+        Content && (
+          <div class="prose">
+            <Content components={{ a: MarkdownLink }} />
+          </div>
+        )
+      }
 
-          <p>
-            Outside of work I'm interested in everything *nix, open-source
-            projects, privacy in tech, and infrastructure that just works. In my
-            free time, I get lost in video games, read the occasional book, and
-            sometimes <Link
-              href="https://soundcloud.com/harmonicseventhnoiseprotocol"
-              external
-              underline>make music</Link
-            >. Want to see what I'm currently working on? Check out what I'm up
-            to <Link href="/now" underline>now</Link>.
+      {
+        home?.data.quote && (
+          <p class="quip" lang={home.data.quoteLang}>
+            “{home.data.quote}”
           </p>
-
-          <p
-            class="text-text-muted dark:text-text-muted-dark text-sm italic"
-            lang="es"
-          >
-            "El camarón que se duerme se lo lleva la corriente"
-          </p>
-        </div>
-      </div>
-    </Section>
+        )
+      }
+    </section>
 
     {
-      blog.length > 0 && (
-        <Section spacing="sm">
-          <div class="flex items-center justify-between">
-            <span class="text-text-muted dark:text-text-muted-dark font-mono text-xs">
-              posts
-            </span>
-            <Link href="/blog" class="font-mono text-xs">
-              all posts →
+      currently.length > 0 && (
+        <section>
+          <div class="section-head">
+            <h2>Now</h2>
+            <Link href="/now">
+              Now page <span class="arrow">→</span>
             </Link>
           </div>
-          <div class="border-border dark:border-border-dark border-t">
-            {blog.map((post) => (
-              <a href={`/blog/${post.id}/`} class="post-item group">
-                <span class="post-item-title">{post.data.title}</span>
-                <time
-                  class="post-item-date"
-                  datetime={new Date(post.data.date).toISOString()}
-                >
-                  {formatDate(new Date(post.data.date), "%b %Y")}
-                </time>
-              </a>
+          <dl class="currently">
+            {currently.map((entry) => (
+              <>
+                <dt>{entry.label}</dt>
+                <dd>
+                  <InlineText text={entry.text} />
+                </dd>
+              </>
             ))}
+          </dl>
+        </section>
+      )
+    }
+
+    {
+      WRITING_HOME && writing.length > 0 && (
+        <section>
+          <div class="section-head">
+            <h2>Writing</h2>
+            <Link href={WRITING_HOME}>
+              <span>{writingLink}</span> <span class="arrow">→</span>
+            </Link>
           </div>
-        </Section>
+          {featured && (
+            <a href={`/blog/${featured.id}/`} class="featured">
+              <span class="featured-meta">
+                <time
+                  class="log-date"
+                  datetime={new Date(featured.data.date).toISOString()}
+                >
+                  {formatDate(featured.data.date, "%Y-%m-%d")}
+                </time>
+                <span class="pill">latest</span>
+              </span>
+              <span class="featured-title">{featured.data.title}</span>
+              {(featured.data.description || featured.data.summary) && (
+                <span class="log-desc">
+                  {featured.data.description || featured.data.summary}
+                </span>
+              )}
+            </a>
+          )}
+          <div class="log">
+            <WritingList items={rest} byYear={false} compact showKind />
+          </div>
+        </section>
       )
     }
 
     {
       recentProjects.length > 0 && (
-        <Section spacing="md">
-          <div class="flex items-center justify-between">
-            <span class="text-text-muted dark:text-text-muted-dark font-mono text-xs">
-              projects
-            </span>
-            <Link href="/projects" class="font-mono text-xs">
-              all projects →
+        <section>
+          <div class="section-head">
+            <h2>Projects</h2>
+            <Link href="/projects">
+              All Projects <span class="arrow">→</span>
             </Link>
           </div>
-          <div class="border-border dark:border-border-dark border-t">
+          <div class="log">
             {recentProjects.map((project) => (
               <ProjectCard project={project} />
             ))}
           </div>
-        </Section>
+        </section>
       )
     }
-
-    <Section spacing="md">
-      <span class="text-text-muted dark:text-text-muted-dark font-mono text-xs"
-        >contact</span
-      >
-      <div class="prose dark:prose-invert max-w-none">
-        <p>
-          If you want to get in touch with me about something or just to say
-          "hello" sometime, here's where you can find me.
-        </p>
-      </div>
-      <ul class="flex flex-wrap gap-3">
-        {
-          SOCIALS.map((social) => (
-            <li class="text-nowrap">
-              <Link
-                href={social.href}
-                aria-label={`${SITE.NAME} on ${social.name}`}
-                external
-                underline
-              >
-                {social.name}
-              </Link>
-            </li>
-          ))
-        }
-      </ul>
-    </Section>
-  </PageContainer>
+  </Container>
 </PageLayout>

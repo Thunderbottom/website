@@ -1,0 +1,24 @@
+---
+import Link from "@components/Link.astro";
+import { parseInline } from "@lib/inline";
+
+interface Props {
+  /** Plain text, with optional [text](url) links. */
+  text: string;
+}
+
+const { text } = Astro.props;
+const parts = parseInline(text);
+---
+
+{
+  parts.map((part) =>
+    part.href ? (
+      <Link href={part.href} external={/^https?:/.test(part.href)} underline>
+        {part.text}
+      </Link>
+    ) : (
+      part.text
+    ),
+  )
+}

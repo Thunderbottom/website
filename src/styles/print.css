@@ -1,0 +1,83 @@
+/* ==========================================================================
+   PRINT
+   ========================================================================== */
+
+@media print {
+  .site-header,
+  .site-footer,
+  .to-top,
+  .reading-progress,
+  .post-nav,
+  .heading-anchor,
+  .post-toc-side,
+  .post-toc-inline,
+  button {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.3;
+  }
+
+  main {
+    padding-top: 0;
+  }
+
+  .prose a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
+  .sidenote {
+    float: none !important;
+    width: 100% !important;
+    margin: 1rem 0 !important;
+    padding-left: 0.5rem !important;
+    border-left: 1px solid #999 !important;
+  }
+
+  /* The resume prints as a resume: compact, and without links to other pages. */
+  .cv-page {
+    font-size: 10pt;
+    line-height: 1.35;
+  }
+
+  .cv-page.stack-lg {
+    --gap: 1.1rem;
+  }
+
+  .cv-page .stack-md {
+    --gap: 0.5rem;
+  }
+
+  .cv-page .section-head a {
+    display: none;
+  }
+
+  .cv-page .log-row {
+    padding-block: 0.4rem;
+    break-inside: avoid;
+  }
+
+  .cv-page .log-desc,
+  .cv-page .cv-points {
+    font-size: 10pt;
+  }
+
+  .cv-page .cv-points li + li {
+    margin-top: 0.15rem;
+  }
+
+  .cv-page .cv-skills {
+    padding-top: 0.4rem;
+    gap: 0.25rem 1rem;
+  }
+}

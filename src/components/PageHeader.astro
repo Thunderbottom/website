@@ -2,34 +2,12 @@
 interface Props {
   title: string;
   description?: string;
-  size?: "sm" | "md" | "lg";
-  class?: string;
 }
 
-const { title, description, size = "md", class: className = "" } = Astro.props;
-
-const titleClasses = {
-  sm: "heading-lg",
-  md: "heading-xl",
-  lg: "heading-2xl",
-};
-
-const titleElement = size === "sm" ? "h2" : "h1";
+const { title, description } = Astro.props;
 ---
 
-<div class={className}>
-  {
-    titleElement === "h1" ? (
-      <h1 class={titleClasses[size]}>{title}</h1>
-    ) : (
-      <h2 class={titleClasses[size]}>{title}</h2>
-    )
-  }
-  {
-    description && (
-      <p class="text-text-muted dark:text-text-muted-dark mt-3 font-mono text-xs leading-relaxed">
-        {description}
-      </p>
-    )
-  }
+<div class="page-head">
+  <h1 class="title">{title}</h1>
+  {description && <p class="label sub">{description}</p>}
 </div>

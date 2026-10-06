@@ -6,12 +6,9 @@ interface Props {
   format?: string;
 }
 
-const { date, format = "%B %d, %Y" } = Astro.props;
+const { date, format = "%Y-%m-%d" } = Astro.props;
 
-const formattedDate = formatDate(date, format);
 const isoDate = typeof date === "string" ? date : date.toISOString();
 ---
 
-<time datetime={isoDate} class="text-secondary-color">
-  {formattedDate}
-</time>
+<time datetime={isoDate}>{formatDate(date, format)}</time>

@@ -1,0 +1,43 @@
+# Runs on GitHub Actions, Forgejo Actions and Gitea Actions alike: it uses only
+# actions/* steps and plain shell. If your runner's label isn't `ubuntu-latest`,
+# change `runs-on` to match it.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Resized photos are cached, so unchanged photos aren't re-encoded.
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.astro
+          key: astro-images-${{ hashFiles('src/content/photography/images/**') }}
+          restore-keys: astro-images-
+
+      - name: Typography lint
+        run: bun run lint:type
+
+      - name: Formatting
+        run: bun run format:check
+
+      - name: Build
+        run: bun run build:prod

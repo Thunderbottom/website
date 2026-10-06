@@ -1,0 +1,93 @@
+/* ==========================================================================
+   INTERACTION
+   One hover affordance for the whole site: an accent underline.
+
+   - Text links, and controls with a text label, underline their label.
+   - Block links (list rows, post links, photo cards) underline their title.
+   - Icon-only controls have no text to underline, so they turn accent.
+   - Keyboard focus gets the same underline, on top of the focus ring.
+
+   Nothing else changes on hover: no boxes, no fills, no movement.
+   ========================================================================== */
+
+/* In-text links rest with a quiet underline; hover turns it into the accent. */
+.link-underline,
+.prose a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 0.2em;
+  text-decoration-skip-ink: auto;
+}
+
+/* Text links and labelled controls */
+:is(
+    .link,
+    .prose a,
+    .sidenote a,
+    .site-brand,
+    .site-nav a,
+    .back,
+    .toc-link,
+    .toc-summary,
+    a.tag-link,
+    .to-top,
+    .heading-anchor
+  ):is(:hover, :focus-visible),
+/* Block links: the title carries the underline */
+:is(a.log-row, a.featured, .post-nav a, .photo-card):is(:hover, :focus-visible)
+  :is(.log-title, .featured-title, .post-nav-title, .photo-title) {
+  text-decoration-line: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+  text-decoration-skip-ink: auto;
+}
+
+/* Icon-only controls */
+.theme-toggle:is(:hover, :focus-visible) {
+  color: var(--accent);
+}
+
+/* Touch targets. On touch devices every control is at least 44px tall; the
+   padding is cancelled by an equal negative margin so layout does not move. */
+@media (pointer: coarse) {
+  .section-head a,
+  .head-links a {
+    padding: 0.85rem 0.5rem;
+    margin: -0.85rem -0.5rem;
+  }
+
+  .site-footer nav a {
+    padding-block: 0.85rem;
+  }
+
+  .toc-summary {
+    min-height: 2.75rem;
+  }
+
+  .post-toc-inline {
+    padding: 0 1rem;
+  }
+
+  .post-toc-inline details[open] {
+    padding-bottom: 0.5rem;
+  }
+
+  .toc-link {
+    padding-block: 0.6rem;
+  }
+
+  .toc-list li + li {
+    margin-top: 0;
+  }
+
+  .project-links a {
+    padding-block: 0.75rem;
+  }
+
+  .heading-anchor {
+    padding: 0.85rem 0.9rem;
+    margin: -0.85rem -0.4rem -0.85rem 0.1rem;
+  }
+}

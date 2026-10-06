@@ -1,21 +1,42 @@
 ---
 import PageLayout from "@layouts/PageLayout.astro";
-import PageContainer from "@components/PageContainer.astro";
-import PageHeader from "@components/PageHeader.astro";
-import Section from "@components/Section.astro";
+import Container from "@components/Container.astro";
+import WritingList from "@components/WritingList.astro";
 import Link from "@components/Link.astro";
+import { WRITING_HOME } from "@lib/config";
+import { getWriting } from "@lib/writing";
+
+const recent = (await getWriting()).slice(0, 3);
 ---
 
-<PageLayout currentPath="/">
-  <PageContainer spacing="lg">
-    <Section spacing="md" class="text-center">
-      <PageHeader title="Uh-oh!" size="sm" />
-      <div class="prose max-w-none">
+<PageLayout title="Page Not Found" description="This page doesn’t exist.">
+  <Container class="stack stack-lg">
+    <section class="stack stack-md">
+      <h1 class="title">Nothing at this address.</h1>
+      <div class="prose">
         <p>
-          Sorry, we've misplaced that URL or it's pointing to something that
-          doesn't exist. <Link href="/">Head back home</Link> to try finding it again.
+          The page you followed a link to doesn’t exist, or it has moved. <Link
+            href="/"
+            underline>Head back home</Link
+          >, or pick up something recent.
         </p>
       </div>
-    </Section>
-  </PageContainer>
+    </section>
+
+    {
+      WRITING_HOME && recent.length > 0 && (
+        <section>
+          <div class="section-head">
+            <h2>Writing</h2>
+            <Link href={WRITING_HOME}>
+              All writing <span class="arrow">→</span>
+            </Link>
+          </div>
+          <div class="log">
+            <WritingList items={recent} byYear={false} compact showKind />
+          </div>
+        </section>
+      )
+    }
+  </Container>
 </PageLayout>

@@ -1,0 +1,146 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import { PHOTOGRAPHY, SITE } from "@lib/config";
+import { getAllPhotos, photoHref, type ProcessedPhoto } from "@lib/photo-utils";
+
+export async function getStaticPaths() {
+  const photos = await getAllPhotos();
+  return photos.map((photo, i) => ({
+    params: { slug: photo.id },
+    props: {
+      photo,
+      newer: i > 0 ? photos[i - 1] : undefined,
+      older: i < photos.length - 1 ? photos[i + 1] : undefined,
+    },
+  }));
+}
+
+interface Props {
+  photo: ProcessedPhoto;
+  newer?: ProcessedPhoto;
+  older?: ProcessedPhoto;
+}
+
+const { photo, newer, older } = Astro.props;
+const { fullImage } = photo.images;
+const ar = (
+  Number(fullImage.attributes.width) / Number(fullImage.attributes.height)
+).toFixed(4);
+const description =
+  photo.body.trim().split("\n")[0] ||
+  `${photo.data.title}, ${photo.formattedDate}.`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ImageObject",
+  name: photo.data.title,
+  description,
+  contentUrl: new URL(fullImage.src, SITE.URL).href,
+  dateCreated: photo.data.date,
+  creator: { "@type": "Person", name: SITE.NAME, url: SITE.URL },
+};
+---
+
+<PageLayout
+  title={photo.data.title}
+  description={description}
+  ogImage={new URL(fullImage.src, SITE.URL).href}
+  jsonLd={jsonLd}
+>
+  <Container wide class="wrap-photo">
+    <article class="photo-page" style={`--ar:${ar}`} data-back="/photography/">
+      <div class="photo-column photo-back">
+        <BackToPrev href="/photography">{PHOTOGRAPHY.TITLE}</BackToPrev>
+      </div>
+
+      <figure class="photo-stage">
+        <img
+          src={fullImage.src}
+          width={fullImage.attributes.width}
+          height={fullImage.attributes.height}
+          alt={photo.data.alt || photo.data.title}
+          fetchpriority="high"
+          decoding="async"
+        />
+      </figure>
+
+      <div class="photo-column photo-info">
+        <header class="photo-text">
+          <time
+            class="photo-date"
+            datetime={new Date(photo.data.date).toISOString()}
+          >
+            {photo.formattedDate}
+          </time>
+          <h1 class="photo-heading">{photo.data.title}</h1>
+          {photo.body.trim() && <p class="photo-note">{photo.body.trim()}</p>}
+        </header>
+
+        {
+          photo.exifRows.length > 0 && (
+            <section class="photo-exif" aria-labelledby="exif-title">
+              <h2 class="exif-title" id="exif-title">
+                EXIF
+              </h2>
+              <dl class="exif">
+                {photo.exifRows.map((row) => (
+                  <>
+                    <dt>{row.label}</dt>
+                    <dd>
+                      {row.href ? (
+                        <a href={row.href}>{row.value}</a>
+                      ) : (
+                        row.value
+                      )}
+                    </dd>
+                  </>
+                ))}
+              </dl>
+            </section>
+          )
+        }
+
+        {
+          (newer || older) && (
+            <nav class="photo-nav" aria-label="More photos">
+              {newer ? (
+                <a href={photoHref(newer)} rel="prev">
+                  <span class="post-nav-label">← Newer</span>
+                  <span class="photo-nav-title">{newer.data.title}</span>
+                </a>
+              ) : (
+                <span />
+              )}
+              {older && (
+                <a href={photoHref(older)} rel="next" class="next">
+                  <span class="post-nav-label">Older →</span>
+                  <span class="photo-nav-title">{older.data.title}</span>
+                </a>
+              )}
+            </nav>
+          )
+        }
+      </div>
+    </article>
+  </Container>
+</PageLayout>
+
+<script>
+  // Arrow keys step through the photos in gallery order (newest first, so
+  // right is the older photo); Escape goes back to the gallery.
+  const page = document.querySelector<HTMLElement>(".photo-page");
+  if (page) {
+    document.addEventListener("keydown", (e) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      const t = e.target as HTMLElement;
+      if (t.closest("input, textarea, select, [contenteditable]")) return;
+      const go = (selector: string) =>
+        document.querySelector<HTMLAnchorElement>(selector)?.click();
+      if (e.key === "ArrowLeft") go('.photo-nav [rel="prev"]');
+      else if (e.key === "ArrowRight") go('.photo-nav [rel="next"]');
+      else if (e.key === "Escape") location.href = page.dataset.back ?? "/";
+    });
+  }
+</script>

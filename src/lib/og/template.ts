@@ -1,204 +1,168 @@
 import satori from "satori";
 import { SITE } from "@lib/config";
+import { THEME } from "@site";
 import type { FontData } from "@lib/fonts";
 
 export interface OgTemplateProps {
   title: string;
   subtitle?: string;
+  /** A small label at the top right, like the "latest" tag: "blog post". */
   badge?: string;
+  /** Dates and the like, in mono above the title: ["2025-06-04", "5 min read"]. */
+  meta?: string[];
 }
 
-const INK = "#000000";
-const PAPER = "#ffffff";
-const MUTED = "#666666";
-const ACCENT = "#C42B1C";
-const RULE = "#e0e0e0";
+// The share image is the site's light theme: the same palette, and the same
+// type roles. Sans for the title, serif italic for the description (as on a
+// post), mono for dates and tags.
+const { ink, ink2, ink3, rule, accent, bg } = THEME.light;
 
-function titleFontSize(title: string): string {
-  if (title.length > 55) return "42px";
-  if (title.length > 28) return "54px";
-  return "64px";
+const SIZE = { width: 1200, height: 630 };
+const GUTTER = 72;
+
+function titleFontSize(title: string): number {
+  if (title.length > 70) return 46;
+  if (title.length > 45) return 54;
+  if (title.length > 24) return 64;
+  return 76;
 }
+
+type Node = {
+  type: string;
+  props: { style: Record<string, unknown>; children?: unknown };
+};
+
+const box = (style: Record<string, unknown>, children?: unknown): Node => ({
+  type: "div",
+  props: { style: { display: "flex", ...style }, children },
+});
 
 export async function generateOgTemplate(
   props: OgTemplateProps,
   fonts: FontData[],
 ): Promise<string> {
-  const { title, subtitle, badge } = props;
+  const { title, subtitle, badge, meta } = props;
 
-  const fontName = fonts.find((f) => f.name === "Atkinson Hyperlegible Next")
+  const has = (name: string) => fonts.some((f) => f.name === name);
+  const sans = has("Atkinson Hyperlegible Next")
     ? "Atkinson Hyperlegible Next"
     : "sans-serif";
+  const mono = has("Commit Mono") ? "Commit Mono" : sans;
+  const serif = has("Source Serif 4") ? "Source Serif 4" : sans;
 
-  const monoName = fonts.find((f) => f.name === "Commit Mono")
-    ? "Commit Mono"
-    : fontName;
+  const size = titleFontSize(title);
+
+  // The header: the brand on the left like the site's header, the kind of page
+  // on the right, a hairline under both.
+  const header = box(
+    {
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: `0 ${GUTTER}px`,
+      height: "104px",
+      borderBottom: `1px solid ${rule}`,
+      flexShrink: "0",
+    },
+    [
+      box(
+        {
+          fontFamily: sans,
+          fontWeight: 700,
+          fontSize: "28px",
+          letterSpacing: "-0.01em",
+          color: ink,
+        },
+        SITE.DOMAIN,
+      ),
+      badge
+        ? box(
+            {
+              fontFamily: mono,
+              fontSize: "20px",
+              color: accent,
+              border: `2px solid ${accent}`,
+              padding: "4px 14px",
+            },
+            badge,
+          )
+        : box({}, ""),
+    ],
+  );
+
+  const body = box(
+    {
+      flex: "1",
+      flexDirection: "column",
+      justifyContent: "center",
+      padding: `0 ${GUTTER}px`,
+    },
+    [
+      meta && meta.length > 0
+        ? box(
+            {
+              fontFamily: mono,
+              fontSize: "22px",
+              color: ink3,
+              marginBottom: "22px",
+              gap: "24px",
+            },
+            meta.map((part) => box({}, part)),
+          )
+        : box({}, ""),
+      box(
+        {
+          fontFamily: sans,
+          fontWeight: 700,
+          fontSize: `${size}px`,
+          letterSpacing: `${(-0.02 * size).toFixed(1)}px`,
+          lineHeight: 1.1,
+          color: ink,
+          overflow: "hidden",
+          display: "-webkit-box",
+          WebkitBoxOrient: "vertical",
+          WebkitLineClamp: 3,
+        },
+        title,
+      ),
+      subtitle
+        ? box(
+            {
+              fontFamily: serif,
+              fontStyle: "italic",
+              fontSize: "32px",
+              lineHeight: 1.4,
+              color: ink2,
+              marginTop: "28px",
+              maxWidth: "980px",
+              overflow: "hidden",
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 2,
+            },
+            subtitle,
+          )
+        : box({}, ""),
+    ],
+  );
 
   return await satori(
-    {
-      type: "div",
-      props: {
-        style: {
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: PAPER,
-        },
-        children: [
-          // Editorial red rule — full-width top stroke
-          {
-            type: "div",
-            props: {
-              style: {
-                width: "100%",
-                height: "3px",
-                backgroundColor: ACCENT,
-                flexShrink: "0",
-              },
-            },
-          },
-          // Main content — title centered in upper zone
-          {
-            type: "div",
-            props: {
-              style: {
-                flex: "1",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                padding: "52px 64px 36px",
-              },
-              children: [
-                // Title
-                {
-                  type: "div",
-                  props: {
-                    style: {
-                      fontSize: titleFontSize(title),
-                      fontWeight: "700",
-                      fontFamily: fontName,
-                      color: INK,
-                      lineHeight: "1.2",
-                      marginBottom: subtitle ? "20px" : "0px",
-                      overflow: "hidden",
-                      display: "-webkit-box",
-                      WebkitBoxOrient: "vertical",
-                      WebkitLineClamp: "3",
-                    },
-                    children: title,
-                  },
-                },
-                // Subtitle
-                ...(subtitle
-                  ? [
-                      {
-                        type: "div",
-                        props: {
-                          style: {
-                            fontSize: "22px",
-                            fontWeight: "400",
-                            fontFamily: fontName,
-                            color: MUTED,
-                            lineHeight: "1.55",
-                            overflow: "hidden",
-                            display: "-webkit-box",
-                            WebkitBoxOrient: "vertical",
-                            WebkitLineClamp: "2",
-                          },
-                          children: subtitle,
-                        },
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          },
-          // Colophon — domain + badge at bottom
-          {
-            type: "div",
-            props: {
-              style: {
-                display: "flex",
-                flexDirection: "column",
-                flexShrink: "0",
-                padding: "0px 64px 44px",
-              },
-              children: [
-                // Rule
-                {
-                  type: "div",
-                  props: {
-                    style: {
-                      width: "100%",
-                      height: "1px",
-                      backgroundColor: RULE,
-                      marginBottom: "20px",
-                    },
-                  },
-                },
-                // Domain + badge row
-                {
-                  type: "div",
-                  props: {
-                    style: {
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    },
-                    children: [
-                      // Domain
-                      {
-                        type: "div",
-                        props: {
-                          style: {
-                            fontSize: "18px",
-                            fontWeight: "700",
-                            fontFamily: fontName,
-                            color: INK,
-                          },
-                          children: SITE.DOMAIN,
-                        },
-                      },
-                      // Badge — only when present
-                      badge
-                        ? {
-                            type: "div",
-                            props: {
-                              style: {
-                                fontSize: "11px",
-                                fontWeight: "400",
-                                fontFamily: monoName,
-                                color: ACCENT,
-                                border: `1px solid ${ACCENT}`,
-                                padding: "5px 14px",
-                                letterSpacing: "0.08em",
-                              },
-                              children: badge,
-                            },
-                          }
-                        : { type: "div", props: { style: {}, children: "" } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
+    box(
+      {
+        height: "100%",
+        width: "100%",
+        flexDirection: "column",
+        backgroundColor: bg,
       },
-    },
+      [header, body],
+    ) as never,
     {
-      width: 1200,
-      height: 630,
-      fonts:
-        fonts && fonts.length > 0
-          ? fonts.map((f) => ({
-              name: f.name,
-              data: f.data,
-              weight: f.weight,
-              style: f.style,
-            }))
-          : [],
+      ...SIZE,
+      fonts: fonts.map((f) => ({
+        name: f.name,
+        data: f.data,
+        weight: f.weight as 400 | 600 | 700,
+        style: f.style,
+      })),
     },
   );
 }

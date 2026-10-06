@@ -1,0 +1,113 @@
+---
+import { render } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import Message from "@components/Message.astro";
+import Sidenote from "@components/Sidenote.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import { NOTES, SITE, formatDate } from "@lib/config";
+import { parseTags, tagToSlug } from "@lib/utils";
+import {
+  getNotes,
+  noteExcerpt,
+  noteHeadline,
+  noteHref,
+  type Note,
+} from "@lib/writing";
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return notes.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      newer: i > 0 ? notes[i - 1] : undefined,
+      older: i < notes.length - 1 ? notes[i + 1] : undefined,
+    },
+  }));
+}
+
+interface Props {
+  entry: Note;
+  newer?: Note;
+  older?: Note;
+}
+
+const { entry, newer, older } = Astro.props;
+const { Content } = await render(entry);
+const tags = parseTags(entry.data.tags);
+// An untitled note is headed by its date.
+const title = entry.data.title ?? formatDate(entry.data.date);
+const description = noteExcerpt(entry.body, 160) || NOTES.DESCRIPTION;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: noteHeadline(entry),
+  datePublished: new Date(entry.data.date).toISOString(),
+  url: new URL(noteHref(entry), SITE.URL).href,
+  author: { "@type": "Person", "@id": `${SITE.URL}/#person`, name: SITE.NAME },
+};
+---
+
+<PageLayout
+  title={title}
+  description={description}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <Container class="stack">
+    <BackToPrev href="/notes">{NOTES.TITLE}</BackToPrev>
+
+    <header>
+      {
+        entry.data.title && (
+          <div class="post-meta">
+            <FormattedDate date={entry.data.date} />
+          </div>
+        )
+      }
+      <h1 class="title" style={entry.data.title ? "margin-top: 0.75rem" : ""}>
+        {title}
+      </h1>
+    </header>
+
+    <article class="prose">
+      <Content components={{ Message, Sidenote }} />
+    </article>
+
+    {
+      tags.length > 0 && (
+        <div class="tag-list">
+          {tags.map((tag) => (
+            <a href={`/tags/${tagToSlug(tag)}/`} class="tag-link">
+              {tag}
+            </a>
+          ))}
+        </div>
+      )
+    }
+
+    {
+      (newer || older) && (
+        <nav class="post-nav" aria-label="More notes">
+          {older ? (
+            <a href={noteHref(older)} rel="prev">
+              <span class="post-nav-label">← Older</span>
+              <span class="post-nav-title">{noteHeadline(older)}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {newer && (
+            <a href={noteHref(newer)} rel="next" class="next">
+              <span class="post-nav-label">Newer →</span>
+              <span class="post-nav-title">{noteHeadline(newer)}</span>
+            </a>
+          )}
+        </nav>
+      )
+    }
+  </Container>
+</PageLayout>

@@ -1,31 +1,38 @@
 ---
 import Container from "@components/Container.astro";
 import Link from "@components/Link.astro";
-import { SITE } from "@lib/config";
+import { SITE, SOCIALS } from "@lib/config";
+import { FEATURES } from "@site";
 
 const currentYear = new Date().getFullYear();
 ---
 
-<footer
-  aria-label="Site footer"
-  class="border-border dark:border-border-dark mt-10 mb-10 border-t pt-8"
->
+<footer class="site-footer" aria-label="Site footer">
   <Container>
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div
-        class="text-text-secondary dark:text-text-secondary-dark font-mono text-xs"
-      >
-        &copy; {currentYear}
-        {SITE.NAME}
-      </div>
-      <nav
-        class="flex items-center gap-4 font-mono text-xs"
-        aria-label="Footer links"
-      >
-        <Link href="/rss.xml">rss</Link>
-        <Link href="https://github.com/Thunderbottom" external>github</Link>
-        <Link href={`mailto:${SITE.EMAIL}`}>email</Link>
+    <div class="footer-inner">
+      <nav aria-label="Contact and feeds">
+        {
+          SOCIALS.map((social) => (
+            <Link
+              href={social.href}
+              aria-label={`${SITE.NAME} on ${social.name}`}
+              external={!social.href.startsWith("mailto:")}
+            >
+              {social.name}
+            </Link>
+          ))
+        }
+        {FEATURES.resume && <Link href="/resume">Resume</Link>}
+        {FEATURES.blog && <Link href="/rss.xml">RSS</Link>}
       </nav>
+
+      <div class="colophon">
+        <p>&copy; {currentYear} {SITE.NAME}</p>
+        <p>
+          Set in Source Serif 4, Atkinson Hyperlegible Next, and Commit Mono.<br>
+          Built with Astro.
+        </p>
+      </div>
     </div>
   </Container>
 </footer>

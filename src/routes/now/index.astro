@@ -1,0 +1,40 @@
+---
+import { getEntry } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import InlineText from "@components/InlineText.astro";
+import { NOW } from "@lib/config";
+
+const now = (await getEntry("now", "now"))?.data;
+const sections = now?.sections ?? [];
+---
+
+<PageLayout title={NOW.TITLE} description={NOW.DESCRIPTION}>
+  <Container class="stack stack-lg">
+    <div class="page-head">
+      <h1 class="title">{NOW.TITLE}</h1>
+      {now?.quip && <p class="quip">“{now.quip}”</p>}
+    </div>
+
+    {
+      sections.map((section) => (
+        <section>
+          <h2 class="now-section">{section.title}</h2>
+          {section.items.length > 0 ? (
+            <ul class="now-list">
+              {section.items.map((item) => (
+                <li>
+                  <span>
+                    <InlineText text={item} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="meta">Nothing at the moment.</p>
+          )}
+        </section>
+      ))
+    }
+  </Container>
+</PageLayout>

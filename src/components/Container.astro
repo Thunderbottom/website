@@ -1,7 +1,13 @@
 ---
-const { class: className = "" } = Astro.props;
+interface Props {
+  class?: string;
+  /** Break out of the reading column (galleries). */
+  wide?: boolean;
+}
+
+const { class: className = "", wide = false } = Astro.props;
 ---
 
-<div class={`mx-auto max-w-[42rem] px-4 sm:px-6 ${className}`}>
+<div class:list={["wrap", wide && "wrap-wide", className]}>
   <slot />
 </div>

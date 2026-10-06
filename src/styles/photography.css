@@ -1,0 +1,441 @@
+/* ==========================================================================
+   PHOTOGRAPHY: the gallery grid and the single-photo page
+   ========================================================================== */
+
+/* Justified rows, sized for the wide shell (72rem).
+
+   Each cell's flex-basis is its aspect ratio times --row (the target row
+   height), and it grows in the same proportion, so every photo in a row shares
+   one height and nothing is cropped. The 14rem floor keeps a tall, narrow
+   portrait wide enough for its caption. On phones it is a single column. */
+.photo-grid {
+  --row: 20rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem 1rem;
+  margin-top: 1.5rem;
+}
+
+.photo-grid::after {
+  content: "";
+  flex-grow: 1000000;
+}
+
+/* A cell may grow to 1.3x its target height and no further, so a row with
+   only a few photos is left-aligned instead of blown up to fill the width. */
+.photo-grid > * {
+  flex: calc(var(--ar, 1.5) * 100) 1
+    max(calc(var(--ar, 1.5) * var(--row)), 14rem);
+  max-width: min(100%, calc(var(--ar, 1.5) * var(--row) * 1.3));
+  min-width: 0;
+}
+
+@media (max-width: 639px) {
+  .photo-grid > * {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
+/* Frameless: the photograph is the card. */
+.photo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.photo-card img {
+  width: 100%;
+  height: auto;
+  background: var(--bg-sunk);
+  border: 1px solid var(--rule);
+}
+
+.photo-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--ink);
+}
+
+.photo-date {
+  color: var(--ink-2);
+}
+
+/* A single photo ----------------------------------------------------------- */
+
+.wrap-wide.wrap-photo {
+  max-width: 88rem;
+}
+
+/* The photograph is as large as fits the screen (the viewport's height, less
+   the header and back link), centred. Everything written sits in the site's
+   reading column instead, so the back link, title, note and camera details
+   stay in the same place from photo to photo, whatever shape the photo is. */
+.photo-page {
+  --fit: calc(100dvh - 11rem);
+}
+
+.photo-column {
+  width: min(100%, calc(var(--measure) - 3rem));
+  margin-inline: auto;
+}
+
+.photo-back {
+  margin-bottom: 0.25rem;
+}
+
+.photo-stage {
+  width: min(100%, calc(var(--fit) * var(--ar, 1.5)));
+  min-width: min(100%, 22rem);
+  margin-inline: auto;
+}
+
+.photo-stage img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--bg-sunk);
+  border: 1px solid var(--rule);
+}
+
+.photo-info {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.photo-note {
+  margin-top: 0.75rem;
+  color: var(--ink-2);
+  max-width: 60ch;
+}
+
+.photo-heading {
+  margin-top: 0.4rem;
+}
+
+/* Camera details: a small heading, then label and value pairs. Each block of
+   the info area opens with a hairline, like a row of table headers. */
+.photo-text,
+.photo-exif {
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.exif-title {
+  margin-bottom: 0.75rem;
+  color: var(--ink-2);
+}
+
+.exif {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-content: start;
+  gap: 0.5rem 1.25rem;
+}
+
+.exif dt {
+  color: var(--ink-3);
+}
+
+.exif dd {
+  color: var(--ink);
+}
+
+.exif a {
+  text-decoration-line: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 0.2em;
+}
+
+.exif a:is(:hover, :focus-visible) {
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+
+.photo-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+/* Room for it: the words on the left, the camera details on the right, in
+   the same fixed column as before. */
+@media (min-width: 720px) {
+  .photo-info {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    column-gap: 2rem;
+    align-items: start;
+  }
+
+  .photo-nav {
+    grid-column: 1 / -1;
+  }
+}
+
+.photo-nav a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.photo-nav .next {
+  text-align: right;
+  grid-column: 2;
+}
+
+.photo-nav-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.photo-nav a:is(:hover, :focus-visible) .photo-nav-title {
+  text-decoration-line: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+
+/* Lightbox: the same page, in an overlay -----------------------------------
+   Opened from the gallery. The photograph sits on a dark table in both
+   themes, with the notes in a panel beside it (below it on phones). */
+
+#lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+  overscroll-behavior: contain;
+  /* Horizontal flicks belong to the swipe handler, not to the browser's own
+     swipe-back gesture. */
+  touch-action: pan-y pinch-zoom;
+}
+
+#lightbox::backdrop {
+  background: transparent;
+}
+
+html:has(#lightbox[open]) {
+  overflow: hidden;
+  /* Turns off the browser's swipe-back gesture while the overlay is open, so
+     a right swipe means "older photo", not "leave the page". */
+  overscroll-behavior-x: none;
+}
+
+html:has(#lightbox[open]) body {
+  overscroll-behavior-x: none;
+}
+
+#lightbox .photo-page,
+#lightbox .lightbox-body {
+  height: 100%;
+}
+
+#lightbox .photo-page {
+  display: grid;
+  grid-template-rows: minmax(0, 66dvh) minmax(0, 1fr);
+}
+
+#lightbox .photo-column {
+  width: auto;
+  margin: 0;
+}
+
+#lightbox .photo-back {
+  display: none;
+}
+
+#lightbox .photo-stage {
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 0.5rem 0;
+  background: #0f0f0e;
+}
+
+#lightbox .photo-stage img {
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border: 0;
+  background: transparent;
+}
+
+#lightbox .photo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0;
+  padding: 0.9rem 1rem 1.25rem;
+  overflow-y: auto;
+}
+
+/* On a phone the arrows and swiping replace the links at the foot of the
+   panel, so nobody has to scroll down to change photo. */
+#lightbox .photo-nav {
+  display: none;
+}
+
+#lightbox .photo-note {
+  margin-top: 0.4rem;
+}
+
+#lightbox .exif {
+  gap: 0.35rem 1rem;
+}
+
+/* Edge arrows, over the photograph */
+.lightbox-step {
+  position: absolute;
+  top: calc(33dvh - 1.375rem);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: rgb(15 15 14 / 0.55);
+  border: 1px solid rgb(255 255 255 / 0.28);
+  color: #e9e7e2;
+}
+
+.lightbox-step[hidden] {
+  display: none;
+}
+
+.lightbox-step.prev {
+  left: 0.5rem;
+}
+
+.lightbox-step.next {
+  right: 0.5rem;
+}
+
+.lightbox-step.next svg {
+  transform: scaleX(-1);
+}
+
+.lightbox-step svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.lightbox-step:is(:hover, :focus-visible) {
+  color: var(--accent-on-dark);
+  border-color: var(--accent-on-dark);
+}
+
+#lightbox .photo-info {
+  align-items: stretch;
+}
+
+#lightbox .photo-text {
+  padding-top: 0;
+  border-top: 0;
+}
+
+#lightbox .photo-exif {
+  margin-top: auto;
+}
+
+#lightbox .photo-nav {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--control);
+  color: var(--ink);
+}
+
+.lightbox-close kbd {
+  padding: 0 0.3em;
+  border: 1px solid var(--control);
+  color: var(--ink-2);
+}
+
+/* No keyboard on a phone: drop the hint, and make the button a real target. */
+@media (pointer: coarse) {
+  .lightbox-close {
+    min-height: 2.75rem;
+  }
+
+  .lightbox-close kbd {
+    display: none;
+  }
+}
+
+.lightbox-close:is(:hover, :focus-visible) {
+  color: var(--accent);
+}
+
+@media (min-width: 900px) {
+  #lightbox .photo-page {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  #lightbox .photo-stage {
+    padding: 1.5rem;
+  }
+
+  #lightbox .photo-info {
+    gap: 1.5rem;
+    padding: 4.25rem 1.5rem 1.5rem;
+    border-left: 1px solid var(--rule);
+  }
+
+  #lightbox .photo-nav {
+    display: grid;
+  }
+
+  #lightbox .photo-note {
+    margin-top: 0.75rem;
+  }
+
+  #lightbox .exif {
+    gap: 0.5rem 1.25rem;
+  }
+
+  .lightbox-step {
+    top: calc(50dvh - 1.375rem);
+  }
+
+  .lightbox-step.next {
+    right: calc(24rem + 0.75rem);
+  }
+
+  .lightbox-step.prev {
+    left: 0.75rem;
+  }
+}

@@ -20,7 +20,12 @@ export async function loadSiteFonts(): Promise<FontData[]> {
       throw new Error("Could not find fonts directory");
     }
 
-    const loadFont = async (filename: string, name: string, weight: number) => {
+    const loadFont = async (
+      filename: string,
+      name: string,
+      weight: number,
+      style: "normal" | "italic" = "normal",
+    ) => {
       try {
         const fontPath = path.join(fontsDir, filename);
         const fontData = await readFile(fontPath);
@@ -34,7 +39,7 @@ export async function loadSiteFonts(): Promise<FontData[]> {
           name,
           data: arrayBuffer,
           weight,
-          style: "normal",
+          style,
         });
       } catch (e) {
         console.warn(`Failed to load ${name} ${weight}:`, e);
@@ -63,6 +68,20 @@ export async function loadSiteFonts(): Promise<FontData[]> {
       "commit-mono/CommitMono-400-Regular.ttf",
       "Commit Mono",
       400,
+    );
+
+    // The serif the site reads in (WOFF: the image generator can't read WOFF2).
+    await loadFont(
+      "source-serif-4/source-serif-4-latin-400-normal.woff",
+      "Source Serif 4",
+      400,
+    );
+
+    await loadFont(
+      "source-serif-4/source-serif-4-latin-400-italic.woff",
+      "Source Serif 4",
+      400,
+      "italic",
     );
 
     if (fonts.length > 0) {

@@ -3,7 +3,8 @@ import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import BackToTop from "@components/BackToTop.astro";
 import { SITE } from "@lib/config";
-import { ClientRouter } from "astro:transitions";
+import { themeCss } from "@lib/theme";
+import { FEATURES, THEME } from "@site";
 import "../styles/global.css";
 
 interface Props {
@@ -12,8 +13,9 @@ interface Props {
   keywords?: string;
   ogType?: string;
   ogImage?: string;
-  currentPath?: string;
   jsonLd?: Record<string, unknown>;
+  /** Keep the page out of search results. */
+  noindex?: boolean;
 }
 
 const {
@@ -22,18 +24,18 @@ const {
   keywords = "astro, blog, technology, life, linux",
   ogType = "website",
   ogImage,
-  currentPath = "",
   jsonLd,
+  noindex = false,
 } = Astro.props;
 
 const pageTitle = title === SITE.NAME ? title : `${title} | ${SITE.NAME}`;
-const canonicalURL = new URL(currentPath, SITE.URL);
+const canonicalURL = new URL(Astro.url.pathname, SITE.URL);
 
 const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={SITE.LANG}>
   <head>
     <meta charset="utf-8" />
     <meta
@@ -43,16 +45,25 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content={THEME.light.bg} />
     <meta
       name="theme-color"
-      content="#111111"
+      content={THEME.dark.bg}
       media="(prefers-color-scheme: dark)"
     />
+
+    <style is:inline set:html={themeCss()}></style>
 
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
 
+    <link
+      rel="preload"
+      href="/fonts/source-serif-4/source-serif-4-latin-wght-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link
       rel="preload"
       href="/fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-variable.woff2"
@@ -69,128 +80,75 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     />
 
     <script is:inline>
-      if ("scrollRestoration" in history) {
-        history.scrollRestoration = "manual";
-      }
-
       function getTheme() {
-        return (
-          localStorage.getItem("theme") ||
-          (window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light")
-        );
+        try {
+          const saved = localStorage.getItem("theme");
+          if (saved) return saved;
+        } catch {}
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
       }
 
       function applyTheme(theme) {
-        document.documentElement.classList.toggle("dark", theme === "dark");
         document.documentElement.setAttribute("data-theme", theme);
-      }
-
-      function updateThemeToggleButton(theme) {
+        // The page colour, from the palette in site.config.ts.
+        const color = getComputedStyle(document.documentElement)
+          .getPropertyValue("--bg")
+          .trim();
+        document
+          .querySelectorAll('meta[name="theme-color"]')
+          .forEach((m) => m.setAttribute("content", color));
         const button = document.getElementById("theme-toggle");
+        // A switch's accessible name says what it IS ("Dark theme"); the
+        // state lives on aria-checked.
         if (button) {
-          button.setAttribute(
-            "aria-label",
-            theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
-          );
+          button.setAttribute("aria-checked", String(theme === "dark"));
         }
       }
 
-      function setupTheme() {
-        const theme = getTheme();
-        applyTheme(theme);
-        updateThemeToggleButton(theme);
-      }
+      applyTheme(getTheme());
 
-      setupTheme();
+      document.addEventListener("DOMContentLoaded", () => {
+        applyTheme(getTheme());
+        setupSidenotes();
+      });
 
       document.addEventListener("click", (e) => {
-        const button = e.target.closest("#theme-toggle");
-        if (!button) return;
-
+        if (!e.target.closest("#theme-toggle")) return;
         e.preventDefault();
 
-        const isDark = document.documentElement.classList.contains("dark");
-        const newTheme = isDark ? "light" : "dark";
-
-        localStorage.setItem("theme", newTheme);
-        applyTheme(newTheme);
-        updateThemeToggleButton(newTheme);
+        const next =
+          document.documentElement.getAttribute("data-theme") === "dark"
+            ? "light"
+            : "dark";
+        try {
+          localStorage.setItem("theme", next);
+        } catch {}
+        applyTheme(next);
       });
 
-      document.addEventListener("astro:before-swap", (e) => {
-        const theme = getTheme();
-        e.newDocument.documentElement.setAttribute("data-theme", theme);
-        e.newDocument.documentElement.classList.toggle(
-          "dark",
-          theme === "dark",
-        );
-      });
+      function setupSidenotes() {
+        document.querySelectorAll(".sidenote-toggle").forEach((toggle) => {
+          const label = toggle.previousElementSibling;
+          if (!label?.classList.contains("sidenote-ref")) return;
 
-      document.addEventListener("astro:page-load", () => {
-        if (!window.location.hash) {
-          window.scrollTo({ top: 0, behavior: "instant" });
-        }
-        const theme = getTheme();
-        applyTheme(theme);
-        updateThemeToggleButton(theme);
-      });
+          const sync = () => {
+            label.setAttribute("data-expanded", String(toggle.checked));
+            toggle.setAttribute("aria-expanded", String(toggle.checked));
+          };
+          sync();
+          toggle.addEventListener("change", sync);
 
-      window.setupUI =
-        window.setupUI ||
-        (() => {
-          requestAnimationFrame(() => {
-            document.documentElement.classList.toggle(
-              "scrolled",
-              window.scrollY > 0,
-            );
+          // The label is a role="button" element, so it needs Enter/Space
+          // activation added by hand.
+          label.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            e.preventDefault();
+            toggle.click();
           });
-
-          document
-            .querySelectorAll(".sidenote-toggle, .margin-toggle")
-            .forEach((toggle) => {
-              if (!toggle.hasListener) {
-                const updateIcon = () => {
-                  const label = toggle.previousElementSibling;
-                  if (label?.classList.contains("sidenote-ref")) {
-                    label.setAttribute(
-                      "data-expanded",
-                      toggle.checked.toString(),
-                    );
-                    toggle.setAttribute(
-                      "aria-expanded",
-                      toggle.checked.toString(),
-                    );
-                  }
-                };
-                updateIcon();
-                toggle.addEventListener("change", updateIcon);
-                toggle.hasListener = true;
-              }
-            });
         });
-
-      if (!window.scrollListener) {
-        let rafId = null;
-        document.addEventListener(
-          "scroll",
-          () => {
-            if (rafId) return;
-            rafId = requestAnimationFrame(() => {
-              document.documentElement.classList.toggle(
-                "scrolled",
-                window.scrollY > 0,
-              );
-              rafId = null;
-            });
-          },
-          { passive: true },
-        );
-        window.scrollListener = true;
       }
-
-      window.setupUI();
     </script>
 
     <title>{pageTitle}</title>
@@ -198,15 +156,30 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
     <meta name="author" content={SITE.NAME} />
+    {noindex && <meta name="robots" content="noindex, noarchive" />}
 
     <link rel="canonical" href={canonicalURL} />
 
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title="RSS"
-      href="/rss.xml"
-    />
+    {
+      FEATURES.blog && (
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="RSS"
+          href="/rss.xml"
+        />
+      )
+    }
+    {
+      FEATURES.notes && (
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Notes"
+          href="/notes/rss.xml"
+        />
+      )
+    }
 
     <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonicalURL} />
@@ -224,8 +197,14 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
     <link
       rel="icon"
       type="image/png"
-      href="/icons/favicon/favicon-96x96.png"
-      sizes="96x96"
+      href="/icons/favicon/favicon-32x32.png"
+      sizes="32x32"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="/icons/favicon/favicon-16x16.png"
+      sizes="16x16"
     />
     <link rel="shortcut icon" href="/icons/favicon/favicon.ico" />
     <link
@@ -234,7 +213,7 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
       href="/icons/favicon/apple-touch-icon.png"
     />
     <meta name="apple-mobile-web-app-title" content={SITE.NAME} />
-    <link rel="manifest" href="/icons/favicon/site.webmanifest" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     {
       jsonLd && (
@@ -252,8 +231,6 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
         ]
       }
     </script>
-
-    <ClientRouter />
   </head>
 
   <body>

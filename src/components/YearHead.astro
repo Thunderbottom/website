@@ -1,0 +1,20 @@
+---
+interface Props {
+  year: string | number;
+  count?: number;
+  unit?: string;
+}
+
+const { year, count, unit } = Astro.props;
+---
+
+<div class="year-head">
+  <h2>{year}</h2>
+  {
+    count !== undefined && unit && (
+      <span class="label">
+        {count} {count === 1 ? unit : `${unit}s`}
+      </span>
+    )
+  }
+</div>

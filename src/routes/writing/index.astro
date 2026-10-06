@@ -1,0 +1,35 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import PageHeader from "@components/PageHeader.astro";
+import WritingList from "@components/WritingList.astro";
+import WritingTabs from "@components/WritingTabs.astro";
+import Link from "@components/Link.astro";
+import { WRITING } from "@lib/config";
+import { getWriting } from "@lib/writing";
+
+const items = await getWriting();
+const posts = items.filter((i) => i.kind === "post").length;
+const counts = { all: items.length, blog: posts, notes: items.length - posts };
+---
+
+<PageLayout title={WRITING.TITLE} description={WRITING.DESCRIPTION}>
+  <Container class="stack stack-lg">
+    <div class="stack stack-md">
+      <div class="head-row">
+        <PageHeader title={WRITING.TITLE} description={WRITING.DESCRIPTION} />
+        <div class="head-links">
+          <Link href="/tags">Tags <span class="arrow">→</span></Link>
+        </div>
+      </div>
+      <WritingTabs current="all" counts={counts} />
+    </div>
+
+    <WritingList items={items} showKind empty="Nothing written yet." />
+
+    <p class="label">
+      Feeds: <Link href="/rss.xml" underline>blog</Link>,
+      <Link href="/notes/rss.xml" underline>notes</Link>.
+    </p>
+  </Container>
+</PageLayout>

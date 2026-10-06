@@ -1,0 +1,37 @@
+---
+// How links render in markdown pages (the homepage introduction): the same as
+// links everywhere else, with the external-link mark on other sites. A link to
+// a section that is switched off (see FEATURES in site.config.ts) is left as
+// plain text, so the text never points at a page that isn't there.
+import Link from "@components/Link.astro";
+import { FEATURES } from "@site";
+
+interface Props {
+  href: string;
+}
+
+const { href, ...rest } = Astro.props;
+const external = /^https?:\/\//.test(href);
+
+const SECTIONS: Record<string, boolean> = {
+  "/blog": FEATURES.blog,
+  "/notes": FEATURES.notes,
+  "/writing": FEATURES.blog && FEATURES.notes,
+  "/photography": FEATURES.photography,
+  "/projects": FEATURES.projects,
+  "/now": FEATURES.now,
+  "/resume": FEATURES.resume,
+};
+const path = href.startsWith("/") ? `/${href.split("/")[1]}` : undefined;
+const off = path !== undefined && SECTIONS[path] === false;
+---
+
+{
+  off ? (
+    <slot />
+  ) : (
+    <Link href={href} external={external} underline {...rest}>
+      <slot />
+    </Link>
+  )
+}

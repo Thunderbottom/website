@@ -2,56 +2,43 @@
 import IconChevronLeft from "@assets/icons/IconChevronLeft.astro";
 ---
 
-<button
-  id="back-to-top"
-  type="button"
-  data-visible="false"
-  class="border-border bg-card text-text-secondary hover:border-text-primary hover:bg-text-primary hover:text-background dark:border-border-dark dark:bg-card-dark dark:text-text-secondary-dark dark:hover:border-text-primary-dark dark:hover:bg-text-primary-dark dark:hover:text-background-dark fixed left-1/2 z-40 inline-flex min-h-[44px] -translate-x-1/2 transform items-center gap-2 border py-3 pr-3 pl-8 transition-[opacity,transform,background-color,border-color,color,box-shadow] duration-200 hover:shadow-sm data-[visible=false]:pointer-events-none data-[visible=false]:translate-y-2 data-[visible=false]:opacity-0 data-[visible=true]:pointer-events-auto data-[visible=true]:translate-y-0 data-[visible=true]:opacity-100"
-  style="bottom: calc(3rem + env(safe-area-inset-bottom, 0px))"
->
-  <IconChevronLeft
-    class="absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2 rotate-90"
-  />
-  <span class="font-mono text-xs whitespace-nowrap"> Back to top </span>
+<button id="back-to-top" type="button" class="to-top" data-visible="false">
+  <IconChevronLeft class="up" />
+  <span>Back to Top</span>
 </button>
 
 <script>
-  function setupBackToTop() {
-    const backToTopBtn = document.getElementById("back-to-top");
-    if (!backToTopBtn) return;
+  // Shown only when you scroll up past the first screen: that is the moment
+  // you want to go back to the top, and the rest of the time it would sit on
+  // top of what you are reading.
+  const button = document.getElementById("back-to-top");
 
-    let isVisible = false;
-    let rafId = null;
+  if (button) {
+    let lastY = window.scrollY;
+    let ticking = false;
 
-    const updateVisibility = (show) => {
-      if (isVisible === show) return;
-      isVisible = show;
-
-      backToTopBtn.setAttribute("data-visible", show.toString());
+    const update = () => {
+      const y = window.scrollY;
+      const delta = y - lastY;
+      if (y < 400) button.dataset.visible = "false";
+      else if (delta < -8) button.dataset.visible = "true";
+      else if (delta > 8) button.dataset.visible = "false";
+      if (Math.abs(delta) > 8) lastY = y;
+      ticking = false;
     };
 
-    const handleScroll = () => {
-      if (rafId) return;
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
 
-      rafId = requestAnimationFrame(() => {
-        const show = window.scrollY > 200;
-        updateVisibility(show);
-        rafId = null;
-      });
-    };
-
-    const scrollToTop = (e) => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    backToTopBtn.addEventListener("click", scrollToTop);
-
-    requestAnimationFrame(() => {
-      updateVisibility(window.scrollY > 200);
-    });
+    button.addEventListener("click", () =>
+      window.scrollTo({ top: 0, behavior: "smooth" }),
+    );
   }
-
-  document.addEventListener("astro:page-load", setupBackToTop);
 </script>

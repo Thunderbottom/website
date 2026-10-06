@@ -1,0 +1,43 @@
+---
+import PhotoCard from "@components/PhotoCard.astro";
+import PhotoLightbox from "@components/PhotoLightbox.astro";
+import YearHead from "@components/YearHead.astro";
+import { groupByYear, type ProcessedPhoto } from "@lib/photo-utils";
+
+interface Props {
+  photos: ProcessedPhoto[];
+}
+
+const { photos } = Astro.props;
+const groups = groupByYear(photos);
+// The first row is above the fold; everything else loads as it nears view.
+const eager = new Set(photos.slice(0, 3).map((p) => p.id));
+---
+
+{
+  photos.length === 0 ? (
+    <p class="empty">No photos yet.</p>
+  ) : (
+    <div class="stack stack-lg">
+      {groups.map(({ group, photos }) => (
+        <section>
+          <YearHead year={group.label} count={photos.length} unit="photo" />
+          <div
+            class="photo-grid"
+            role="list"
+            aria-label={`Photos from ${group.label}`}
+          >
+            {photos.map((photo) => (
+              <PhotoCard
+                photo={photo}
+                loading={eager.has(photo.id) ? "eager" : "lazy"}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  )
+}
+
+<PhotoLightbox />

@@ -1,0 +1,153 @@
+---
+import { getEntry } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import PageHeader from "@components/PageHeader.astro";
+import ProjectCard from "@components/ProjectCard.astro";
+import InlineText from "@components/InlineText.astro";
+import Link from "@components/Link.astro";
+import { SITE } from "@lib/config";
+import { getProjects } from "@lib/projects";
+import { FEATURES } from "@site";
+
+const entry = await getEntry("resume", "resume");
+if (!entry) {
+  throw new Error(
+    'src/content/resume.yaml needs a top-level "resume:" entry. Or set resume to false in FEATURES (site.config.ts) to drop this page.',
+  );
+}
+const resume = entry.data;
+
+const projects = (await getProjects()).filter((p) =>
+  resume.projects.includes(p.id),
+);
+
+const links = [
+  { label: "Email", href: `mailto:${SITE.EMAIL}`, external: false },
+  ...resume.links.map((l) => ({ ...l, external: true })),
+];
+---
+
+<PageLayout title="Resume" description={`Resume of ${SITE.NAME}`} noindex>
+  <Container class="stack stack-lg cv-page">
+    <div class="stack stack-md">
+      <PageHeader title={SITE.NAME} description={resume.headline} />
+      <div class="prose">
+        <p>{resume.summary}</p>
+      </div>
+      <nav class="project-links" aria-label="Contact">
+        {
+          links.map((item, i) => (
+            <>
+              {i > 0 && <span class="sep">/</span>}
+              <Link href={item.href} external={item.external} underline>
+                {item.label}
+              </Link>
+            </>
+          ))
+        }
+      </nav>
+    </div>
+
+    <section>
+      <div class="section-head"><h2>Experience</h2></div>
+      <div class="log">
+        {
+          resume.experience.map((role) => (
+            <div class="log-row">
+              <p class="log-date">
+                <time datetime={role.start}>{role.start}</time> to
+                <br />
+                {role.end ? <time datetime={role.end}>{role.end}</time> : "now"}
+              </p>
+              <div>
+                <div class="cv-head">
+                  <span class="log-title">{role.company}</span>
+                  {role.location && (
+                    <span class="cv-location">{role.location}</span>
+                  )}
+                </div>
+                <p class="log-desc full">{role.title}</p>
+                {role.points.length > 0 && (
+                  <ul class="cv-points">
+                    {role.points.map((point) => (
+                      <li>
+                        <InlineText text={point} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Education</h2></div>
+      <div class="log">
+        {
+          resume.education.map((item) => (
+            <div class="log-row">
+              <p class="log-date">
+                <time datetime={item.start}>{item.start}</time> to
+                <br />
+                <time datetime={item.end}>{item.end}</time>
+              </p>
+              <div>
+                <div class="cv-head">
+                  <span class="log-title">{item.school}</span>
+                  <span class="cv-location">{item.location}</span>
+                </div>
+                <p class="log-desc full">{item.degree}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    {
+      projects.length > 0 && (
+        <section>
+          <div class="section-head">
+            <h2>Projects</h2>
+            {FEATURES.projects && (
+              <Link href="/projects">
+                All Projects <span class="arrow">→</span>
+              </Link>
+            )}
+          </div>
+          <div class="log">
+            {projects.map((project) => (
+              <ProjectCard project={project} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section>
+      <div class="section-head"><h2>Skills</h2></div>
+      <dl class="cv-skills">
+        {
+          resume.skills.map((skill) => (
+            <>
+              <dt>{skill.label}</dt>
+              <dd>{skill.items}</dd>
+            </>
+          ))
+        }
+        {
+          resume.languages && (
+            <>
+              <dt>Languages</dt>
+              <dd>{resume.languages}</dd>
+            </>
+          )
+        }
+      </dl>
+    </section>
+  </Container>
+</PageLayout>

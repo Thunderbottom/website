@@ -1,0 +1,41 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import PageHeader from "@components/PageHeader.astro";
+import { tagToSlug } from "@lib/utils";
+import { getWriting, itemTags } from "@lib/writing";
+
+const writing = await getWriting();
+
+const tagMap = new Map<string, number>();
+for (const item of writing) {
+  for (const tag of itemTags(item)) {
+    tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
+  }
+}
+
+const sortedTags = [...tagMap.entries()].sort(
+  (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+);
+---
+
+<PageLayout title="Tags" description="Browse writing by tag">
+  <Container class="stack">
+    <PageHeader title="Tags" />
+
+    {
+      sortedTags.length > 0 ? (
+        <div class="tag-list">
+          {sortedTags.map(([tag, count]) => (
+            <a href={`/tags/${tagToSlug(tag)}/`} class="tag-link">
+              {tag}
+              <span>{count}</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="empty">No tags yet.</p>
+      )
+    }
+  </Container>
+</PageLayout>
