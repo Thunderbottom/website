@@ -258,7 +258,8 @@ a.tag-link,
 
 .heading-anchor {
   font-family: var(--mono);
-  font-size: var(--text-sm);
+  font-size: 0.75em;
+  line-height: 1;
   font-weight: var(--w-regular);
 }
 

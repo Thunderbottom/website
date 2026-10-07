@@ -40,9 +40,9 @@ const links = [
     <p class="log-desc full">{project.description}</p>
     {
       project.tags && project.tags.length > 0 && (
-        <span class="log-tags">
+        <span class="log-tags log-tags-boxed">
           {project.tags.map((tag) => (
-            <span>{tag}</span>
+            <span class="tag">{tag}</span>
           ))}
         </span>
       )
@@ -50,9 +50,8 @@ const links = [
     {
       links.length > 0 && (
         <nav class="project-links" aria-label={`Links for ${project.title}`}>
-          {links.map((item, i) => (
+          {links.map((item) => (
             <>
-              {i > 0 && <span class="sep">/</span>}
               <Link href={item.href} external underline>
                 {item.label}
               </Link>

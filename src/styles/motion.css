@@ -1,7 +1,6 @@
 /* ==========================================================================
    MOTION: native CSS only, each piece answers a question.
    - header hairline: "has the page scrolled under me?"
-   - reading progress: "how far through am I?"
    - page entrance: "where do I start reading?" (every page)
    - item reveal: "this list is still filling in" (rows, photos)
    ========================================================================== */
@@ -39,9 +38,17 @@
     view-transition-name: site-header;
   }
 
+  /* The page itself swaps instantly and the new page's entrance does the
+     easing. A cross-fade here stacked on top of that, and the blended
+     snapshots flashed, most visibly on a dark background. */
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: 160ms;
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(root) {
+    display: none;
   }
 }
 
@@ -87,29 +94,6 @@
       from {
         opacity: 0;
         transform: translateY(1rem);
-      }
-    }
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: scroll()) {
-    .reading-progress {
-      position: fixed;
-      inset: 0 0 auto 0;
-      z-index: 60;
-      height: 2px;
-      background: var(--accent);
-      transform: scaleX(0);
-      transform-origin: left;
-      animation: reading-progress linear both;
-      animation-timeline: scroll(root block);
-      pointer-events: none;
-    }
-
-    @keyframes reading-progress {
-      to {
-        transform: scaleX(1);
       }
     }
   }

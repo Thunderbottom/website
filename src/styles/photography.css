@@ -373,7 +373,10 @@ html:has(#lightbox[open]) body {
   gap: 0.6rem;
   min-height: 2.25rem;
   padding: 0 0.75rem;
-  background: var(--bg);
+  /* It floats over the photo, so let the photo show through. */
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--control);
   color: var(--ink);
 }

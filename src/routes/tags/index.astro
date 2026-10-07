@@ -2,6 +2,8 @@
 import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import PageHeader from "@components/PageHeader.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import { WRITING_HOME } from "@lib/config";
 import { tagToSlug } from "@lib/utils";
 import { getWriting, itemTags } from "@lib/writing";
 
@@ -21,6 +23,7 @@ const sortedTags = [...tagMap.entries()].sort(
 
 <PageLayout title="Tags" description="Browse writing by tag">
   <Container class="stack">
+    {WRITING_HOME && <BackToPrev href={WRITING_HOME}>Writing</BackToPrev>}
     <PageHeader title="Tags" />
 
     {

@@ -437,6 +437,24 @@ main {
     border-color 150ms ease;
 }
 
+/* Reading progress: an accent stroke that runs clockwise round the button. */
+.to-top-ring {
+  position: absolute;
+  inset: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.to-top-ring rect {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
 /* A keyboard user tabbing to it should always see it. */
 .to-top:focus-visible {
   opacity: 1;
@@ -596,4 +614,10 @@ a.tag-link[aria-current="page"] {
   display: flex;
   gap: 1rem;
   padding-bottom: 0.35rem;
+}
+
+/* Tech stack on a project: the same boxed tags as elsewhere, kept close. */
+.log-tags-boxed {
+  gap: 0.35rem;
+  margin-top: 0.6rem;
 }

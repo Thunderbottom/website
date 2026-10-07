@@ -37,9 +37,8 @@ const links = [
       </div>
       <nav class="project-links" aria-label="Contact">
         {
-          links.map((item, i) => (
+          links.map((item) => (
             <>
-              {i > 0 && <span class="sep">/</span>}
               <Link href={item.href} external={item.external} underline>
                 {item.label}
               </Link>

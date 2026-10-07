@@ -16,6 +16,8 @@ interface Props {
   jsonLd?: Record<string, unknown>;
   /** Keep the page out of search results. */
   noindex?: boolean;
+  /** Show reading progress on the back-to-top button (long reads). */
+  progress?: boolean;
 }
 
 const {
@@ -26,6 +28,7 @@ const {
   ogImage,
   jsonLd,
   noindex = false,
+  progress = false,
 } = Astro.props;
 
 const pageTitle = title === SITE.NAME ? title : `${title} | ${SITE.NAME}`;
@@ -240,6 +243,6 @@ const finalOgImage = ogImage || Astro.locals.ogImageUrl || `${SITE.URL}/og.png`;
       <slot />
     </main>
     <Footer />
-    <BackToTop />
+    <BackToTop progress={progress} />
   </body>
 </html>
