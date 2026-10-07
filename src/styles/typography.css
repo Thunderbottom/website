@@ -259,7 +259,7 @@ a.tag-link,
 .heading-anchor {
   font-family: var(--mono);
   font-size: 0.75em;
-  line-height: 1;
+  line-height: var(--lh-tight);
   font-weight: var(--w-regular);
 }
 
@@ -275,6 +275,11 @@ a.tag-link,
 @media (max-width: 1099px) {
   .sidenote-ref {
     font-size: var(--text-lg);
+    line-height: var(--lh-tight);
+  }
+
+  .sidenote-ref::after {
+    font-size: var(--text-base);
     line-height: var(--lh-tight);
   }
 }

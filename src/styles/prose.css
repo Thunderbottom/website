@@ -266,8 +266,6 @@
     width: 1.25rem;
     height: 1.25rem;
     border: 1px solid var(--accent);
-    font-size: var(--text-base);
-    line-height: 1;
     color: var(--accent);
   }
 
